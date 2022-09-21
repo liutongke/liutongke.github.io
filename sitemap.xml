@@ -2,6 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://liutongke.github.io/tags/api/</loc>
+    <lastmod>2022-09-10T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://liutongke.github.io/posts/api_swoole_doc/</loc>
     <lastmod>2022-09-10T00:00:00+00:00</lastmod>
   </url><url>
@@ -35,13 +38,10 @@
     <loc>https://liutongke.github.io/tags/go/</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://liutongke.github.io/posts/go_tinypng_mult_zip/</loc>
+    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://liutongke.github.io/tags/tinypng/</loc>
-    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://liutongke.github.io/tags/%E7%A0%B4%E8%A7%A3/</loc>
-    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://liutongke.github.io/posts/tinypng_mult_zip/</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://liutongke.github.io/tags/redis/</loc>
@@ -56,7 +56,7 @@
     <loc>https://liutongke.github.io/tags/nginx/</loc>
     <lastmod>2022-08-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://liutongke.github.io/tags/php8.0/</loc>
+    <loc>https://liutongke.github.io/tags/windows/</loc>
     <lastmod>2022-08-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://liutongke.github.io/posts/windows_php8.0_nginx/</loc>
@@ -80,10 +80,10 @@
     <loc>https://liutongke.github.io/posts/redis_data_reveal/</loc>
     <lastmod>2020-06-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://liutongke.github.io/posts/redis5.0_method/</loc>
+    <loc>https://liutongke.github.io/posts/redis5.0_discard_method/</loc>
     <lastmod>2020-06-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://liutongke.github.io/tags/centos/</loc>
+    <loc>https://liutongke.github.io/tags/centos7/</loc>
     <lastmod>2019-10-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://liutongke.github.io/posts/centos7_git/</loc>
@@ -98,14 +98,119 @@
     <loc>https://liutongke.github.io/tags/mysql/</loc>
     <lastmod>2018-12-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://liutongke.github.io/posts/mysql_index/</loc>
-    <lastmod>2018-12-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://liutongke.github.io/tags/%E7%B4%A2%E5%BC%95/</loc>
+    <loc>https://liutongke.github.io/posts/mysql_left_rule/</loc>
     <lastmod>2018-12-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://liutongke.github.io/tags/%E6%9C%80%E5%B7%A6%E5%8C%B9%E9%85%8D%E5%8E%9F%E5%88%99/</loc>
     <lastmod>2018-12-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/github_tips/</loc>
+    <lastmod>2018-08-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/django/</loc>
+    <lastmod>2018-08-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/rsa%E5%8A%A0%E5%AF%86/</loc>
+    <lastmod>2018-08-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/django_web_rsa/</loc>
+    <lastmod>2018-08-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/qq%E7%99%BB%E5%BD%95/</loc>
+    <lastmod>2018-08-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/django_web_qq/</loc>
+    <lastmod>2018-08-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/django_web_weibo/</loc>
+    <lastmod>2018-08-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/%E6%96%B0%E6%B5%AA%E5%BE%AE%E5%8D%9A%E7%99%BB%E5%BD%95/</loc>
+    <lastmod>2018-08-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/centos7_expand_disk/</loc>
+    <lastmod>2018-07-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/php_foreach/</loc>
+    <lastmod>2018-07-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/centos7_lamp/</loc>
+    <lastmod>2018-06-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/lamp/</loc>
+    <lastmod>2018-06-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/python/</loc>
+    <lastmod>2018-05-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/wechat_sport_data_python/</loc>
+    <lastmod>2018-05-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/django_nginx_uwsgi/</loc>
+    <lastmod>2018-05-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/uwsgi/</loc>
+    <lastmod>2018-05-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/php_ali_sms/</loc>
+    <lastmod>2018-05-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/composer/</loc>
+    <lastmod>2018-04-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/my_composer_package/</loc>
+    <lastmod>2018-04-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/redis_guanxi/</loc>
+    <lastmod>2018-02-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/https/</loc>
+    <lastmod>2018-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/set_nginx_https/</loc>
+    <lastmod>2018-01-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/raspberry-pi-3/</loc>
+    <lastmod>2017-11-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/raspberrypi3_wifi/</loc>
+    <lastmod>2017-11-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/raspberrypi3_os_xshell/</loc>
+    <lastmod>2017-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/raspberrypi3_incr_memory/</loc>
+    <lastmod>2017-11-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/raspberrypi3_yum_err/</loc>
+    <lastmod>2017-11-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/ipv6/</loc>
+    <lastmod>2017-10-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/centos7_aliyun_ecs_ipv6/</loc>
+    <lastmod>2017-10-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/wechat/</loc>
+    <lastmod>2017-10-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/wechat_sport_data_php/</loc>
+    <lastmod>2017-10-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/centos7_lnmp/</loc>
+    <lastmod>2017-08-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/lnmp/</loc>
+    <lastmod>2017-08-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/chaoku_chaoku_barrage/</loc>
+    <lastmod>2017-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/tags/thinkphp/</loc>
+    <lastmod>2017-06-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://liutongke.github.io/posts/thinkphp_phpqrcode/</loc>
+    <lastmod>2017-06-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://liutongke.github.io/categories/</loc>
   </url>

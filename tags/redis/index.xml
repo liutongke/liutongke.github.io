@@ -27,11 +27,20 @@
     
     <item>
       <title>Redis5.0-弃用方法名和替代方法名（php-redis 5以后废弃了一些方法名）</title>
-      <link>https://liutongke.github.io/posts/redis5.0_method/</link>
+      <link>https://liutongke.github.io/posts/redis5.0_discard_method/</link>
       <pubDate>Thu, 11 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/redis5.0_method/</guid>
+      <guid>https://liutongke.github.io/posts/redis5.0_discard_method/</guid>
       <description>php-redis 5以后废弃了一些方法名 被弃用方法名 替代方法名 delete del zUnion zunionstore zInter zinterstore zDeleteRangeByRank zRemRangeByRank zDeleteRangeByScore zRemRangeByScore zDelete zRem setTimeout expire sContains sismember sRemove srem sSize scard lGetRange lrange lGet lindex listTrim ltrim lRemove lrem lSize lLen getKeys keys getMultiple mget renameKey rename</description>
+    </item>
+    
+    <item>
+      <title>Redis实现用户关注功能</title>
+      <link>https://liutongke.github.io/posts/redis_guanxi/</link>
+      <pubDate>Thu, 01 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/posts/redis_guanxi/</guid>
+      <description>最近项目要涉及到粉丝关注问题，权衡再三还是使用Redis实现比较方便，使用Redis的有序集合可以做到根据关注的时间有序的取出列表，假设我的</description>
     </item>
     
   </channel>

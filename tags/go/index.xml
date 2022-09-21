@@ -8,11 +8,11 @@
     <language>en-us</language>
     <lastBuildDate>Thu, 08 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>破解图片压缩网站tinypng突破数量限制</title>
-      <link>https://liutongke.github.io/posts/tinypng_mult_zip/</link>
+      <title>Go破解图片压缩网站tinypng突破数量限制</title>
+      <link>https://liutongke.github.io/posts/go_tinypng_mult_zip/</link>
       <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/tinypng_mult_zip/</guid>
+      <guid>https://liutongke.github.io/posts/go_tinypng_mult_zip/</guid>
       <description>(一).介绍 🔗TinyPNG(熊猫压缩)官方提供了浏览器网站版，通过用户手动上传和下载图片不光使用比较繁琐而且还有使用限制。TinyPNG(</description>
     </item>
     

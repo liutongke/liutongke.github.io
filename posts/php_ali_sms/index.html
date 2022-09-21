@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>PHP开发实用-阿里短信服务（Short Message Service） | keke</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="PHP开发实用-阿里短信服务（Short Message Service）">
+<meta name="generator" content="Hugo 0.103.1" />
+
+
+  <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">PHP开发实用-阿里短信服务（Short Message Service）</h1>
+
+    <div class="tip">
+        <time datetime="2018-05-08 00:00:00 &#43;0000 UTC">2018年05月08日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1451字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          3分钟
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#步骤-1-使用阿里云短信服务正常发短信需要">步骤 1 使用阿里云短信服务正常发短信需要</a></li>
+        <li><a href="#步骤-2-获取阿里云访问密钥">步骤 2 获取阿里云访问密钥</a></li>
+        <li><a href="#步骤-3-将阿里云短信整合进laravel进行开发">步骤 3 将阿里云短信整合进Laravel进行开发</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h3 id="步骤-1-使用阿里云短信服务正常发短信需要">步骤 1 使用阿里云短信服务正常发短信需要 <a href="#%e6%ad%a5%e9%aa%a4-1-%e4%bd%bf%e7%94%a8%e9%98%bf%e9%87%8c%e4%ba%91%e7%9f%ad%e4%bf%a1%e6%9c%8d%e5%8a%a1%e6%ad%a3%e5%b8%b8%e5%8f%91%e7%9f%ad%e4%bf%a1%e9%9c%80%e8%a6%81" class="anchor">🔗</a></h3><ul>
+<li>短信签名</li>
+<li>短信模板</li>
+</ul>
+<ol>
+<li>1申请短信签名<br>
+  根据用户属性来创建符合自身属性的签名信息。企业用户需要上传相关企业资质证明，个人用户需要上传证明个人身份的证明。
+  <strong>短信签名需要审核通过后才可以使用。</strong>
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-41f48ff20cda9986.jpg" alt="申请短信签名"  />
+</p>
+1.2 申请短信模板<br>
+  短信模板，即具体发送的短信内容。短信模板可以支持验证码、短信通知、推广短信、国际/港澳台消息四种模式。验证码和短信通知，通过变量替换实现个性短信定制。推广短信不支持在模板中添加变量。
+  <strong>短信模板需要审核通过后才可以使用。</strong><br>
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-f70149013bef94f6.png" alt="申请短信模板"  />
+</p></li>
+</ol>
+<h3 id="步骤-2-获取阿里云访问密钥">步骤 2 获取阿里云访问密钥 <a href="#%e6%ad%a5%e9%aa%a4-2-%e8%8e%b7%e5%8f%96%e9%98%bf%e9%87%8c%e4%ba%91%e8%ae%bf%e9%97%ae%e5%af%86%e9%92%a5" class="anchor">🔗</a></h3><p>调用短信API还需要两个参数：</p>
+<ul>
+<li>Access Key ID</li>
+<li>Access Key Secret</li>
+</ul>
+<p>  可以通过阿里云控制台的 <a href="https://ak-console.aliyun.com/#/accesskey" title="秘钥管理页面"  target="_blank" rel="noopener">秘钥管理页面</a> 创建、管理所有的访问秘钥对，且保证它处于“启用”状态。由于访问秘钥是阿里云对 API 请求进行安全验证的关键因子，请妥善保管你的访问秘钥。如果某些秘钥对出现泄漏风险，建议及时删除该秘钥对并生成新的替代秘钥对。</p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-a7238436bcc2bf32.png" alt="获取Access Key ID"  />
+</p></p>
+<h3 id="步骤-3-将阿里云短信整合进laravel进行开发">步骤 3 将阿里云短信整合进Laravel进行开发 <a href="#%e6%ad%a5%e9%aa%a4-3-%e5%b0%86%e9%98%bf%e9%87%8c%e4%ba%91%e7%9f%ad%e4%bf%a1%e6%95%b4%e5%90%88%e8%bf%9blaravel%e8%bf%9b%e8%a1%8c%e5%bc%80%e5%8f%91" class="anchor">🔗</a></h3><p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-c0b098cf18e44b4a.png" alt="阿里云开发包"  />
+</p>
+  <a href="http://ytx-sdk.oss-cn-shanghai.aliyuncs.com/dysms_php.zip?spm=a2c4g.11186623.2.4.eExBcY&amp;file=dysms_php.zip" target="_blank" rel="noopener">下载</a>阿里云提供的SDK开发并将api_sdk/lib/Core和api_sdk/lib/Api复制一份放到项目app/Tools/dysms下，没有的话需要自己创建。<br>
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-5672b170fe0ef53e.png" alt="整合进Laravel"  />
+</p>
+打开项目根目录下的composer.json文件，在classmap，加上图示代码<br>
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-2acc863ba841580b.png" alt="添加自动加载"  />
+</p>
+打开命令行工具在项目根目录输入：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>composer dumpautoload  
+</span></span></code></pre></div><p>执行成功如下图
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-325402cdfffe0af4.png" alt="自动加载成功"  />
+</p><br>
+接下来就是正式的开发了，直接使用sdk里面导入包的方式进行引入：
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-dfaf13a49372b236.png" alt="引入"  />
+</p>
+第一次postman测试运行报错如下：
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-b132cb2580262cd6.png" alt="运行报错"  />
+</p><br>
+这是因为EndpointerProvider里面，没有setEndpoints就直接使用了getEndpointers，所以返回为空信息，setEndpoints操作是在EndpointConf中调用的，加载xml中的endpoints，在调用代码中加入</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 手动加载endpoint
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>EndpointConfig<span style="color:#666">::</span><span style="color:#b44">load</span>();
+</span></span></code></pre></div><p>再次运行代码发现报如下错误：
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-42283f6954e75258.png" alt="代理报错"  />
+</p><br>
+这是因为代理的原因，注释一下代码就可以了：
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-0404d77677447e19.png" alt="注释curl代理"  />
+</p></p>
+<p>开发完整代码，<a href="https://github.com/liutongke/jianshu-demo" target="_blank" rel="noopener">github源码地址 </a>：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#666">&lt;?</span>php
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">namespace</span> App\Http\Controllers\Admin;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">use</span> Illuminate\Http\Request;
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">use</span> App\Http\Controllers\Controller;
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">use</span> Illuminate\Support\Facades\Input;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">use</span> Aliyun\Core\Profile\DefaultProfile;
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">use</span> Aliyun\Core\DefaultAcsClient;
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">use</span> Aliyun\Api\Sms\Request\V20170525\SendSmsRequest;
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">use</span> Aliyun\Core\Regions\EndpointConfig;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">class</span> <span style="color:#00f">Dysms</span> <span style="color:#a2f;font-weight:bold">extends</span> Controller
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">static</span> <span style="color:#b8860b">$acsClient</span> <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">//阿里短信
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    <span style="color:#a2f;font-weight:bold">public</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">Dysms</span>()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 初始化SendSmsRequest实例用于设置发送短信的参数
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$request</span> <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">new</span> SendSmsRequest();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">//可选-启用https协议
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#080;font-style:italic">//$request-&gt;setProtocol(&#34;https&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 必填，设置短信接收号码
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$request</span><span style="color:#666">-&gt;</span><span style="color:#b44">setPhoneNumbers</span>(Input<span style="color:#666">::</span><span style="color:#b44">get</span>(<span style="color:#b44">&#39;phone&#39;</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 必填，设置签名名称，应严格按&#34;签名名称&#34;填写，请参考: https://dysms.console.aliyun.com/dysms.htm#/develop/sign
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$request</span><span style="color:#666">-&gt;</span><span style="color:#b44">setSignName</span>(<span style="color:#b44">&#34;签名&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 必填，设置模板CODE，应严格按&#34;模板CODE&#34;填写, 请参考: https://dysms.console.aliyun.com/dysms.htm#/develop/template
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$request</span><span style="color:#666">-&gt;</span><span style="color:#b44">setTemplateCode</span>(<span style="color:#b44">&#34;模版CODE&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 可选，设置模板参数, 假如模板中存在变量需要替换则为必填项
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$request</span><span style="color:#666">-&gt;</span><span style="color:#b44">setTemplateParam</span>(json_encode(<span style="color:#a2f;font-weight:bold">array</span>(
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic">// 短信模板中字段的值
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            <span style="color:#b44">&#34;code&#34;</span> <span style="color:#666">=&gt;</span> rand(<span style="color:#666">000000</span>, <span style="color:#666">999999</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#b44">&#34;product&#34;</span> <span style="color:#666">=&gt;</span> <span style="color:#b44">&#34;dsd&#34;</span>
+</span></span><span style="display:flex;"><span>        ), JSON_UNESCAPED_UNICODE));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 可选，设置流水号
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$request</span><span style="color:#666">-&gt;</span><span style="color:#b44">setOutId</span>(<span style="color:#b44">&#34;1234567&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 选填，上行短信扩展码（扩展码字段控制在7位或以下，无特殊需求用户请忽略此字段）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//        $request-&gt;setSmsUpExtendCode(&#34;1234567&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#080;font-style:italic">// 发起访问请求
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$acsResponse</span> <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">static</span><span style="color:#666">::</span><span style="color:#b44">getAcsClient</span>()<span style="color:#666">-&gt;</span><span style="color:#b44">getAcsResponse</span>(<span style="color:#b8860b">$request</span>);
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//打印执行结果
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        dd(<span style="color:#b8860b">$acsResponse</span>);
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 执行成功后的返回状态
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//        {#1538
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//            +&#34;Message&#34;: &#34;OK&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//            +&#34;RequestId&#34;: &#34;0CE56BFE-5E9A-4F3F-8AEC-5C524720CE83&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//            +&#34;BizId&#34;: &#34;480519725607521112^0&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//            +&#34;Code&#34;: &#34;OK&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//        }
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#b44;font-style:italic">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * 取得AcsClient
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     *
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @return DefaultAcsClient
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">public</span> <span style="color:#a2f;font-weight:bold">static</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">getAcsClient</span>()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">//产品名称:云通信流量服务API产品,开发者无需替换
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$product</span> <span style="color:#666">=</span> <span style="color:#b44">&#34;Dysmsapi&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">//产品域名,开发者无需替换
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$domain</span> <span style="color:#666">=</span> <span style="color:#b44">&#34;dysmsapi.aliyuncs.com&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// TODO 此处需要替换成开发者自己的AK (https://ak-console.aliyun.com/)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#080;font-style:italic">// AccessKeyId
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$accessKeyId</span> <span style="color:#666">=</span> <span style="color:#b44">&#34;AccessKeyId&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// AccessKeySecret
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$accessKeySecret</span> <span style="color:#666">=</span> <span style="color:#b44">&#34;AccessKeySecret&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 暂时不支持多Region
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$region</span> <span style="color:#666">=</span> <span style="color:#b44">&#34;cn-hangzhou&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 服务结点
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#b8860b">$endPointName</span> <span style="color:#666">=</span> <span style="color:#b44">&#34;cn-hangzhou&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">if</span> (<span style="color:#a2f;font-weight:bold">static</span><span style="color:#666">::</span><span style="color:#b8860b">$acsClient</span> <span style="color:#666">==</span> <span style="color:#a2f;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic">//初始化acsClient,暂不支持region化
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            <span style="color:#b8860b">$profile</span> <span style="color:#666">=</span> DefaultProfile<span style="color:#666">::</span><span style="color:#b44">getProfile</span>(<span style="color:#b8860b">$region</span>, <span style="color:#b8860b">$accessKeyId</span>, <span style="color:#b8860b">$accessKeySecret</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic">// 手动加载endpoint
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            EndpointConfig<span style="color:#666">::</span><span style="color:#b44">load</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic">// 增加服务结点
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            DefaultProfile<span style="color:#666">::</span><span style="color:#b44">addEndpoint</span>(<span style="color:#b8860b">$endPointName</span>, <span style="color:#b8860b">$region</span>, <span style="color:#b8860b">$product</span>, <span style="color:#b8860b">$domain</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic">// 初始化AcsClient用于发起请求
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            <span style="color:#a2f;font-weight:bold">static</span><span style="color:#666">::</span><span style="color:#b8860b">$acsClient</span> <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">new</span> DefaultAcsClient(<span style="color:#b8860b">$profile</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#a2f;font-weight:bold">static</span><span style="color:#666">::</span><span style="color:#b8860b">$acsClient</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>PS:最后不得不吐槽下，阿里用OSS和阿里短信好多坑啊，这么大的一个公司。</p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://liutongke.github.io/tags/php">php</a>
+            
+        </div>
+    
+    
+    
+  <div id="comment">
+    
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "your-disqus-shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  </div>
+
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+       © Copyright 
+       2022 
+       <span class="split">
+        <svg fill="#bbbbbb" width="15" height="15" version="1.1" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 15 15">
+  <path d="M13.91,6.75c-1.17,2.25-4.3,5.31-6.07,6.94c-0.1903,0.1718-0.4797,0.1718-0.67,0C5.39,12.06,2.26,9,1.09,6.75&#xA;&#x9;C-1.48,1.8,5-1.5,7.5,3.45C10-1.5,16.48,1.8,13.91,6.75z"/>
+</svg>
+       </span>
+       keke
+    
+    </div>
+
+    
+</footer>
+
+
+
+  </body>
+</html>

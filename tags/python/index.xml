@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Python on keke</title>
+    <link>https://liutongke.github.io/tags/python/</link>
+    <description>Recent content in Python on keke</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 20 May 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>微信运动数据抓取(Python)</title>
+      <link>https://liutongke.github.io/posts/wechat_sport_data_python/</link>
+      <pubDate>Sun, 20 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/posts/wechat_sport_data_python/</guid>
+      <description>“微信运动”能够向朋友分享一个包含有运动数据的网页，网页中就有我们需要的数据。url类似于：http://hw.weixin.qq.com/</description>
+    </item>
+    
+    <item>
+      <title>CentOS7下部署Django（nginx&#43;uWSGI&#43;Python3&#43;Django)</title>
+      <link>https://liutongke.github.io/posts/django_nginx_uwsgi/</link>
+      <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/posts/django_nginx_uwsgi/</guid>
+      <description>部署代码后uWSGI需要重新启动,关闭系统防火墙或者开放端口 系统版本:CentOS7.0 Python版本:Python3.6.3 Django</description>
+    </item>
+    
+  </channel>
+</rss>

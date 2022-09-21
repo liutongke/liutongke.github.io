@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>我用Django搭网站(2)-QQ登录 | keke</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="我用Django搭网站(2)-QQ登录">
+<meta name="generator" content="Hugo 0.103.1" />
+
+
+  <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">我用Django搭网站(2)-QQ登录</h1>
+
+    <div class="tip">
+        <time datetime="2018-08-13 00:00:00 &#43;0000 UTC">2018年08月13日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1230字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          3分钟
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <blockquote>
+<p>接入QQ登录前，网站需首先进行申请，获得对应的appid与appkey，以保证后续流程中可正确对网站与用户进行验证与授权。
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-59c5a78818420da3.png" alt="流程步骤"  />
+</p></p>
+</blockquote>
+<h4 id="第一步准备阶段">第一步：准备阶段 <a href="#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%87%86%e5%a4%87%e9%98%b6%e6%ae%b5" class="anchor">🔗</a></h4><p>打开<a href="https://connect.qq.com/" target="_blank" rel="noopener">QQ互联</a>，并登录你的QQ账号。再点击导航上的“应用管理”，创建应用获取appid和appkey。
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-3fccdfa7db7e3c84.png" alt="创建应用"  />
+</p>
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-6336aae8249d4fb9.png" alt="创建应用"  />
+</p>
+<em><strong>其中要注意的是网站名称要和备案的网站名称一致，否则会审核不通过</strong></em>
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-a1b4e561b410d655.png" alt="填写回调地址"  />
+</p>
+创建完应用以后就可以获得appid和appkey了，即使审核没通过也没关系，测试也可以使用。
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-8e4acb0867181864.png" alt="appid和appkey了"  />
+</p></p>
+<h4 id="第二步具体开发">第二步：具体开发 <a href="#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e5%85%b7%e4%bd%93%e5%bc%80%e5%8f%91" class="anchor">🔗</a></h4><ul>
+<li>创建web应用
+创建完成之后，打开models.py文件，编写模型：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">class</span> <span style="color:#00f">Users</span>(models<span style="color:#666">.</span>Model):
+</span></span><span style="display:flex;"><span>    qq_openid <span style="color:#666">=</span> models<span style="color:#666">.</span>CharField(max_length<span style="color:#666">=</span><span style="color:#666">64</span>, null<span style="color:#666">=</span><span style="color:#a2f;font-weight:bold">True</span>)  <span style="color:#080;font-style:italic"># QQ的关联OpenID</span>
+</span></span><span style="display:flex;"><span>    description <span style="color:#666">=</span> models<span style="color:#666">.</span>CharField(max_length<span style="color:#666">=</span><span style="color:#666">200</span>, null<span style="color:#666">=</span><span style="color:#a2f;font-weight:bold">True</span>)  <span style="color:#080;font-style:italic"># 个性签名</span>
+</span></span><span style="display:flex;"><span>    nickname <span style="color:#666">=</span> models<span style="color:#666">.</span>CharField(max_length<span style="color:#666">=</span><span style="color:#666">30</span>, null<span style="color:#666">=</span><span style="color:#a2f;font-weight:bold">True</span>)  <span style="color:#080;font-style:italic"># 用户昵称</span>
+</span></span><span style="display:flex;"><span>    head <span style="color:#666">=</span> models<span style="color:#666">.</span>CharField(max_length<span style="color:#666">=</span><span style="color:#666">100</span>, null<span style="color:#666">=</span><span style="color:#a2f;font-weight:bold">True</span>)  <span style="color:#080;font-style:italic"># 用户头像</span>
+</span></span><span style="display:flex;"><span>    sex <span style="color:#666">=</span> models<span style="color:#666">.</span>CharField(max_length<span style="color:#666">=</span><span style="color:#666">2</span>, null<span style="color:#666">=</span><span style="color:#a2f;font-weight:bold">True</span>)  <span style="color:#080;font-style:italic"># 性别</span>
+</span></span></code></pre></div><p>模型用于存储QQ登录返回的openid值。这个openid是与QQ互联创建的应用一一对应。
+在总的urls路由中，加入对应应用路由。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">django.contrib</span> <span style="color:#a2f;font-weight:bold">import</span> admin
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">django.urls</span> <span style="color:#a2f;font-weight:bold">import</span> include, path
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>urlpatterns <span style="color:#666">=</span> [
+</span></span><span style="display:flex;"><span>    path(<span style="color:#b44">&#39;login/&#39;</span>, include(<span style="color:#b44">&#39;login.urls&#39;</span>)),  <span style="color:#080;font-style:italic"># 登录模块</span>
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><p>打开对应应用目录下urls.py文件，填写对用的路由：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">django.urls</span> <span style="color:#a2f;font-weight:bold">import</span> path
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">.</span> <span style="color:#a2f;font-weight:bold">import</span> views
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>urlpatterns <span style="color:#666">=</span> [
+</span></span><span style="display:flex;"><span>    path(<span style="color:#b44">&#39;oauth/qq/login&#39;</span>, views<span style="color:#666">.</span>qq_login),<span style="color:#080;font-style:italic"># qq登录</span>
+</span></span><span style="display:flex;"><span>    path(<span style="color:#b44">&#39;qq/connect/callback.php&#39;</span>, views<span style="color:#666">.</span>qq_check),  <span style="color:#080;font-style:italic"># 回调路由</span>
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><ul>
+<li>开发登录模块
+1.在工程目录settings.py中设置常量</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#b44">&#39;&#39;&#39;QQ登录常量&#39;&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>QQ_APP_ID <span style="color:#666">=</span> <span style="color:#b44">&#34;appid&#34;</span>
+</span></span><span style="display:flex;"><span>QQ_APP_KEY <span style="color:#666">=</span> <span style="color:#b44">&#34;appkey&#34;</span>
+</span></span><span style="display:flex;"><span>REDIRECT_URI <span style="color:#666">=</span> <span style="color:#b44">&#34;回调地址&#34;</span>
+</span></span></code></pre></div><p>2.在对应应用的文件夹下创建qq_oauth.py文件，编辑qq_oauth.py文件：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">import</span> <span style="color:#00f;font-weight:bold">requests</span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">import</span> <span style="color:#00f;font-weight:bold">json</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">class</span> <span style="color:#00f">OAuthQQ</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">def</span> __init__(self, client_id, client_key, redirect_uri):
+</span></span><span style="display:flex;"><span>        self<span style="color:#666">.</span>client_id <span style="color:#666">=</span> client_id
+</span></span><span style="display:flex;"><span>        self<span style="color:#666">.</span>client_key <span style="color:#666">=</span> client_key
+</span></span><span style="display:flex;"><span>        self<span style="color:#666">.</span>redirect_uri <span style="color:#666">=</span> redirect_uri
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">def</span> <span style="color:#00a000">get_auth_url</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#b44">&#34;&#34;&#34;获取授权页面的网址&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#b44">&#39;https://graph.qq.com/oauth2.0/authorize?response_type=code&amp;client_id=&#39;</span> <span style="color:#666">+</span> self<span style="color:#666">.</span>client_id <span style="color:#666">+</span> <span style="color:#b44">&#39;&amp;state=1&amp;scope=get_user_info&amp;redirect_uri=&#39;</span> <span style="color:#666">+</span> self<span style="color:#666">.</span>redirect_uri
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">def</span> <span style="color:#00a000">get_access_token</span>(self, code):
+</span></span><span style="display:flex;"><span>        <span style="color:#b44">&#34;&#34;&#34;根据code获取access_token&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        url <span style="color:#666">=</span> <span style="color:#b44">&#34;https://graph.qq.com/oauth2.0/token&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        querystring <span style="color:#666">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#b44">&#34;grant_type&#34;</span>: <span style="color:#b44">&#34;authorization_code&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#b44">&#34;client_id&#34;</span>: self<span style="color:#666">.</span>client_id,
+</span></span><span style="display:flex;"><span>            <span style="color:#b44">&#34;client_secret&#34;</span>: self<span style="color:#666">.</span>client_key,
+</span></span><span style="display:flex;"><span>            <span style="color:#b44">&#34;code&#34;</span>: code,
+</span></span><span style="display:flex;"><span>            <span style="color:#b44">&#34;redirect_uri&#34;</span>: self<span style="color:#666">.</span>redirect_uri
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        response <span style="color:#666">=</span> requests<span style="color:#666">.</span>request(<span style="color:#b44">&#34;GET&#34;</span>, url, params<span style="color:#666">=</span>querystring)
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> response<span style="color:#666">.</span>text<span style="color:#666">.</span>split(<span style="color:#b44">&#39;=&#39;</span>, <span style="color:#666">3</span>)[<span style="color:#666">1</span>]<span style="color:#666">.</span>split(<span style="color:#b44">&#39;&amp;&#39;</span>, <span style="color:#666">1</span>)[<span style="color:#666">0</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">def</span> <span style="color:#00a000">get_openid</span>(self, access_token):  <span style="color:#080;font-style:italic"># 获取用户的openid</span>
+</span></span><span style="display:flex;"><span>        url <span style="color:#666">=</span> <span style="color:#b44">&#34;https://graph.qq.com/oauth2.0/me&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        querystring <span style="color:#666">=</span> {<span style="color:#b44">&#34;access_token&#34;</span>: access_token}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        response <span style="color:#666">=</span> requests<span style="color:#666">.</span>request(<span style="color:#b44">&#34;GET&#34;</span>, url, params<span style="color:#666">=</span>querystring)
+</span></span><span style="display:flex;"><span>        call_back <span style="color:#666">=</span> <span style="color:#a2f">str</span>(response<span style="color:#666">.</span>text)[<span style="color:#666">9</span>:<span style="color:#666">-</span><span style="color:#666">3</span>]
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> json<span style="color:#666">.</span>loads(call_back)[<span style="color:#b44">&#39;openid&#39;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">def</span> <span style="color:#00a000">get_user_info</span>(self, access_token, qq_openid):  <span style="color:#080;font-style:italic"># 获取用户的详细信息</span>
+</span></span><span style="display:flex;"><span>        url <span style="color:#666">=</span> <span style="color:#b44">&#34;https://graph.qq.com/user/get_user_info&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        querystring <span style="color:#666">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#b44">&#34;access_token&#34;</span>: access_token,
+</span></span><span style="display:flex;"><span>            <span style="color:#b44">&#34;oauth_consumer_key&#34;</span>: self<span style="color:#666">.</span>client_id,
+</span></span><span style="display:flex;"><span>            <span style="color:#b44">&#34;openid&#34;</span>: qq_openid
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        response <span style="color:#666">=</span> requests<span style="color:#666">.</span>request(<span style="color:#b44">&#34;GET&#34;</span>, url, params<span style="color:#666">=</span>querystring)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> json<span style="color:#666">.</span>loads(response<span style="color:#666">.</span>text)
+</span></span></code></pre></div><p>3.编辑对应应用的文件夹下views.py文件：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">.qq_oauth</span> <span style="color:#a2f;font-weight:bold">import</span> OAuthQQ
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">def</span> <span style="color:#00a000">qq_login</span>(request):  <span style="color:#080;font-style:italic"># QQ第三方登录</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic"># 获取 得到Authorization Code的地址</span>
+</span></span><span style="display:flex;"><span>    url <span style="color:#666">=</span> OAuthQQ(settings<span style="color:#666">.</span>QQ_APP_ID,
+</span></span><span style="display:flex;"><span>                  settings<span style="color:#666">.</span>QQ_APP_KEY,
+</span></span><span style="display:flex;"><span>                  settings<span style="color:#666">.</span>REDIRECT_URI)<span style="color:#666">.</span>get_auth_url()
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic"># 重定向到授权页面</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">return</span> HttpResponseRedirect(url)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">def</span> <span style="color:#00a000">qq_check</span>(request):  <span style="color:#080;font-style:italic"># 第三方QQ登录，回调函数</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#b44">&#34;&#34;&#34;登录之后，会跳转到这里。需要判断code和state&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    code <span style="color:#666">=</span> request<span style="color:#666">.</span>GET<span style="color:#666">.</span>get(<span style="color:#b44">&#39;code&#39;</span>, <span style="color:#a2f;font-weight:bold">None</span>)
+</span></span><span style="display:flex;"><span>    authqq <span style="color:#666">=</span> OAuthQQ(settings<span style="color:#666">.</span>QQ_APP_ID, settings<span style="color:#666">.</span>QQ_APP_KEY, settings<span style="color:#666">.</span>REDIRECT_URI)
+</span></span><span style="display:flex;"><span>    access_token <span style="color:#666">=</span> authqq<span style="color:#666">.</span>get_access_token(code)  <span style="color:#080;font-style:italic"># 获取access_token</span>
+</span></span><span style="display:flex;"><span>    time<span style="color:#666">.</span>sleep(<span style="color:#666">0.05</span>)  <span style="color:#080;font-style:italic"># 稍微停一下，给系统调用接口一点时间</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    qq_openid <span style="color:#666">=</span> authqq<span style="color:#666">.</span>get_openid(access_token)  <span style="color:#080;font-style:italic"># 获取用户的openid</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    if_new_user <span style="color:#666">=</span> models<span style="color:#666">.</span>Users<span style="color:#666">.</span>objects<span style="color:#666">.</span>filter(qq_openid<span style="color:#666">=</span>qq_openid)<span style="color:#666">.</span>first()  <span style="color:#080;font-style:italic"># 通过openid判断是否是新用户</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">if</span> if_new_user <span style="color:#a2f;font-weight:bold">is</span> <span style="color:#a2f;font-weight:bold">not</span> <span style="color:#a2f;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">#老用户处理逻辑</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic"># 新用户业务处理逻辑</span>
+</span></span></code></pre></div><h5 id="总结">总结： <a href="#%e6%80%bb%e7%bb%93" class="anchor">🔗</a></h5><p>大体思路是用户点击QQ登录按钮调用qq_login方法然后跳转到登陆授权页面，当用户授权登录之后，QQ会跳转到回调页面，get方式携带code。得到code以后使用get_access_token方法得到access_token。
+得到access_token后拿来获取openid。获取到openid之后，通过openid判断是否是新用户，来调取get_user_info方法获取用户的详细信息。</p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://liutongke.github.io/tags/django">Django</a>
+            
+                <a href="https://liutongke.github.io/tags/qq%E7%99%BB%E5%BD%95">QQ登录</a>
+            
+        </div>
+    
+    
+    
+  <div id="comment">
+    
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "your-disqus-shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  </div>
+
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+       © Copyright 
+       2022 
+       <span class="split">
+        <svg fill="#bbbbbb" width="15" height="15" version="1.1" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 15 15">
+  <path d="M13.91,6.75c-1.17,2.25-4.3,5.31-6.07,6.94c-0.1903,0.1718-0.4797,0.1718-0.67,0C5.39,12.06,2.26,9,1.09,6.75&#xA;&#x9;C-1.48,1.8,5-1.5,7.5,3.45C10-1.5,16.48,1.8,13.91,6.75z"/>
+</svg>
+       </span>
+       keke
+    
+    </div>
+
+    
+</footer>
+
+
+
+  </body>
+</html>

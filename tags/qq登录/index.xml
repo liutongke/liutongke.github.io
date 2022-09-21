@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>QQ登录 on keke</title>
+    <link>https://liutongke.github.io/tags/qq%E7%99%BB%E5%BD%95/</link>
+    <description>Recent content in QQ登录 on keke</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 13 Aug 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/qq%E7%99%BB%E5%BD%95/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>我用Django搭网站(2)-QQ登录</title>
+      <link>https://liutongke.github.io/posts/django_web_qq/</link>
+      <pubDate>Mon, 13 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/posts/django_web_qq/</guid>
+      <description>接入QQ登录前，网站需首先进行申请，获得对应的appid与appkey，以保证后续流程中可正确对网站与用户进行验证与授权。 第一步：准备阶段 🔗</description>
+    </item>
+    
+  </channel>
+</rss>

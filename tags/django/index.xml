@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Django on keke</title>
+    <link>https://liutongke.github.io/tags/django/</link>
+    <description>Recent content in Django on keke</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 15 Aug 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/django/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>我用Django搭网站(3)-表单RSA加密</title>
+      <link>https://liutongke.github.io/posts/django_web_rsa/</link>
+      <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/posts/django_web_rsa/</guid>
+      <description>之前开发项目时因为种种原因一直使用明文提交，表单直接明文提交非常不安全,只要稍加操作就能轻易获取用户的信息。在众里寻他千百度之后决定使用RS</description>
+    </item>
+    
+    <item>
+      <title>我用Django搭网站(2)-QQ登录</title>
+      <link>https://liutongke.github.io/posts/django_web_qq/</link>
+      <pubDate>Mon, 13 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/posts/django_web_qq/</guid>
+      <description>接入QQ登录前，网站需首先进行申请，获得对应的appid与appkey，以保证后续流程中可正确对网站与用户进行验证与授权。 第一步：准备阶段 🔗</description>
+    </item>
+    
+    <item>
+      <title>我用Django搭网站(1)-新浪微博登录</title>
+      <link>https://liutongke.github.io/posts/django_web_weibo/</link>
+      <pubDate>Sat, 11 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/posts/django_web_weibo/</guid>
+      <description>新浪微博第三方登录使用的是OAuth2.0，开发前提已经注册开发者帐号，是开发者。 OAuth简介 🔗OAuth： OAuth（开放授权）是一个开</description>
+    </item>
+    
+    <item>
+      <title>CentOS7下部署Django（nginx&#43;uWSGI&#43;Python3&#43;Django)</title>
+      <link>https://liutongke.github.io/posts/django_nginx_uwsgi/</link>
+      <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/posts/django_nginx_uwsgi/</guid>
+      <description>部署代码后uWSGI需要重新启动,关闭系统防火墙或者开放端口 系统版本:CentOS7.0 Python版本:Python3.6.3 Django</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>CentOS7下部署Django（nginx&#43;uWSGI&#43;Python3&#43;Django) | keke</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="CentOS7下部署Django（nginx&#43;uWSGI&#43;Python3&#43;Django)">
+<meta name="generator" content="Hugo 0.103.1" />
+
+
+  <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">CentOS7下部署Django（nginx&#43;uWSGI&#43;Python3&#43;Django)</h1>
+
+    <div class="tip">
+        <time datetime="2018-05-18 00:00:00 &#43;0000 UTC">2018年05月18日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          710字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2分钟
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <blockquote>
+<p>部署代码后uWSGI需要重新启动,关闭系统防火墙或者开放端口</p>
+</blockquote>
+<ul>
+<li>系统版本:CentOS7.0</li>
+<li>Python版本:Python3.6.3</li>
+<li>Django版本:2.0.5</li>
+<li>uWSGI版本:2.0.17</li>
+<li>nginx版本1.4.4</li>
+</ul>
+<hr>
+<h5 id="1安装需要的依赖">1.安装需要的依赖 <a href="#1%e5%ae%89%e8%a3%85%e9%9c%80%e8%a6%81%e7%9a%84%e4%be%9d%e8%b5%96" class="anchor">🔗</a></h5><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>yum install wget openssl-devel bzip2-devel expat-devel gdbm-devel readline-devel sqlite-devel
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>yum install libxml*
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>yum -y install gcc automake autoconf libtool make gcc-c++ glibc libxslt-devel libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses ncurses-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5-devel libidn libidn-devel openssl openssl-devel pcre pcre-devel libmcrypt libmcrypt-devel cmake
+</span></span></code></pre></div><p>安装libxml模块是为了让uwsig支持使用“-x&quot;选项，能通过xml文件启动项目</p>
+<h5 id="2编译安装python3">2.编译安装python3 <a href="#2%e7%bc%96%e8%af%91%e5%ae%89%e8%a3%85python3" class="anchor">🔗</a></h5><p>进入目录，依次执行以下命令：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tgz
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">#下载完成后，执行解压命令：</span>
+</span></span><span style="display:flex;"><span>tar -zxvf Python-3.6.3.tar.gz
+</span></span><span style="display:flex;"><span><span style="color:#a2f">cd</span> Python-3.6.3
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">#将python3安装到/usr/local/python3/路径下</span>
+</span></span><span style="display:flex;"><span>./configure --prefix<span style="color:#666">=</span>/usr/local/python3
+</span></span><span style="display:flex;"><span>make <span style="color:#666">&amp;&amp;</span> make install
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">#创建软连接</span>
+</span></span><span style="display:flex;"><span>ln -s /usr/local/python3/bin/python3.6 /usr/bin/python3
+</span></span><span style="display:flex;"><span>ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+</span></span></code></pre></div><p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-9df5797a3471fafe.png" alt="安装Python3成功"  />
+</p></p>
+<h5 id="3安装django和uwsgi配置启动项目xml文件">3.安装Django和uWSGI配置启动项目xml文件 <a href="#3%e5%ae%89%e8%a3%85django%e5%92%8cuwsgi%e9%85%8d%e7%bd%ae%e5%90%af%e5%8a%a8%e9%a1%b9%e7%9b%aexml%e6%96%87%e4%bb%b6" class="anchor">🔗</a></h5><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>pip3 install django
+</span></span><span style="display:flex;"><span>pip3 install uwsgi
+</span></span></code></pre></div><p>创建uWSGI软连接：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ln -s /usr/local/python3/bin/uwsgi /usr/bin/uwsgi3
+</span></span></code></pre></div><p>将你的Django项目放到你想放的路径下，并在项目里新建 django_study.xml，内容如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#008000;font-weight:bold">uwsgi</span>&gt;
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">&lt;!-- 内部端口，自定义 --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#008000;font-weight:bold">socket</span>&gt;127.0.0.1:8000&lt;/<span style="color:#008000;font-weight:bold">socket</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">&lt;!-- 项目路径 --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#008000;font-weight:bold">chdir</span>&gt;项目的路径&lt;/<span style="color:#008000;font-weight:bold">chdir</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#008000;font-weight:bold">module</span>&gt;django_study.wsgi&lt;/<span style="color:#008000;font-weight:bold">module</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">&lt;!-- 进程数 --&gt;</span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#008000;font-weight:bold">processes</span>&gt;4&lt;/<span style="color:#008000;font-weight:bold">processes</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">&lt;!-- 日志文件 --&gt;</span> 
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#008000;font-weight:bold">daemonize</span>&gt;uwsgi.log&lt;/<span style="color:#008000;font-weight:bold">daemonize</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#008000;font-weight:bold">uwsgi</span>&gt;
+</span></span></code></pre></div><h5 id="4安装nginx和配置nginxconf文件">4.安装nginx和配置nginx.conf文件 <a href="#4%e5%ae%89%e8%a3%85nginx%e5%92%8c%e9%85%8d%e7%bd%aenginxconf%e6%96%87%e4%bb%b6" class="anchor">🔗</a></h5><ul>
+<li>安装nginx</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>wget http://nginx.org/download/nginx-1.4.4.tar.gz /usr/local/src
+</span></span><span style="display:flex;"><span><span style="color:#a2f">cd</span> /usr/local/src
+</span></span><span style="display:flex;"><span>tar xf nginx-1.4.4.tar.gz
+</span></span><span style="display:flex;"><span><span style="color:#a2f">cd</span> nginx-1.4.4
+</span></span><span style="display:flex;"><span>创建用户www和用户组www
+</span></span><span style="display:flex;"><span>groupadd www
+</span></span><span style="display:flex;"><span>useradd -g www www
+</span></span><span style="display:flex;"><span>./configure --user<span style="color:#666">=</span>www --group<span style="color:#666">=</span>www --prefix<span style="color:#666">=</span>/usr/local/nginx --with-http_stub_status_module --without-http-cache --with-http_ssl_module --with-http_gzip_static_module --with-ipv6
+</span></span><span style="display:flex;"><span>make <span style="color:#666">&amp;&amp;</span> make install
+</span></span></code></pre></div><ul>
+<li>配置nginx</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>server <span style="color:#666">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">#暴露给外部访问的端口</span>
+</span></span><span style="display:flex;"><span>    listen 80; 
+</span></span><span style="display:flex;"><span>    server_name localhost;
+</span></span><span style="display:flex;"><span>    charset utf-8;
+</span></span><span style="display:flex;"><span>    location / <span style="color:#666">{</span>
+</span></span><span style="display:flex;"><span>        include uwsgi_params;
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">#外部访问80就转发到内部8000</span>
+</span></span><span style="display:flex;"><span>        uwsgi_pass 127.0.0.1:8000; 
+</span></span><span style="display:flex;"><span>    <span style="color:#666">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#666">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">#检查配置文件是否有误</span>
+</span></span><span style="display:flex;"><span>/usr/local/nginx/sbin/nginx -t
+</span></span></code></pre></div><p>提示nginx: the configuration file /usr/local/nginx/conf/nginx.conf syntax is ok
+nginx: configuration file /usr/local/nginx/conf/nginx.conf test is successful的话说明配置文件无误，启动nginx
+/usr/local/nginx/sbin/nginx</p>
+<h5 id="5访问项目页面">5.访问项目页面 <a href="#5%e8%ae%bf%e9%97%ae%e9%a1%b9%e7%9b%ae%e9%a1%b5%e9%9d%a2" class="anchor">🔗</a></h5><p>进入Django项目路径，执行以下命令：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>uwsgi3 -x django_study.xml
+</span></span></code></pre></div><p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-f29b62db994c340c.png" alt="启动成功"  />
+</p></p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://liutongke.github.io/tags/python">Python</a>
+            
+                <a href="https://liutongke.github.io/tags/centos7">CentOS7</a>
+            
+                <a href="https://liutongke.github.io/tags/django">Django</a>
+            
+                <a href="https://liutongke.github.io/tags/nginx">nginx</a>
+            
+                <a href="https://liutongke.github.io/tags/uwsgi">uWSGI</a>
+            
+        </div>
+    
+    
+    
+  <div id="comment">
+    
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "your-disqus-shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  </div>
+
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+       © Copyright 
+       2022 
+       <span class="split">
+        <svg fill="#bbbbbb" width="15" height="15" version="1.1" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 15 15">
+  <path d="M13.91,6.75c-1.17,2.25-4.3,5.31-6.07,6.94c-0.1903,0.1718-0.4797,0.1718-0.67,0C5.39,12.06,2.26,9,1.09,6.75&#xA;&#x9;C-1.48,1.8,5-1.5,7.5,3.45C10-1.5,16.48,1.8,13.91,6.75z"/>
+</svg>
+       </span>
+       keke
+    
+    </div>
+
+    
+</footer>
+
+
+
+  </body>
+</html>
