@@ -6,7 +6,16 @@
     <description>Recent content in Posts on keke</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 10 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 21 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL线上分库分表数据迁移</title>
+      <link>https://liutongke.github.io/posts/mysql_sub-table/</link>
+      <pubDate>Wed, 21 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/posts/mysql_sub-table/</guid>
+      <description>(一).项目分析，确定sharding column： 🔗 首先对功能进行分析，现有一张用户场景皮肤道具表属于单表设计。同一个用户可以拥有N张皮肤</description>
+    </item>
+    
     <item>
       <title>api-swoole框架文档</title>
       <link>https://liutongke.github.io/posts/api_swoole_doc/</link>
