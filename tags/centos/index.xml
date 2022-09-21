@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CentOS on keke</title>
+    <link>https://liutongke.github.io/tags/centos/</link>
+    <description>Recent content in CentOS on keke</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 18 Oct 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/centos/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CentOS7-安装最新版本GIT(git version 2.18.0)</title>
+      <link>https://liutongke.github.io/posts/centos7_git/</link>
+      <pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/posts/centos7_git/</guid>
+      <description>Git安装方式有两种一种是yum安装一种是编译安装： 一、yum命令安装，此方法简单，会自动安装依赖的包，而且会从源里安装最新的版本，如果仓库</description>
+    </item>
+    
+  </channel>
+</rss>

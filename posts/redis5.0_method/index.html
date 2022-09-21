@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <title>keke</title>
+    <title>Redis5.0-弃用方法名和替代方法名（php-redis 5以后废弃了一些方法名） | keke</title>
 
     <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
 <meta name="viewport" content="width=device-width,minimum-scale=1">
-<meta name="description" content="My Blog">
+<meta name="description" content="Redis5.0-弃用方法名和替代方法名（php-redis 5以后废弃了一些方法名）">
 <meta name="generator" content="Hugo 0.103.1" />
 
 
@@ -58,73 +58,159 @@ if (!doNotTrack) {
     <main class="main">
       
 
-<div id="page-404">
-  <div class="text">
-      
-          <h1>404</h1>
-      
+<section id="single">
+    <h1 class="title">Redis5.0-弃用方法名和替代方法名（php-redis 5以后废弃了一些方法名）</h1>
 
-      
-          <div>页面不存在</div>
-      
+    <div class="tip">
+        <time datetime="2020-06-11 00:00:00 &#43;0000 UTC">2020年06月11日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          59字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1分钟
+        </span>
     </div>
 
-  
-      <h2 class="read-more">更多内容</h2> 
+    
+    
+        
   
 
-  
-
 
     
+
+
+    <div class="content">
+      <blockquote>
+<p>php-redis 5以后废弃了一些方法名<br/></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>被弃用方法名</th>
+<th>替代方法名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>delete</td>
+<td>del</td>
+</tr>
+<tr>
+<td>zUnion</td>
+<td>zunionstore</td>
+</tr>
+<tr>
+<td>zInter</td>
+<td>zinterstore</td>
+</tr>
+<tr>
+<td>zDeleteRangeByRank</td>
+<td>zRemRangeByRank</td>
+</tr>
+<tr>
+<td>zDeleteRangeByScore</td>
+<td>zRemRangeByScore</td>
+</tr>
+<tr>
+<td>zDelete</td>
+<td>zRem</td>
+</tr>
+<tr>
+<td>setTimeout</td>
+<td>expire</td>
+</tr>
+<tr>
+<td>sContains</td>
+<td>sismember</td>
+</tr>
+<tr>
+<td>sRemove</td>
+<td>srem</td>
+</tr>
+<tr>
+<td>sSize</td>
+<td>scard</td>
+</tr>
+<tr>
+<td>lGetRange</td>
+<td>lrange</td>
+</tr>
+<tr>
+<td>lGet</td>
+<td>lindex</td>
+</tr>
+<tr>
+<td>listTrim</td>
+<td>ltrim</td>
+</tr>
+<tr>
+<td>lRemove</td>
+<td>lrem</td>
+</tr>
+<tr>
+<td>lSize</td>
+<td>lLen</td>
+</tr>
+<tr>
+<td>getKeys</td>
+<td>keys</td>
+</tr>
+<tr>
+<td>getMultiple</td>
+<td>mget</td>
+</tr>
+<tr>
+<td>renameKey</td>
+<td>rename</td>
+</tr>
+</tbody>
+</table>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://liutongke.github.io/tags/redis">Redis</a>
+            
+        </div>
     
     
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/posts/api_swoole_doc/'>api-swoole框架文档</a></h1>   
-            <div class="date">9月 10, 2022</div>
-          </div>
-        </section>
     
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/posts/tinypng_mult_zip/'>破解图片压缩网站tinypng突破数量限制</a></h1>   
-            <div class="date">9月 8, 2022</div>
-          </div>
-        </section>
+  <div id="comment">
     
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/posts/go_redis_middleware/'>使用golang实现Redis中间件</a></h1>   
-            <div class="date">9月 1, 2022</div>
-          </div>
-        </section>
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
     
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/posts/windows_php8.0_nginx/'>Windows安装PHP8.0和nginx详细步骤</a></h1>   
-            <div class="date">8月 28, 2022</div>
-          </div>
-        </section>
     
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/posts/go_chunzhen_ip/'>Go使用纯真IP数据库获取地理位置</a></h1>   
-            <div class="date">4月 30, 2021</div>
-          </div>
-        </section>
     
-</div>
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "your-disqus-shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  </div>
+
+
+</section>
+
 
     </main>
     

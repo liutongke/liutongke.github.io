@@ -9,91 +9,91 @@
     <lastBuildDate>Sat, 10 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>api-swoole框架文档</title>
-      <link>https://liutongke.github.io/posts/api-swoole%E6%A1%86%E6%9E%B6%E6%96%87%E6%A1%A3/</link>
+      <link>https://liutongke.github.io/posts/api_swoole_doc/</link>
       <pubDate>Sat, 10 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/api-swoole%E6%A1%86%E6%9E%B6%E6%96%87%E6%A1%A3/</guid>
+      <guid>https://liutongke.github.io/posts/api_swoole_doc/</guid>
       <description>(一).开始 🔗1.1下载与安装 🔗源码地址： api-swoole框架github源码地址 api-swoole框架gitee源码地址 需要确保运行</description>
     </item>
     
     <item>
       <title>破解图片压缩网站tinypng突破数量限制</title>
-      <link>https://liutongke.github.io/posts/%E7%A0%B4%E8%A7%A3%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9%E7%BD%91%E7%AB%99tinypng%E7%AA%81%E7%A0%B4%E6%95%B0%E9%87%8F%E9%99%90%E5%88%B6/</link>
+      <link>https://liutongke.github.io/posts/tinypng_mult_zip/</link>
       <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/%E7%A0%B4%E8%A7%A3%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9%E7%BD%91%E7%AB%99tinypng%E7%AA%81%E7%A0%B4%E6%95%B0%E9%87%8F%E9%99%90%E5%88%B6/</guid>
+      <guid>https://liutongke.github.io/posts/tinypng_mult_zip/</guid>
       <description>(一).介绍 🔗TinyPNG(熊猫压缩)官方提供了浏览器网站版，通过用户手动上传和下载图片不光使用比较繁琐而且还有使用限制。TinyPNG(</description>
     </item>
     
     <item>
       <title>使用golang实现Redis中间件</title>
-      <link>https://liutongke.github.io/posts/%E4%BD%BF%E7%94%A8golang%E5%AE%9E%E7%8E%B0redis%E4%B8%AD%E9%97%B4%E4%BB%B6/</link>
+      <link>https://liutongke.github.io/posts/go_redis_middleware/</link>
       <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/%E4%BD%BF%E7%94%A8golang%E5%AE%9E%E7%8E%B0redis%E4%B8%AD%E9%97%B4%E4%BB%B6/</guid>
+      <guid>https://liutongke.github.io/posts/go_redis_middleware/</guid>
       <description>##（一）.RESP协议解释 RESP协议在Redis1.2被引入，直到Redis2.0才成为和Redis服务器通信的标准。这个协议需要在你的</description>
     </item>
     
     <item>
       <title>Windows安装PHP8.0和nginx详细步骤</title>
-      <link>https://liutongke.github.io/posts/windows%E5%AE%89%E8%A3%85php8.0%E5%92%8Cnginx%E8%AF%A6%E7%BB%86%E6%AD%A5%E9%AA%A4/</link>
+      <link>https://liutongke.github.io/posts/windows_php8.0_nginx/</link>
       <pubDate>Sun, 28 Aug 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/windows%E5%AE%89%E8%A3%85php8.0%E5%92%8Cnginx%E8%AF%A6%E7%BB%86%E6%AD%A5%E9%AA%A4/</guid>
+      <guid>https://liutongke.github.io/posts/windows_php8.0_nginx/</guid>
       <description>一.PHP8.1安装部署 🔗2.下载PHP 🔗打开PHP官网，选择对应的PHP版本下载。 None Thread Safe和Thread Safe版本区别 1.None Thread Safe就</description>
     </item>
     
     <item>
       <title>Go使用纯真IP数据库获取地理位置</title>
-      <link>https://liutongke.github.io/posts/go%E4%BD%BF%E7%94%A8%E7%BA%AF%E7%9C%9Fip%E6%95%B0%E6%8D%AE%E5%BA%93%E8%8E%B7%E5%8F%96%E5%9C%B0%E7%90%86%E4%BD%8D%E7%BD%AE/</link>
+      <link>https://liutongke.github.io/posts/go_chunzhen_ip/</link>
       <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/go%E4%BD%BF%E7%94%A8%E7%BA%AF%E7%9C%9Fip%E6%95%B0%E6%8D%AE%E5%BA%93%E8%8E%B7%E5%8F%96%E5%9C%B0%E7%90%86%E4%BD%8D%E7%BD%AE/</guid>
+      <guid>https://liutongke.github.io/posts/go_chunzhen_ip/</guid>
       <description>纯真版IP地址数据库是当前网络上最权威、地址最精确、IP记录以及网吧数据最多的IP地址数据库。收集了包括中国电信、中国移动、中国联通、铁通、</description>
     </item>
     
     <item>
       <title>Go自定义 input 函数整理用户输入</title>
-      <link>https://liutongke.github.io/posts/go%E8%87%AA%E5%AE%9A%E4%B9%89-input-%E5%87%BD%E6%95%B0%E6%95%B4%E7%90%86%E7%94%A8%E6%88%B7%E8%BE%93%E5%85%A5/</link>
+      <link>https://liutongke.github.io/posts/go_input_func/</link>
       <pubDate>Wed, 13 Jan 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/go%E8%87%AA%E5%AE%9A%E4%B9%89-input-%E5%87%BD%E6%95%B0%E6%95%B4%E7%90%86%E7%94%A8%E6%88%B7%E8%BE%93%E5%85%A5/</guid>
+      <guid>https://liutongke.github.io/posts/go_input_func/</guid>
       <description>学习阶段经常使用输入，把 fmt.Scan 用户输入整理成函数，方便调用，减少重复代码 package main import ( &amp;#34;fmt&amp;#34; ) func input(prompt string) string { var text string fmt.Print(prompt) fmt.Scan(&amp;amp;text) return text } func main() { a := input(&amp;#34;输</description>
     </item>
     
     <item>
       <title>使用Redis Data Reveal（rdr）查看Redis中key占用内存空间</title>
-      <link>https://liutongke.github.io/posts/%E4%BD%BF%E7%94%A8redis-data-revealrdr%E6%9F%A5%E7%9C%8Bredis%E4%B8%ADkey%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E7%A9%BA%E9%97%B4/</link>
+      <link>https://liutongke.github.io/posts/redis_data_reveal/</link>
       <pubDate>Tue, 30 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/%E4%BD%BF%E7%94%A8redis-data-revealrdr%E6%9F%A5%E7%9C%8Bredis%E4%B8%ADkey%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E7%A9%BA%E9%97%B4/</guid>
+      <guid>https://liutongke.github.io/posts/redis_data_reveal/</guid>
       <description>项目响应速度要求比较高，全部使用Redis缓存这也导致缓存。需要分析各种键占用内存情况进行优化。 redisclient虽然可以很方便的对re</description>
     </item>
     
     <item>
       <title>Redis5.0-弃用方法名和替代方法名（php-redis 5以后废弃了一些方法名）</title>
-      <link>https://liutongke.github.io/posts/redis5.0-%E5%BC%83%E7%94%A8%E6%96%B9%E6%B3%95%E5%90%8D%E5%92%8C%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%B3%95%E5%90%8Dphp-redis-5%E4%BB%A5%E5%90%8E%E5%BA%9F%E5%BC%83%E4%BA%86%E4%B8%80%E4%BA%9B%E6%96%B9%E6%B3%95%E5%90%8D/</link>
+      <link>https://liutongke.github.io/posts/redis5.0_method/</link>
       <pubDate>Thu, 11 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/redis5.0-%E5%BC%83%E7%94%A8%E6%96%B9%E6%B3%95%E5%90%8D%E5%92%8C%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%B3%95%E5%90%8Dphp-redis-5%E4%BB%A5%E5%90%8E%E5%BA%9F%E5%BC%83%E4%BA%86%E4%B8%80%E4%BA%9B%E6%96%B9%E6%B3%95%E5%90%8D/</guid>
+      <guid>https://liutongke.github.io/posts/redis5.0_method/</guid>
       <description>php-redis 5以后废弃了一些方法名 被弃用方法名 替代方法名 delete del zUnion zunionstore zInter zinterstore zDeleteRangeByRank zRemRangeByRank zDeleteRangeByScore zRemRangeByScore zDelete zRem setTimeout expire sContains sismember sRemove srem sSize scard lGetRange lrange lGet lindex listTrim ltrim lRemove lrem lSize lLen getKeys keys getMultiple mget renameKey rename</description>
     </item>
     
     <item>
       <title>CentOS7-安装最新版本GIT(git version 2.18.0)</title>
-      <link>https://liutongke.github.io/posts/centos7-%E5%AE%89%E8%A3%85%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%ACgitgit-version-2.18.0/</link>
+      <link>https://liutongke.github.io/posts/centos7_git/</link>
       <pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/centos7-%E5%AE%89%E8%A3%85%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%ACgitgit-version-2.18.0/</guid>
+      <guid>https://liutongke.github.io/posts/centos7_git/</guid>
       <description>Git安装方式有两种一种是yum安装一种是编译安装： 一、yum命令安装，此方法简单，会自动安装依赖的包，而且会从源里安装最新的版本，如果仓库</description>
     </item>
     
     <item>
       <title>MySQL联合索引运用-最左匹配原则</title>
-      <link>https://liutongke.github.io/posts/mysql%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95%E8%BF%90%E7%94%A8-%E6%9C%80%E5%B7%A6%E5%8C%B9%E9%85%8D%E5%8E%9F%E5%88%99/</link>
+      <link>https://liutongke.github.io/posts/mysql_index/</link>
       <pubDate>Wed, 12 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/mysql%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95%E8%BF%90%E7%94%A8-%E6%9C%80%E5%B7%A6%E5%8C%B9%E9%85%8D%E5%8E%9F%E5%88%99/</guid>
+      <guid>https://liutongke.github.io/posts/mysql_index/</guid>
       <description>前言 🔗 之前看了很多关于MySQL索引的文章也看了《高性能MySQL》这本书，自以为熟悉了MySQL索引使用原理，入职面试时和面试官交流，发现</description>
     </item>
     

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>MySQL联合索引运用-最左匹配原则 | keke</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="MySQL联合索引运用-最左匹配原则">
+<meta name="generator" content="Hugo 0.103.1" />
+
+
+  <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">MySQL联合索引运用-最左匹配原则</h1>
+
+    <div class="tip">
+        <time datetime="2018-12-12 00:00:00 &#43;0000 UTC">2018年12月12日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1815字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          4分钟
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h1 id="前言">前言 <a href="#%e5%89%8d%e8%a8%80" class="anchor">🔗</a></h1><blockquote>
+<p>之前看了很多关于MySQL索引的文章也看了《高性能MySQL》这本书，自以为熟悉了MySQL索引使用原理，入职面试时和面试官交流，发现对复合索引的使用有些理解偏颇，发现自己的不足整理一下这方面的内容。</p>
+</blockquote>
+<p>实例表：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">CREATE</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">TABLE</span><span style="color:#bbb"> </span><span style="color:#666">`</span>test<span style="color:#666">`</span><span style="color:#bbb"> </span>(<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#666">`</span>id<span style="color:#666">`</span><span style="color:#bbb"> </span><span style="color:#0b0;font-weight:bold">bigint</span>(<span style="color:#666">20</span>)<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">unsigned</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#800">NULL</span><span style="color:#bbb"> </span><span style="color:#a2f">AUTO_INCREMENT</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#666">`</span>uId<span style="color:#666">`</span><span style="color:#bbb"> </span><span style="color:#0b0;font-weight:bold">int</span>(<span style="color:#666">10</span>)<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">unsigned</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#800">NULL</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#666">`</span>chatId<span style="color:#666">`</span><span style="color:#bbb"> </span><span style="color:#0b0;font-weight:bold">smallint</span>(<span style="color:#666">5</span>)<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">unsigned</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#800">NULL</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#666">`</span>tId<span style="color:#666">`</span><span style="color:#bbb"> </span><span style="color:#0b0;font-weight:bold">int</span>(<span style="color:#666">11</span>)<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#800">NULL</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#a2f;font-weight:bold">PRIMARY</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">KEY</span><span style="color:#bbb"> </span>(<span style="color:#666">`</span>id<span style="color:#666">`</span>),<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#a2f;font-weight:bold">UNIQUE</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">KEY</span><span style="color:#bbb"> </span><span style="color:#666">`</span>test_uId_chatId_tId<span style="color:#666">`</span><span style="color:#bbb"> </span>(<span style="color:#666">`</span>uId<span style="color:#666">`</span>,<span style="color:#666">`</span>chatId<span style="color:#666">`</span>,<span style="color:#666">`</span>tId<span style="color:#666">`</span>)<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">USING</span><span style="color:#bbb"> </span>BTREE<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>)<span style="color:#bbb"> </span><span style="color:#a2f">ENGINE</span><span style="color:#666">=</span>InnoDB<span style="color:#bbb"> </span><span style="color:#a2f">AUTO_INCREMENT</span><span style="color:#666">=</span><span style="color:#666">8</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">DEFAULT</span><span style="color:#bbb"> </span><span style="color:#a2f">CHARSET</span><span style="color:#666">=</span>utf8mb4;<span style="color:#bbb">
+</span></span></span></code></pre></div><h4 id="最左前缀匹配原则">最左前缀匹配原则 <a href="#%e6%9c%80%e5%b7%a6%e5%89%8d%e7%bc%80%e5%8c%b9%e9%85%8d%e5%8e%9f%e5%88%99" class="anchor">🔗</a></h4><p>  在MySQL建立联合索引时会遵循最左前缀匹配的原则，即最左优先，在检索数据时从联合索引的最左边开始匹配，示例：
+对列uId、列chatId和列tId建一个联合索引
+<code>shell KEY test_uId_chatId_tId on test(uId,chatId,tId); </code>
+联合索引***test_uId_chatId_tId <em><strong>实际建立了</strong></em>(uId)、(uId,chatId)、(uId,chatId,tId)<em><strong>三个索引。
+<code>SELECT * FROM test WHERE uId=“1” AND chatId=“2”;</code>
+上面这个查询语句执行时会依照最左前缀匹配原则，检索时会使用索引</strong></em>(uId,chatId)***进行数据匹配。
+<em><strong>注意：</strong></em>
+索引的字段可以是任意顺序的，如：
+<code> SELECT * FROM test WHERE uId=“1” AND chatId=“2”;</code><br>
+<code>SELECT * FROM test WHERE chatId=“2” AND uId=“1”; </code>
+这两个查询语句都会用到索引(uId,chatId)，MySQL创建联合索引的规则是首先会对联合合索引的最左边的，也就是第一个字段uId的数据进行排序，在第一个字段的排序基础上，然后再对后面第二个字段chatId进行排序。其实就相当于实现了类似 order by uId chatId这样一种排序规则。
+  有人会疑惑第二个查询语句不符合最左前缀匹配：首先可以肯定是两个查询语句都包涵索引(uId,chatId)中的uId、chatId两个字段，只是顺序不一样，查询条件一样，最后所查询的结果肯定是一样的。既然结果是一样的，到底以何种顺序的查询方式最好呢？此时我们可以借助mysql查询优化器explain，explain会纠正sql语句该以什么样的顺序执行效率最高，最后才生成真正的执行计划。</p>
+<p><em><strong>为什么要使用联合索引</strong></em></p>
+<ul>
+<li>减少开销，联合索引test_uId_chatId_tId 实际建立了(uId)、(uId,chatId)、(uId,chatId,tId)三个索引。每多一个索引，都会增加写操作的开销和磁盘空间的开销。对于大量数据的表，使用联合索引会大大的减少开销！</li>
+<li>覆盖索引,对联合索引(col1,col2,col3)，如果有如下的sql: select col1,col2,col3 from test where col1=1 and col2=2。那么MySQL可以直接通过遍历索引取得数据，而无需回表，这减少了很多的随机io操作。减少io操作，特别的随机io其实是dba主要的优化策略。所以，在真正的实际应用中，覆盖索引是主要的提升性能的优化手段之一。</li>
+<li>效率高,索引列越多，通过索引筛选出的数据越少。有1000W条数据的表，有如下sql:select from table where col1=1 and col2=2 and col3=3,假设假设每个条件可以筛选出10%的数据，如果只有单值索引，那么通过该索引能筛选出1000W10%=100w条数据，然后再回表从100w条数据中找到符合col2=2 and col3= 3的数据，然后再排序，再分页；如果是联合索引，通过索引筛选出1000w10% 10% *10%=1w，效率提升可想而知！
+引申:
+对于联合索引(uId,chatId,tId)，查询语句<code>SELECT * FROM test WHERE chatId=2;</code>是否能够触发索引,当时面试官问我时我回答是不触发，实际上是触发索引的
+原因总结：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">EXPLAIN</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#666">*</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">FROM</span><span style="color:#bbb"> </span><span style="color:#666">`</span>test<span style="color:#666">`</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>uid<span style="color:#666">=</span><span style="color:#b44">&#39;1&#39;</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">AND</span><span style="color:#bbb"> </span>chatId<span style="color:#666">=</span><span style="color:#b44">&#39;2&#39;</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#a2f;font-weight:bold">EXPLAIN</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#666">*</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">FROM</span><span style="color:#bbb"> </span><span style="color:#666">`</span>test<span style="color:#666">`</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>chatId<span style="color:#666">=</span><span style="color:#b44">&#39;2&#39;</span>;<span style="color:#bbb">
+</span></span></span></code></pre></div><p>观察上述两个explain结果中的type字段。查询中分别是：
+<p class="markdown-image">
+  <img src="https://upload-images.jianshu.io/upload_images/7783090-3d3752d03264537d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="遵循左原则"  />
+</p></p>
+<p><p class="markdown-image">
+  <img src="https://upload-images.jianshu.io/upload_images/7783090-14392f491cbba239.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="不遵循左原则"  />
+</p></p>
+<p>上述两个查询的explain结果中显示用到索引的情况类型是不一样的。可观察explain结果中的type字段，分别是：</p>
+<ul>
+<li>type: index
+<em><strong>index</strong></em>：这种类型表示mysql会对整个该索引进行扫描。要想用到这种类型的索引，对这个索引并无特别要求，只要是索引，或者某个联合索引的一部分，mysql都可能会采用index类型的方式扫描。但是呢，缺点是效率不高，mysql会从索引中的第一个数据一个个的查找到最后一个数据，直到找到符合判断条件的某个索引。所以，上述语句会触发索引。</li>
+<li>type: ref
+<em><strong>ref</strong></em>：这种类型表示mysql会根据特定的算法快速查找到某个符合条件的索引，而不是会对索引中每一个数据都进行一一的扫描判断，也就是所谓你平常理解的使用索引查询会更快的取出数据。而要想实现这种查找，索引却是有要求的，要实现这种能快速查找的算法，索引就要满足特定的数据结构。简单说，也就是索引字段的数据必须是有序的，才能实现这种类型的查找，才能利用到索引。</li>
+</ul>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://liutongke.github.io/tags/mysql">MySQL</a>
+            
+                <a href="https://liutongke.github.io/tags/%E6%9C%80%E5%B7%A6%E5%8C%B9%E9%85%8D%E5%8E%9F%E5%88%99">最左匹配原则</a>
+            
+                <a href="https://liutongke.github.io/tags/%E7%B4%A2%E5%BC%95">索引</a>
+            
+        </div>
+    
+    
+    
+  <div id="comment">
+    
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "your-disqus-shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  </div>
+
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+       © Copyright 
+       2022 
+       <span class="split">
+        <svg fill="#bbbbbb" width="15" height="15" version="1.1" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 15 15">
+  <path d="M13.91,6.75c-1.17,2.25-4.3,5.31-6.07,6.94c-0.1903,0.1718-0.4797,0.1718-0.67,0C5.39,12.06,2.26,9,1.09,6.75&#xA;&#x9;C-1.48,1.8,5-1.5,7.5,3.45C10-1.5,16.48,1.8,13.91,6.75z"/>
+</svg>
+       </span>
+       keke
+    
+    </div>
+
+    
+</footer>
+
+
+
+  </body>
+</html>
