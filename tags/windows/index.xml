@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Windows on keke的个人博客</title>
-    <link>https://liutongke.github.io/tags/windows/</link>
+    <link>https://ltkblog.cn/tags/windows/</link>
     <description>Recent content in Windows on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 28 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/windows/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 28 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/windows/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Windows安装PHP8.0和nginx详细步骤</title>
-      <link>https://liutongke.github.io/windows_php8.0_nginx/</link>
+      <link>https://ltkblog.cn/windows_php8.0_nginx/</link>
       <pubDate>Sun, 28 Aug 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/windows_php8.0_nginx/</guid>
+      <guid>https://ltkblog.cn/windows_php8.0_nginx/</guid>
       <description>一.PHP8.1安装部署 🔗2.下载PHP 🔗打开PHP官网，选择对应的PHP版本下载。 None Thread Safe和Thread Safe版本区别 1.None Thread Safe就</description>
     </item>
     

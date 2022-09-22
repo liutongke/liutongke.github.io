@@ -2,44 +2,44 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Go on keke的个人博客</title>
-    <link>https://liutongke.github.io/tags/go/</link>
+    <link>https://ltkblog.cn/tags/go/</link>
     <description>Recent content in Go on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 08 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 08 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/go/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go破解图片压缩网站tinypng突破数量限制</title>
-      <link>https://liutongke.github.io/go_tinypng_mult_zip/</link>
+      <link>https://ltkblog.cn/go_tinypng_mult_zip/</link>
       <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/go_tinypng_mult_zip/</guid>
+      <guid>https://ltkblog.cn/go_tinypng_mult_zip/</guid>
       <description>(一).介绍 🔗TinyPNG(熊猫压缩)官方提供了浏览器网站版，通过用户手动上传和下载图片不光使用比较繁琐而且还有使用限制。TinyPNG(</description>
     </item>
     
     <item>
       <title>使用golang实现Redis中间件</title>
-      <link>https://liutongke.github.io/go_redis_middleware/</link>
+      <link>https://ltkblog.cn/go_redis_middleware/</link>
       <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/go_redis_middleware/</guid>
+      <guid>https://ltkblog.cn/go_redis_middleware/</guid>
       <description>##（一）.RESP协议解释 RESP协议在Redis1.2被引入，直到Redis2.0才成为和Redis服务器通信的标准。这个协议需要在你的</description>
     </item>
     
     <item>
       <title>Go使用纯真IP数据库获取地理位置</title>
-      <link>https://liutongke.github.io/go_chunzhen_ip/</link>
+      <link>https://ltkblog.cn/go_chunzhen_ip/</link>
       <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/go_chunzhen_ip/</guid>
+      <guid>https://ltkblog.cn/go_chunzhen_ip/</guid>
       <description>纯真版IP地址数据库是当前网络上最权威、地址最精确、IP记录以及网吧数据最多的IP地址数据库。收集了包括中国电信、中国移动、中国联通、铁通、</description>
     </item>
     
     <item>
       <title>Go自定义 input 函数整理用户输入</title>
-      <link>https://liutongke.github.io/go_input_func/</link>
+      <link>https://ltkblog.cn/go_input_func/</link>
       <pubDate>Wed, 13 Jan 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/go_input_func/</guid>
+      <guid>https://ltkblog.cn/go_input_func/</guid>
       <description>学习阶段经常使用输入，把 fmt.Scan 用户输入整理成函数，方便调用，减少重复代码 package main import ( &amp;#34;fmt&amp;#34; ) func input(prompt string) string { var text string fmt.Print(prompt) fmt.Scan(&amp;amp;text) return text } func main() { a := input(&amp;#34;输</description>
     </item>
     

@@ -2,80 +2,80 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>php on keke的个人博客</title>
-    <link>https://liutongke.github.io/tags/php/</link>
+    <link>https://ltkblog.cn/tags/php/</link>
     <description>Recent content in php on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 10 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/php/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 10 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/php/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>api-swoole框架文档</title>
-      <link>https://liutongke.github.io/api_swoole_doc/</link>
+      <link>https://ltkblog.cn/api_swoole_doc/</link>
       <pubDate>Sat, 10 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/api_swoole_doc/</guid>
+      <guid>https://ltkblog.cn/api_swoole_doc/</guid>
       <description>(一).开始 🔗1.1下载与安装 🔗源码地址： api-swoole框架github源码地址 api-swoole框架gitee源码地址 需要确保运行</description>
     </item>
     
     <item>
       <title>Windows安装PHP8.0和nginx详细步骤</title>
-      <link>https://liutongke.github.io/windows_php8.0_nginx/</link>
+      <link>https://ltkblog.cn/windows_php8.0_nginx/</link>
       <pubDate>Sun, 28 Aug 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/windows_php8.0_nginx/</guid>
+      <guid>https://ltkblog.cn/windows_php8.0_nginx/</guid>
       <description>一.PHP8.1安装部署 🔗2.下载PHP 🔗打开PHP官网，选择对应的PHP版本下载。 None Thread Safe和Thread Safe版本区别 1.None Thread Safe就</description>
     </item>
     
     <item>
       <title>PHP foreach引用&amp;</title>
-      <link>https://liutongke.github.io/php_foreach/</link>
+      <link>https://ltkblog.cn/php_foreach/</link>
       <pubDate>Wed, 11 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/php_foreach/</guid>
+      <guid>https://ltkblog.cn/php_foreach/</guid>
       <description>将以下代码打印 $variable = [&amp;#39;a&amp;#39;, &amp;#39;b&amp;#39;, &amp;#39;c&amp;#39;]; foreach ($variable as $key =&amp;gt; &amp;amp;$value) { } foreach ($variable as $key =&amp;gt; $value) { } echo &amp;#34;&amp;lt;pre /&amp;gt;&amp;#34;; var_dump($variable); echo &amp;#34;&amp;lt;pre /&amp;gt;&amp;#34;; #结果 array(3) { [0]=&amp;gt; string(1) &amp;#34;a&amp;#34; [1]=&amp;gt; string(1) &amp;#34;b&amp;#34; [2]=&amp;gt; &amp;amp;string(1) &amp;#34;b&amp;#34; } 打印出来的结果跟预期结果的不一致，这是因</description>
     </item>
     
     <item>
       <title>CentOS7 yum安装lamp环境</title>
-      <link>https://liutongke.github.io/centos7_lamp/</link>
+      <link>https://ltkblog.cn/centos7_lamp/</link>
       <pubDate>Fri, 01 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/centos7_lamp/</guid>
+      <guid>https://ltkblog.cn/centos7_lamp/</guid>
       <description>1.安装apache 🔗 yum install httpd #根据提示，输入Y安装即可成功安装 systemctl start httpd.service #启动apache systemctl stop httpd.service #停止apache systemctl restart httpd.service #重启apache systemctl enable httpd.service</description>
     </item>
     
     <item>
       <title>PHP开发实用-阿里短信服务（Short Message Service）</title>
-      <link>https://liutongke.github.io/php_ali_sms/</link>
+      <link>https://ltkblog.cn/php_ali_sms/</link>
       <pubDate>Tue, 08 May 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/php_ali_sms/</guid>
+      <guid>https://ltkblog.cn/php_ali_sms/</guid>
       <description>步骤 1 使用阿里云短信服务正常发短信需要 🔗 短信签名 短信模板 1申请短信签名 根据用户属性来创建符合自身属性的签名信息。企业用户需要上传相关企业资质</description>
     </item>
     
     <item>
       <title>开发一个属于自己的第一个Composer/Packagist包</title>
-      <link>https://liutongke.github.io/my_composer_package/</link>
+      <link>https://ltkblog.cn/my_composer_package/</link>
       <pubDate>Tue, 03 Apr 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/my_composer_package/</guid>
+      <guid>https://ltkblog.cn/my_composer_package/</guid>
       <description>Composer 给我们带来了诸多的好处： 模块化，降低代码重用成本 统一的第三方代码组织方式 更科学的版本更新 初始化项目，生成composer.json文件 初始</description>
     </item>
     
     <item>
       <title>微信运动数据抓取(PHP)</title>
-      <link>https://liutongke.github.io/wechat_sport_data_php/</link>
+      <link>https://ltkblog.cn/wechat_sport_data_php/</link>
       <pubDate>Sat, 21 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/wechat_sport_data_php/</guid>
+      <guid>https://ltkblog.cn/wechat_sport_data_php/</guid>
       <description>“微信运动”能够向朋友分享一个包含有运动数据的网页，网页中就有我们需要的数据。url类似于：http://hw.weixin.qq.com/</description>
     </item>
     
     <item>
       <title>Centos7安装lnmp环境</title>
-      <link>https://liutongke.github.io/centos7_lnmp/</link>
+      <link>https://ltkblog.cn/centos7_lnmp/</link>
       <pubDate>Thu, 24 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/centos7_lnmp/</guid>
+      <guid>https://ltkblog.cn/centos7_lnmp/</guid>
       <description>系统版本：centos7 64位 PHP版本：PHP 7.0.21 Nginx版本：1.8.1 MySQL版本：5.5.17 注：1.所有安装都必须放在 /usr/</description>
     </item>
     

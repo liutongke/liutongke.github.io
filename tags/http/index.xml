@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>http on keke的个人博客</title>
-    <link>https://liutongke.github.io/tags/http/</link>
+    <link>https://ltkblog.cn/tags/http/</link>
     <description>Recent content in http on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 10 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/http/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 10 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/http/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>api-swoole框架文档</title>
-      <link>https://liutongke.github.io/api_swoole_doc/</link>
+      <link>https://ltkblog.cn/api_swoole_doc/</link>
       <pubDate>Sat, 10 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/api_swoole_doc/</guid>
+      <guid>https://ltkblog.cn/api_swoole_doc/</guid>
       <description>(一).开始 🔗1.1下载与安装 🔗源码地址： api-swoole框架github源码地址 api-swoole框架gitee源码地址 需要确保运行</description>
     </item>
     

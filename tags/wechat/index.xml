@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>wechat on keke的个人博客</title>
-    <link>https://liutongke.github.io/tags/wechat/</link>
+    <link>https://ltkblog.cn/tags/wechat/</link>
     <description>Recent content in wechat on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 21 Oct 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/wechat/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 21 Oct 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/wechat/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>微信运动数据抓取(PHP)</title>
-      <link>https://liutongke.github.io/wechat_sport_data_php/</link>
+      <link>https://ltkblog.cn/wechat_sport_data_php/</link>
       <pubDate>Sat, 21 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/wechat_sport_data_php/</guid>
+      <guid>https://ltkblog.cn/wechat_sport_data_php/</guid>
       <description>“微信运动”能够向朋友分享一个包含有运动数据的网页，网页中就有我们需要的数据。url类似于：http://hw.weixin.qq.com/</description>
     </item>
     

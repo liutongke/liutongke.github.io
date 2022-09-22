@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>lamp on keke的个人博客</title>
-    <link>https://liutongke.github.io/tags/lamp/</link>
+    <link>https://ltkblog.cn/tags/lamp/</link>
     <description>Recent content in lamp on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 01 Jun 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/lamp/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 01 Jun 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/lamp/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CentOS7 yum安装lamp环境</title>
-      <link>https://liutongke.github.io/centos7_lamp/</link>
+      <link>https://ltkblog.cn/centos7_lamp/</link>
       <pubDate>Fri, 01 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/centos7_lamp/</guid>
+      <guid>https://ltkblog.cn/centos7_lamp/</guid>
       <description>1.安装apache 🔗 yum install httpd #根据提示，输入Y安装即可成功安装 systemctl start httpd.service #启动apache systemctl stop httpd.service #停止apache systemctl restart httpd.service #重启apache systemctl enable httpd.service</description>
     </item>
     

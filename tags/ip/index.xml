@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>IP on keke的个人博客</title>
-    <link>https://liutongke.github.io/tags/ip/</link>
+    <link>https://ltkblog.cn/tags/ip/</link>
     <description>Recent content in IP on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 30 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/ip/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/ip/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go使用纯真IP数据库获取地理位置</title>
-      <link>https://liutongke.github.io/go_chunzhen_ip/</link>
+      <link>https://ltkblog.cn/go_chunzhen_ip/</link>
       <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/go_chunzhen_ip/</guid>
+      <guid>https://ltkblog.cn/go_chunzhen_ip/</guid>
       <description>纯真版IP地址数据库是当前网络上最权威、地址最精确、IP记录以及网吧数据最多的IP地址数据库。收集了包括中国电信、中国移动、中国联通、铁通、</description>
     </item>
     

@@ -2,71 +2,71 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>CentOS7 on keke的个人博客</title>
-    <link>https://liutongke.github.io/tags/centos7/</link>
+    <link>https://ltkblog.cn/tags/centos7/</link>
     <description>Recent content in CentOS7 on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 18 Oct 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/centos7/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 18 Oct 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/centos7/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CentOS7-安装最新版本GIT(git version 2.18.0)</title>
-      <link>https://liutongke.github.io/centos7_git/</link>
+      <link>https://ltkblog.cn/centos7_git/</link>
       <pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/centos7_git/</guid>
+      <guid>https://ltkblog.cn/centos7_git/</guid>
       <description>Git安装方式有两种一种是yum安装一种是编译安装： 一、yum命令安装，此方法简单，会自动安装依赖的包，而且会从源里安装最新的版本，如果仓库</description>
     </item>
     
     <item>
       <title>CentOS7-扩容挂载磁盘</title>
-      <link>https://liutongke.github.io/centos7_expand_disk/</link>
+      <link>https://ltkblog.cn/centos7_expand_disk/</link>
       <pubDate>Mon, 30 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/centos7_expand_disk/</guid>
+      <guid>https://ltkblog.cn/centos7_expand_disk/</guid>
       <description>1.1查看新磁盘,可以看到/dev/sdb是新的未挂载的磁盘； [root@localhost ~]# fdisk -l 1.2硬盘分区 ，进入fdisk模式 进入fdisk模式 [root@localhost ~]# /sbin/fdisk /dev/sdb 输入n进行</description>
     </item>
     
     <item>
       <title>CentOS7 yum安装lamp环境</title>
-      <link>https://liutongke.github.io/centos7_lamp/</link>
+      <link>https://ltkblog.cn/centos7_lamp/</link>
       <pubDate>Fri, 01 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/centos7_lamp/</guid>
+      <guid>https://ltkblog.cn/centos7_lamp/</guid>
       <description>1.安装apache 🔗 yum install httpd #根据提示，输入Y安装即可成功安装 systemctl start httpd.service #启动apache systemctl stop httpd.service #停止apache systemctl restart httpd.service #重启apache systemctl enable httpd.service</description>
     </item>
     
     <item>
       <title>CentOS7下部署Django（nginx&#43;uWSGI&#43;Python3&#43;Django)</title>
-      <link>https://liutongke.github.io/django_nginx_uwsgi/</link>
+      <link>https://ltkblog.cn/django_nginx_uwsgi/</link>
       <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/django_nginx_uwsgi/</guid>
+      <guid>https://ltkblog.cn/django_nginx_uwsgi/</guid>
       <description>部署代码后uWSGI需要重新启动,关闭系统防火墙或者开放端口 系统版本:CentOS7.0 Python版本:Python3.6.3 Django</description>
     </item>
     
     <item>
       <title>树莓派(Raspberry Pi 3) centos7 扩容内存卡</title>
-      <link>https://liutongke.github.io/raspberrypi3_incr_memory/</link>
+      <link>https://ltkblog.cn/raspberrypi3_incr_memory/</link>
       <pubDate>Fri, 24 Nov 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/raspberrypi3_incr_memory/</guid>
+      <guid>https://ltkblog.cn/raspberrypi3_incr_memory/</guid>
       <description>在使用Win32DiskImager为一张空白的SD卡刷入新的centos7系统后，发现卡上的可用剩余空间并不大，用df -h查看，根目录下的</description>
     </item>
     
     <item>
       <title>阿里云ECS centos7.2 支持IPv6</title>
-      <link>https://liutongke.github.io/centos7_aliyun_ecs_ipv6/</link>
+      <link>https://ltkblog.cn/centos7_aliyun_ecs_ipv6/</link>
       <pubDate>Fri, 27 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/centos7_aliyun_ecs_ipv6/</guid>
+      <guid>https://ltkblog.cn/centos7_aliyun_ecs_ipv6/</guid>
       <description>公司的项目因为服务器没有支持IPv6而被appstore给退回来了 第一部分 🔗 第一步：编辑 /etc/sysctl.conf 文件，将其中三条禁用IPv6的设置更改为： 第二步：</description>
     </item>
     
     <item>
       <title>Centos7安装lnmp环境</title>
-      <link>https://liutongke.github.io/centos7_lnmp/</link>
+      <link>https://ltkblog.cn/centos7_lnmp/</link>
       <pubDate>Thu, 24 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/centos7_lnmp/</guid>
+      <guid>https://ltkblog.cn/centos7_lnmp/</guid>
       <description>系统版本：centos7 64位 PHP版本：PHP 7.0.21 Nginx版本：1.8.1 MySQL版本：5.5.17 注：1.所有安装都必须放在 /usr/</description>
     </item>
     

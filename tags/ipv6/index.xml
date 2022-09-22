@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>ipv6 on keke的个人博客</title>
-    <link>https://liutongke.github.io/tags/ipv6/</link>
+    <link>https://ltkblog.cn/tags/ipv6/</link>
     <description>Recent content in ipv6 on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 27 Oct 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/ipv6/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 27 Oct 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/ipv6/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>阿里云ECS centos7.2 支持IPv6</title>
-      <link>https://liutongke.github.io/centos7_aliyun_ecs_ipv6/</link>
+      <link>https://ltkblog.cn/centos7_aliyun_ecs_ipv6/</link>
       <pubDate>Fri, 27 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/centos7_aliyun_ecs_ipv6/</guid>
+      <guid>https://ltkblog.cn/centos7_aliyun_ecs_ipv6/</guid>
       <description>公司的项目因为服务器没有支持IPv6而被appstore给退回来了 第一部分 🔗 第一步：编辑 /etc/sysctl.conf 文件，将其中三条禁用IPv6的设置更改为： 第二步：</description>
     </item>
     
