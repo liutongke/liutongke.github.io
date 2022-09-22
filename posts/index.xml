@@ -6,301 +6,310 @@
     <description>Recent content in Posts on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 21 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 22 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo添加不蒜子（Busuanzi）站点访问量与阅读量统计</title>
+      <link>https://liutongke.github.io/hugo_busuanzi_count/</link>
+      <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/hugo_busuanzi_count/</guid>
+      <description>环境 🔗【统计平台】：不蒜子 【站点主题】：nodejh/hugo-theme-mini (一).head 🔗 打开项目根目录找到主题安装的目录中he</description>
+    </item>
+    
     <item>
       <title>MySQL线上分库分表数据迁移</title>
-      <link>https://liutongke.github.io/posts/mysql_sub-table/</link>
+      <link>https://liutongke.github.io/mysql_sub-table/</link>
       <pubDate>Wed, 21 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/mysql_sub-table/</guid>
+      <guid>https://liutongke.github.io/mysql_sub-table/</guid>
       <description>(一).项目分析，确定sharding column： 🔗 首先对功能进行分析，现有一张用户场景皮肤道具表属于单表设计。同一个用户可以拥有N张皮肤</description>
     </item>
     
     <item>
       <title>api-swoole框架文档</title>
-      <link>https://liutongke.github.io/posts/api_swoole_doc/</link>
+      <link>https://liutongke.github.io/api_swoole_doc/</link>
       <pubDate>Sat, 10 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/api_swoole_doc/</guid>
+      <guid>https://liutongke.github.io/api_swoole_doc/</guid>
       <description>(一).开始 🔗1.1下载与安装 🔗源码地址： api-swoole框架github源码地址 api-swoole框架gitee源码地址 需要确保运行</description>
     </item>
     
     <item>
       <title>Go破解图片压缩网站tinypng突破数量限制</title>
-      <link>https://liutongke.github.io/posts/go_tinypng_mult_zip/</link>
+      <link>https://liutongke.github.io/go_tinypng_mult_zip/</link>
       <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/go_tinypng_mult_zip/</guid>
+      <guid>https://liutongke.github.io/go_tinypng_mult_zip/</guid>
       <description>(一).介绍 🔗TinyPNG(熊猫压缩)官方提供了浏览器网站版，通过用户手动上传和下载图片不光使用比较繁琐而且还有使用限制。TinyPNG(</description>
     </item>
     
     <item>
       <title>使用golang实现Redis中间件</title>
-      <link>https://liutongke.github.io/posts/go_redis_middleware/</link>
+      <link>https://liutongke.github.io/go_redis_middleware/</link>
       <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/go_redis_middleware/</guid>
+      <guid>https://liutongke.github.io/go_redis_middleware/</guid>
       <description>##（一）.RESP协议解释 RESP协议在Redis1.2被引入，直到Redis2.0才成为和Redis服务器通信的标准。这个协议需要在你的</description>
     </item>
     
     <item>
       <title>Windows安装PHP8.0和nginx详细步骤</title>
-      <link>https://liutongke.github.io/posts/windows_php8.0_nginx/</link>
+      <link>https://liutongke.github.io/windows_php8.0_nginx/</link>
       <pubDate>Sun, 28 Aug 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/windows_php8.0_nginx/</guid>
+      <guid>https://liutongke.github.io/windows_php8.0_nginx/</guid>
       <description>一.PHP8.1安装部署 🔗2.下载PHP 🔗打开PHP官网，选择对应的PHP版本下载。 None Thread Safe和Thread Safe版本区别 1.None Thread Safe就</description>
     </item>
     
     <item>
       <title>Go使用纯真IP数据库获取地理位置</title>
-      <link>https://liutongke.github.io/posts/go_chunzhen_ip/</link>
+      <link>https://liutongke.github.io/go_chunzhen_ip/</link>
       <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/go_chunzhen_ip/</guid>
+      <guid>https://liutongke.github.io/go_chunzhen_ip/</guid>
       <description>纯真版IP地址数据库是当前网络上最权威、地址最精确、IP记录以及网吧数据最多的IP地址数据库。收集了包括中国电信、中国移动、中国联通、铁通、</description>
     </item>
     
     <item>
       <title>Go自定义 input 函数整理用户输入</title>
-      <link>https://liutongke.github.io/posts/go_input_func/</link>
+      <link>https://liutongke.github.io/go_input_func/</link>
       <pubDate>Wed, 13 Jan 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/go_input_func/</guid>
+      <guid>https://liutongke.github.io/go_input_func/</guid>
       <description>学习阶段经常使用输入，把 fmt.Scan 用户输入整理成函数，方便调用，减少重复代码 package main import ( &amp;#34;fmt&amp;#34; ) func input(prompt string) string { var text string fmt.Print(prompt) fmt.Scan(&amp;amp;text) return text } func main() { a := input(&amp;#34;输</description>
     </item>
     
     <item>
       <title>使用Redis Data Reveal（rdr）查看Redis中key占用内存空间</title>
-      <link>https://liutongke.github.io/posts/redis_data_reveal/</link>
+      <link>https://liutongke.github.io/redis_data_reveal/</link>
       <pubDate>Tue, 30 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/redis_data_reveal/</guid>
+      <guid>https://liutongke.github.io/redis_data_reveal/</guid>
       <description>项目响应速度要求比较高，全部使用Redis缓存这也导致缓存。需要分析各种键占用内存情况进行优化。 redisclient虽然可以很方便的对re</description>
     </item>
     
     <item>
       <title>Redis5.0-弃用方法名和替代方法名（php-redis 5以后废弃了一些方法名）</title>
-      <link>https://liutongke.github.io/posts/redis5.0_discard_method/</link>
+      <link>https://liutongke.github.io/redis5.0_discard_method/</link>
       <pubDate>Thu, 11 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/redis5.0_discard_method/</guid>
+      <guid>https://liutongke.github.io/redis5.0_discard_method/</guid>
       <description>php-redis 5以后废弃了一些方法名 被弃用方法名 替代方法名 delete del zUnion zunionstore zInter zinterstore zDeleteRangeByRank zRemRangeByRank zDeleteRangeByScore zRemRangeByScore zDelete zRem setTimeout expire sContains sismember sRemove srem sSize scard lGetRange lrange lGet lindex listTrim ltrim lRemove lrem lSize lLen getKeys keys getMultiple mget renameKey rename</description>
     </item>
     
     <item>
       <title>CentOS7-安装最新版本GIT(git version 2.18.0)</title>
-      <link>https://liutongke.github.io/posts/centos7_git/</link>
+      <link>https://liutongke.github.io/centos7_git/</link>
       <pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/centos7_git/</guid>
+      <guid>https://liutongke.github.io/centos7_git/</guid>
       <description>Git安装方式有两种一种是yum安装一种是编译安装： 一、yum命令安装，此方法简单，会自动安装依赖的包，而且会从源里安装最新的版本，如果仓库</description>
     </item>
     
     <item>
       <title>MySQL联合索引运用-最左匹配原则</title>
-      <link>https://liutongke.github.io/posts/mysql_left_rule/</link>
+      <link>https://liutongke.github.io/mysql_left_rule/</link>
       <pubDate>Wed, 12 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/mysql_left_rule/</guid>
+      <guid>https://liutongke.github.io/mysql_left_rule/</guid>
       <description>前言 🔗 之前看了很多关于MySQL索引的文章也看了《高性能MySQL》这本书，自以为熟悉了MySQL索引使用原理，入职面试时和面试官交流，发现</description>
     </item>
     
     <item>
       <title>GitHub小技巧-定义项目语言</title>
-      <link>https://liutongke.github.io/posts/github_tips/</link>
+      <link>https://liutongke.github.io/github_tips/</link>
       <pubDate>Sun, 26 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/github_tips/</guid>
+      <guid>https://liutongke.github.io/github_tips/</guid>
       <description>GitHub是根据项目里文件数目最多的文件类型,识别项目类型。后端项目难免会包含前端的资源，有时候就会被标记成前端语言，因为项目里 css 等文件比</description>
     </item>
     
     <item>
       <title>我用Django搭网站(3)-表单RSA加密</title>
-      <link>https://liutongke.github.io/posts/django_web_rsa/</link>
+      <link>https://liutongke.github.io/django_web_rsa/</link>
       <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/django_web_rsa/</guid>
+      <guid>https://liutongke.github.io/django_web_rsa/</guid>
       <description>之前开发项目时因为种种原因一直使用明文提交，表单直接明文提交非常不安全,只要稍加操作就能轻易获取用户的信息。在众里寻他千百度之后决定使用RS</description>
     </item>
     
     <item>
       <title>我用Django搭网站(2)-QQ登录</title>
-      <link>https://liutongke.github.io/posts/django_web_qq/</link>
+      <link>https://liutongke.github.io/django_web_qq/</link>
       <pubDate>Mon, 13 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/django_web_qq/</guid>
+      <guid>https://liutongke.github.io/django_web_qq/</guid>
       <description>接入QQ登录前，网站需首先进行申请，获得对应的appid与appkey，以保证后续流程中可正确对网站与用户进行验证与授权。 第一步：准备阶段 🔗</description>
     </item>
     
     <item>
       <title>我用Django搭网站(1)-新浪微博登录</title>
-      <link>https://liutongke.github.io/posts/django_web_weibo/</link>
+      <link>https://liutongke.github.io/django_web_weibo/</link>
       <pubDate>Sat, 11 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/django_web_weibo/</guid>
+      <guid>https://liutongke.github.io/django_web_weibo/</guid>
       <description>新浪微博第三方登录使用的是OAuth2.0，开发前提已经注册开发者帐号，是开发者。 OAuth简介 🔗OAuth： OAuth（开放授权）是一个开</description>
     </item>
     
     <item>
       <title>CentOS7-扩容挂载磁盘</title>
-      <link>https://liutongke.github.io/posts/centos7_expand_disk/</link>
+      <link>https://liutongke.github.io/centos7_expand_disk/</link>
       <pubDate>Mon, 30 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/centos7_expand_disk/</guid>
+      <guid>https://liutongke.github.io/centos7_expand_disk/</guid>
       <description>1.1查看新磁盘,可以看到/dev/sdb是新的未挂载的磁盘； [root@localhost ~]# fdisk -l 1.2硬盘分区 ，进入fdisk模式 进入fdisk模式 [root@localhost ~]# /sbin/fdisk /dev/sdb 输入n进行</description>
     </item>
     
     <item>
       <title>PHP foreach引用&amp;</title>
-      <link>https://liutongke.github.io/posts/php_foreach/</link>
+      <link>https://liutongke.github.io/php_foreach/</link>
       <pubDate>Wed, 11 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/php_foreach/</guid>
+      <guid>https://liutongke.github.io/php_foreach/</guid>
       <description>将以下代码打印 $variable = [&amp;#39;a&amp;#39;, &amp;#39;b&amp;#39;, &amp;#39;c&amp;#39;]; foreach ($variable as $key =&amp;gt; &amp;amp;$value) { } foreach ($variable as $key =&amp;gt; $value) { } echo &amp;#34;&amp;lt;pre /&amp;gt;&amp;#34;; var_dump($variable); echo &amp;#34;&amp;lt;pre /&amp;gt;&amp;#34;; #结果 array(3) { [0]=&amp;gt; string(1) &amp;#34;a&amp;#34; [1]=&amp;gt; string(1) &amp;#34;b&amp;#34; [2]=&amp;gt; &amp;amp;string(1) &amp;#34;b&amp;#34; } 打印出来的结果跟预期结果的不一致，这是因</description>
     </item>
     
     <item>
       <title>CentOS7 yum安装lamp环境</title>
-      <link>https://liutongke.github.io/posts/centos7_lamp/</link>
+      <link>https://liutongke.github.io/centos7_lamp/</link>
       <pubDate>Fri, 01 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/centos7_lamp/</guid>
+      <guid>https://liutongke.github.io/centos7_lamp/</guid>
       <description>1.安装apache 🔗 yum install httpd #根据提示，输入Y安装即可成功安装 systemctl start httpd.service #启动apache systemctl stop httpd.service #停止apache systemctl restart httpd.service #重启apache systemctl enable httpd.service</description>
     </item>
     
     <item>
       <title>微信运动数据抓取(Python)</title>
-      <link>https://liutongke.github.io/posts/wechat_sport_data_python/</link>
+      <link>https://liutongke.github.io/wechat_sport_data_python/</link>
       <pubDate>Sun, 20 May 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/wechat_sport_data_python/</guid>
+      <guid>https://liutongke.github.io/wechat_sport_data_python/</guid>
       <description>“微信运动”能够向朋友分享一个包含有运动数据的网页，网页中就有我们需要的数据。url类似于：http://hw.weixin.qq.com/</description>
     </item>
     
     <item>
       <title>CentOS7下部署Django（nginx&#43;uWSGI&#43;Python3&#43;Django)</title>
-      <link>https://liutongke.github.io/posts/django_nginx_uwsgi/</link>
+      <link>https://liutongke.github.io/django_nginx_uwsgi/</link>
       <pubDate>Fri, 18 May 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/django_nginx_uwsgi/</guid>
+      <guid>https://liutongke.github.io/django_nginx_uwsgi/</guid>
       <description>部署代码后uWSGI需要重新启动,关闭系统防火墙或者开放端口 系统版本:CentOS7.0 Python版本:Python3.6.3 Django</description>
     </item>
     
     <item>
       <title>PHP开发实用-阿里短信服务（Short Message Service）</title>
-      <link>https://liutongke.github.io/posts/php_ali_sms/</link>
+      <link>https://liutongke.github.io/php_ali_sms/</link>
       <pubDate>Tue, 08 May 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/php_ali_sms/</guid>
+      <guid>https://liutongke.github.io/php_ali_sms/</guid>
       <description>步骤 1 使用阿里云短信服务正常发短信需要 🔗 短信签名 短信模板 1申请短信签名 根据用户属性来创建符合自身属性的签名信息。企业用户需要上传相关企业资质</description>
     </item>
     
     <item>
       <title>开发一个属于自己的第一个Composer/Packagist包</title>
-      <link>https://liutongke.github.io/posts/my_composer_package/</link>
+      <link>https://liutongke.github.io/my_composer_package/</link>
       <pubDate>Tue, 03 Apr 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/my_composer_package/</guid>
+      <guid>https://liutongke.github.io/my_composer_package/</guid>
       <description>Composer 给我们带来了诸多的好处： 模块化，降低代码重用成本 统一的第三方代码组织方式 更科学的版本更新 初始化项目，生成composer.json文件 初始</description>
     </item>
     
     <item>
       <title>Redis实现用户关注功能</title>
-      <link>https://liutongke.github.io/posts/redis_guanxi/</link>
+      <link>https://liutongke.github.io/redis_guanxi/</link>
       <pubDate>Thu, 01 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/redis_guanxi/</guid>
+      <guid>https://liutongke.github.io/redis_guanxi/</guid>
       <description>最近项目要涉及到粉丝关注问题，权衡再三还是使用Redis实现比较方便，使用Redis的有序集合可以做到根据关注的时间有序的取出列表，假设我的</description>
     </item>
     
     <item>
       <title>配置nginx支持Https</title>
-      <link>https://liutongke.github.io/posts/set_nginx_https/</link>
+      <link>https://liutongke.github.io/set_nginx_https/</link>
       <pubDate>Sat, 20 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/set_nginx_https/</guid>
+      <guid>https://liutongke.github.io/set_nginx_https/</guid>
       <description>配置nginx支持Https一定要先使用stop停止nginx然后重新代开不能使用reload 一：安装letsencrypt 🔗1.从git上</description>
     </item>
     
     <item>
       <title>树莓派(Raspberry Pi 3) 使用wifi模块连接网络</title>
-      <link>https://liutongke.github.io/posts/raspberrypi3_wifi/</link>
+      <link>https://liutongke.github.io/raspberrypi3_wifi/</link>
       <pubDate>Thu, 30 Nov 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/raspberrypi3_wifi/</guid>
+      <guid>https://liutongke.github.io/raspberrypi3_wifi/</guid>
       <description>树莓派3B内置了wifi和蓝牙模块，启动WIFI模块有两种方式，一种是图形界面，一种是命令行模式。 使用图形界面： 在桌面右上角的菜单栏里面选择</description>
     </item>
     
     <item>
       <title>树莓派(Raspberry Pi 3) - 系统烧录及xshell连接</title>
-      <link>https://liutongke.github.io/posts/raspberrypi3_os_xshell/</link>
+      <link>https://liutongke.github.io/raspberrypi3_os_xshell/</link>
       <pubDate>Sun, 26 Nov 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/raspberrypi3_os_xshell/</guid>
+      <guid>https://liutongke.github.io/raspberrypi3_os_xshell/</guid>
       <description>树莓派(Raspberry pi)是一块集成度极高的ARM开发板，不仅包含了HDMI，RCA，CSI，HDMI，GPIO等端口，还支持蓝牙以及</description>
     </item>
     
     <item>
       <title>树莓派(Raspberry Pi 3) centos7 扩容内存卡</title>
-      <link>https://liutongke.github.io/posts/raspberrypi3_incr_memory/</link>
+      <link>https://liutongke.github.io/raspberrypi3_incr_memory/</link>
       <pubDate>Fri, 24 Nov 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/raspberrypi3_incr_memory/</guid>
+      <guid>https://liutongke.github.io/raspberrypi3_incr_memory/</guid>
       <description>在使用Win32DiskImager为一张空白的SD卡刷入新的centos7系统后，发现卡上的可用剩余空间并不大，用df -h查看，根目录下的</description>
     </item>
     
     <item>
       <title>树莓派(Raspberry Pi 3) centos7使用yum命令报错</title>
-      <link>https://liutongke.github.io/posts/raspberrypi3_yum_err/</link>
+      <link>https://liutongke.github.io/raspberrypi3_yum_err/</link>
       <pubDate>Fri, 24 Nov 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/raspberrypi3_yum_err/</guid>
+      <guid>https://liutongke.github.io/raspberrypi3_yum_err/</guid>
       <description>使用yum命令报错 File &amp;#34;/usr/bin/yum&amp;#34;, line 30 except KeyboardInterrupt, e: ^ SyntaxError: invalid syntax 问题如下： 问题出现原因： yum包管理是使用python2.x写的，将python2.x升级到pyth</description>
     </item>
     
     <item>
       <title>阿里云ECS centos7.2 支持IPv6</title>
-      <link>https://liutongke.github.io/posts/centos7_aliyun_ecs_ipv6/</link>
+      <link>https://liutongke.github.io/centos7_aliyun_ecs_ipv6/</link>
       <pubDate>Fri, 27 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/centos7_aliyun_ecs_ipv6/</guid>
+      <guid>https://liutongke.github.io/centos7_aliyun_ecs_ipv6/</guid>
       <description>公司的项目因为服务器没有支持IPv6而被appstore给退回来了 第一部分 🔗 第一步：编辑 /etc/sysctl.conf 文件，将其中三条禁用IPv6的设置更改为： 第二步：</description>
     </item>
     
     <item>
       <title>微信运动数据抓取(PHP)</title>
-      <link>https://liutongke.github.io/posts/wechat_sport_data_php/</link>
+      <link>https://liutongke.github.io/wechat_sport_data_php/</link>
       <pubDate>Sat, 21 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/wechat_sport_data_php/</guid>
+      <guid>https://liutongke.github.io/wechat_sport_data_php/</guid>
       <description>“微信运动”能够向朋友分享一个包含有运动数据的网页，网页中就有我们需要的数据。url类似于：http://hw.weixin.qq.com/</description>
     </item>
     
     <item>
       <title>Centos7安装lnmp环境</title>
-      <link>https://liutongke.github.io/posts/centos7_lnmp/</link>
+      <link>https://liutongke.github.io/centos7_lnmp/</link>
       <pubDate>Thu, 24 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/centos7_lnmp/</guid>
+      <guid>https://liutongke.github.io/centos7_lnmp/</guid>
       <description>系统版本：centos7 64位 PHP版本：PHP 7.0.21 Nginx版本：1.8.1 MySQL版本：5.5.17 注：1.所有安装都必须放在 /usr/</description>
     </item>
     
     <item>
       <title>超酷播放器使用弹幕</title>
-      <link>https://liutongke.github.io/posts/chaoku_chaoku_barrage/</link>
+      <link>https://liutongke.github.io/chaoku_chaoku_barrage/</link>
       <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/chaoku_chaoku_barrage/</guid>
+      <guid>https://liutongke.github.io/chaoku_chaoku_barrage/</guid>
       <description>注意，这里的直播放仅是说弹幕采用直播的形式，不是指视频直播 普通的视频弹幕： 该插件因为为了简单化使用，所以没有使用数据库存储数据的形式。而是把</description>
     </item>
     
     <item>
       <title>Thinkphp通过phpqrcode实现网址验证码</title>
-      <link>https://liutongke.github.io/posts/thinkphp_phpqrcode/</link>
+      <link>https://liutongke.github.io/thinkphp_phpqrcode/</link>
       <pubDate>Mon, 05 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/thinkphp_phpqrcode/</guid>
+      <guid>https://liutongke.github.io/thinkphp_phpqrcode/</guid>
       <description>第一步： phpqrcode下载第三方扩展包，http://phpqrcode.sourceforge.net/ 第二步： 将扩展包放到/Thin</description>
     </item>
     

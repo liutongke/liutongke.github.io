@@ -9,10 +9,10 @@
     <lastBuildDate>Tue, 03 Apr 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/composer/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>开发一个属于自己的第一个Composer/Packagist包</title>
-      <link>https://liutongke.github.io/posts/my_composer_package/</link>
+      <link>https://liutongke.github.io/my_composer_package/</link>
       <pubDate>Tue, 03 Apr 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/my_composer_package/</guid>
+      <guid>https://liutongke.github.io/my_composer_package/</guid>
       <description>Composer 给我们带来了诸多的好处： 模块化，降低代码重用成本 统一的第三方代码组织方式 更科学的版本更新 初始化项目，生成composer.json文件 初始</description>
     </item>
     

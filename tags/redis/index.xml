@@ -9,37 +9,37 @@
     <lastBuildDate>Thu, 01 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/redis/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用golang实现Redis中间件</title>
-      <link>https://liutongke.github.io/posts/go_redis_middleware/</link>
+      <link>https://liutongke.github.io/go_redis_middleware/</link>
       <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/go_redis_middleware/</guid>
+      <guid>https://liutongke.github.io/go_redis_middleware/</guid>
       <description>##（一）.RESP协议解释 RESP协议在Redis1.2被引入，直到Redis2.0才成为和Redis服务器通信的标准。这个协议需要在你的</description>
     </item>
     
     <item>
       <title>使用Redis Data Reveal（rdr）查看Redis中key占用内存空间</title>
-      <link>https://liutongke.github.io/posts/redis_data_reveal/</link>
+      <link>https://liutongke.github.io/redis_data_reveal/</link>
       <pubDate>Tue, 30 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/redis_data_reveal/</guid>
+      <guid>https://liutongke.github.io/redis_data_reveal/</guid>
       <description>项目响应速度要求比较高，全部使用Redis缓存这也导致缓存。需要分析各种键占用内存情况进行优化。 redisclient虽然可以很方便的对re</description>
     </item>
     
     <item>
       <title>Redis5.0-弃用方法名和替代方法名（php-redis 5以后废弃了一些方法名）</title>
-      <link>https://liutongke.github.io/posts/redis5.0_discard_method/</link>
+      <link>https://liutongke.github.io/redis5.0_discard_method/</link>
       <pubDate>Thu, 11 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/redis5.0_discard_method/</guid>
+      <guid>https://liutongke.github.io/redis5.0_discard_method/</guid>
       <description>php-redis 5以后废弃了一些方法名 被弃用方法名 替代方法名 delete del zUnion zunionstore zInter zinterstore zDeleteRangeByRank zRemRangeByRank zDeleteRangeByScore zRemRangeByScore zDelete zRem setTimeout expire sContains sismember sRemove srem sSize scard lGetRange lrange lGet lindex listTrim ltrim lRemove lrem lSize lLen getKeys keys getMultiple mget renameKey rename</description>
     </item>
     
     <item>
       <title>Redis实现用户关注功能</title>
-      <link>https://liutongke.github.io/posts/redis_guanxi/</link>
+      <link>https://liutongke.github.io/redis_guanxi/</link>
       <pubDate>Thu, 01 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/redis_guanxi/</guid>
+      <guid>https://liutongke.github.io/redis_guanxi/</guid>
       <description>最近项目要涉及到粉丝关注问题，权衡再三还是使用Redis实现比较方便，使用Redis的有序集合可以做到根据关注的时间有序的取出列表，假设我的</description>
     </item>
     

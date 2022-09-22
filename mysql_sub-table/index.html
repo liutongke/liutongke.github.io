@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>MySQL线上分库分表数据迁移 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="MySQL线上分库分表数据迁移">
+
+
+
+  <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">MySQL线上分库分表数据迁移</h1>
+
+    <div class="tip">
+        <time datetime="2022-09-21 00:00:00 &#43;0000 UTC">2022年09月21日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2440字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          5分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一项目分析确定sharding-column"><strong>(一).项目分析，确定sharding column：</strong></a>
+      <ul>
+        <li><a href="#注场景皮肤道具表结构"><strong>注：场景皮肤道具表结构</strong></a></li>
+      </ul>
+    </li>
+    <li><a href="#二确定分库分表方案"><strong>(二).确定分库分表方案：</strong></a></li>
+    <li><a href="#三方案具体实施"><strong>(三).方案具体实施：</strong></a>
+      <ul>
+        <li><a href="#31主动迁移"><strong>3.1主动迁移：</strong></a></li>
+        <li><a href="#32被动迁移"><strong>3.2被动迁移：</strong></a></li>
+      </ul>
+    </li>
+    <li><a href="#注被动迁移与被动迁移公用方法"><strong>注：被动迁移与被动迁移公用方法</strong></a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h2 id="一项目分析确定sharding-column"><strong>(一).项目分析，确定sharding column：</strong> <a href="#%e4%b8%80%e9%a1%b9%e7%9b%ae%e5%88%86%e6%9e%90%e7%a1%ae%e5%ae%9asharding-column" class="anchor">🔗</a></h2><p>  首先对功能进行分析，现有一张用户场景皮肤道具表属于单表设计。同一个用户可以拥有N张皮肤。每个用户现阶段有一百多种皮肤，数据已达到千万级别，而且皮肤数量在后期还会随着场景数量增加而不断增加。</p>
+<p>  表中有两个字段可以作为分表的字段（<code>用户id</code>和<code>应用场景id</code>），场景是根据对应的<code>应用场景id</code>加载的所以可以根据场景id进行分库分表。但是每次加载某个场景时功能需求需要一次性取出整个场景所有的<code>皮肤id</code>，分表后会将皮肤分配到N张表中，不光增加项目复杂度还要对MySQL发送多条sql请求操作数据库。所以不适合根据<code>应用场景id</code>作为<code>sharding column</code>。</p>
+<p>  根据<code>uid</code>进行分表的话，同一个用户的所有数据都将会被分配到同一张表中，这样在加载场景时直接通过<code>sharding column</code>就可以访问分库分表后的单表，而不需要跨库跨表操作，性能跟项目复杂度最优，所以选择<code>uid</code>作为<code>sharding column</code>进行分表。</p>
+<h3 id="注场景皮肤道具表结构"><strong>注：场景皮肤道具表结构</strong> <a href="#%e6%b3%a8%e5%9c%ba%e6%99%af%e7%9a%ae%e8%82%a4%e9%81%93%e5%85%b7%e8%a1%a8%e7%bb%93%e6%9e%84" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">CREATE</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">TABLE</span><span style="color:#bbb"> </span><span style="color:#666">`</span>user_skin<span style="color:#666">`</span><span style="color:#bbb"> </span>(<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#666">`</span>id<span style="color:#666">`</span><span style="color:#bbb"> </span><span style="color:#0b0;font-weight:bold">int</span>(<span style="color:#666">11</span>)<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#800">NULL</span><span style="color:#bbb"> </span><span style="color:#a2f">AUTO_INCREMENT</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#666">`</span>uid<span style="color:#666">`</span><span style="color:#bbb"> </span><span style="color:#0b0;font-weight:bold">int</span>(<span style="color:#666">10</span>)<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">unsigned</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#800">NULL</span><span style="color:#bbb"> </span>COMMENT<span style="color:#bbb"> </span><span style="color:#b44">&#39;帐号UID&#39;</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#666">`</span>sceneId<span style="color:#666">`</span><span style="color:#bbb"> </span><span style="color:#0b0;font-weight:bold">int</span>(<span style="color:#666">11</span>)<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#800">NULL</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">DEFAULT</span><span style="color:#bbb"> </span><span style="color:#b44">&#39;0&#39;</span><span style="color:#bbb"> </span>COMMENT<span style="color:#bbb"> </span><span style="color:#b44">&#39;应用场景id&#39;</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#666">`</span>skinId<span style="color:#666">`</span><span style="color:#bbb"> </span><span style="color:#0b0;font-weight:bold">int</span>(<span style="color:#666">11</span>)<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">unsigned</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#800">NULL</span><span style="color:#bbb"> </span>COMMENT<span style="color:#bbb"> </span><span style="color:#b44">&#39;皮肤id&#39;</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#666">`</span>tm<span style="color:#666">`</span><span style="color:#bbb"> </span><span style="color:#0b0;font-weight:bold">datetime</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">DEFAULT</span><span style="color:#bbb"> </span><span style="color:#800">NULL</span><span style="color:#bbb"> </span>COMMENT<span style="color:#bbb"> </span><span style="color:#b44">&#39;获得的时间&#39;</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#a2f;font-weight:bold">PRIMARY</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">KEY</span><span style="color:#bbb"> </span>(<span style="color:#666">`</span>id<span style="color:#666">`</span>),<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#a2f;font-weight:bold">UNIQUE</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">KEY</span><span style="color:#bbb"> </span><span style="color:#666">`</span>a_t<span style="color:#666">`</span><span style="color:#bbb"> </span>(<span style="color:#666">`</span>uid<span style="color:#666">`</span>,<span style="color:#666">`</span>skinId<span style="color:#666">`</span>)<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">USING</span><span style="color:#bbb"> </span>BTREE<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>)<span style="color:#bbb"> </span><span style="color:#a2f">ENGINE</span><span style="color:#666">=</span>InnoDB<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">DEFAULT</span><span style="color:#bbb"> </span><span style="color:#a2f">CHARSET</span><span style="color:#666">=</span>utf8mb4<span style="color:#bbb"> </span>COMMENT<span style="color:#666">=</span><span style="color:#b44">&#39;道具皮肤表&#39;</span>;<span style="color:#bbb">
+</span></span></span></code></pre></div><h2 id="二确定分库分表方案"><strong>(二).确定分库分表方案：</strong> <a href="#%e4%ba%8c%e7%a1%ae%e5%ae%9a%e5%88%86%e5%ba%93%e5%88%86%e8%a1%a8%e6%96%b9%e6%a1%88" class="anchor">🔗</a></h2><p>  在选取了合适的<code>sharding column</code>后，需要选取确定具体的分库分表方案了，考虑游戏项目对接口延时比较敏感，故而选取了<code>主动迁移</code>为主，<code>被动迁移</code>为辅相结合的方案。</p>
+<ol>
+<li><strong>主动迁移</strong>挂起一个单独的程序来主动遍历需要分库分表的表，然后将查询到的数据迁移到分库分表后的新表表中。</li>
+<li><strong>被动迁移</strong>在相关的接口业务代码中放入勾子函数，当调用对应接口时，遍历需要分库分表的表，然后迁移数据。</li>
+</ol>
+<h2 id="三方案具体实施"><strong>(三).方案具体实施：</strong> <a href="#%e4%b8%89%e6%96%b9%e6%a1%88%e5%85%b7%e4%bd%93%e5%ae%9e%e6%96%bd" class="anchor">🔗</a></h2><h3 id="31主动迁移"><strong>3.1主动迁移：</strong> <a href="#31%e4%b8%bb%e5%8a%a8%e8%bf%81%e7%a7%bb" class="anchor">🔗</a></h3><ul>
+<li>单独的程序首先主动遍历用户表，查询出<code>用户uid</code>。</li>
+<li>程序获取Redis排它锁，判断被动迁移程序是否在运行迁移数据。</li>
+<li>成功获取Redis排它锁以后查询<code>迁移记录表</code>判断数据是否已经迁移完成。</li>
+<li>根据<code>用户uid</code>查询出对应的用户道具数据。</li>
+<li>将<code>用户uid</code>取模选择数据迁移的新表。</li>
+<li>判断需要迁移的新表是否已经存在，不存在则创建。</li>
+<li>开始迁移用户数据。</li>
+<li>用户数据迁移成功后再<code>迁移记录表</code>中写入迁移记录信息。</li>
+</ul>
+<h4 id="主动迁移伪代码"><strong>主动迁移伪代码：</strong> <a href="#%e4%b8%bb%e5%8a%a8%e8%bf%81%e7%a7%bb%e4%bc%aa%e4%bb%a3%e7%a0%81" class="anchor">🔗</a></h4><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">//主动迁移数据
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    <span style="color:#a2f;font-weight:bold">public</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">driveData</span>()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#b8860b">$limit</span> <span style="color:#666">=</span> <span style="color:#666">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#b8860b">$pageSize</span> <span style="color:#666">=</span> <span style="color:#666">100</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">while</span> (<span style="color:#a2f;font-weight:bold">true</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$userList</span> <span style="color:#666">=</span> <span style="color:#b8860b">$this</span><span style="color:#666">-&gt;</span><span style="color:#b44">db</span><span style="color:#666">-&gt;</span><span style="color:#b44">query</span>(<span style="color:#b44">&#34;SELECT uid FROM user_info LIMIT ?,?&#34;</span>, <span style="color:#b8860b">$limit</span>, <span style="color:#b8860b">$pageSize</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">foreach</span> (<span style="color:#b8860b">$userList</span> <span style="color:#a2f;font-weight:bold">as</span> <span style="color:#b8860b">$uid</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#b8860b">$tmpLock</span> <span style="color:#666">=</span> <span style="color:#b44">&#39;setuSkin:&#39;</span> <span style="color:#666">.</span> <span style="color:#b8860b">$uid</span> <span style="color:#666">.</span> <span style="color:#b44">&#39;.lock&#39;</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#a2f;font-weight:bold">if</span> (Redis<span style="color:#666">::</span><span style="color:#b44">set</span>(<span style="color:#b8860b">$tmpLock</span>, <span style="color:#666">1</span>, <span style="color:#b44">&#34;nx&#34;</span>, <span style="color:#b44">&#34;ex&#34;</span>, <span style="color:#666">10</span>)) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#a2f;font-weight:bold">if</span> (Redis<span style="color:#666">::</span><span style="color:#b44">get</span>(<span style="color:#b44">&#39;isOkMove&#39;</span> <span style="color:#666">.</span> <span style="color:#b8860b">$uid</span>)) {
+</span></span><span style="display:flex;"><span>                        Redis<span style="color:#666">::</span><span style="color:#b44">del</span>(<span style="color:#b8860b">$tmpLock</span>);<span style="color:#080;font-style:italic">//解锁
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                        dd(<span style="color:#b44">&#39;has move&#39;</span>);<span style="color:#080;font-style:italic">//已经转移了
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#b8860b">$moId</span> <span style="color:#666">=</span> <span style="color:#b8860b">$this</span><span style="color:#666">-&gt;</span><span style="color:#b44">idMod</span>(<span style="color:#b8860b">$uid</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#a2f;font-weight:bold">if</span> (<span style="color:#b8860b">$moId</span> <span style="color:#666">===</span> <span style="color:#a2f;font-weight:bold">false</span>) {<span style="color:#080;font-style:italic">//不合法的取模
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                        Redis<span style="color:#666">::</span><span style="color:#b44">del</span>(<span style="color:#b8860b">$tmpLock</span>);<span style="color:#080;font-style:italic">//解锁
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                        dd(<span style="color:#b44">&#39;mod fail&#39;</span>);
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#b8860b">$tbName</span> <span style="color:#666">=</span> <span style="color:#b8860b">$this</span><span style="color:#666">-&gt;</span><span style="color:#b44">tbName</span>(<span style="color:#b8860b">$moId</span>);<span style="color:#080;font-style:italic">//获得表名
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                    <span style="color:#b8860b">$this</span><span style="color:#666">-&gt;</span><span style="color:#b44">isTable</span>(<span style="color:#b8860b">$tbName</span>);<span style="color:#080;font-style:italic">//判断MySQL中表是否存在，不存在则创建新表
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                    <span style="color:#b8860b">$res</span> <span style="color:#666">=</span> <span style="color:#b8860b">$this</span><span style="color:#666">-&gt;</span><span style="color:#b44">moveUserSkinData</span>(<span style="color:#b8860b">$tbName</span>, <span style="color:#b8860b">$uid</span>);<span style="color:#080;font-style:italic">//开始进行数据转移
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                    Redis<span style="color:#666">::</span><span style="color:#b44">del</span>(<span style="color:#b8860b">$tmpLock</span>);<span style="color:#080;font-style:italic">//解锁
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                    dd([<span style="color:#b8860b">$res</span>, <span style="color:#b8860b">$tbName</span>]);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$limit</span> <span style="color:#666">=</span> <span style="color:#b8860b">$limit</span> <span style="color:#666">+</span> <span style="color:#b8860b">$pageSize</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><h3 id="32被动迁移"><strong>3.2被动迁移：</strong> <a href="#32%e8%a2%ab%e5%8a%a8%e8%bf%81%e7%a7%bb" class="anchor">🔗</a></h3><ul>
+<li>首先程序获取Redis排它锁，判断被动迁移程序是否在运行迁移数据。</li>
+<li>成功获取Redis排它锁以后查询<code>迁移记录表</code>判断数据是否已经迁移完成。</li>
+<li>根据<code>用户uid</code>查询出对应的用户道具数据。</li>
+<li>将<code>用户uid</code>取模选择数据迁移的新表。</li>
+<li>判断需要迁移的新表是否已经存在，不存在则创建。</li>
+<li>开始迁移用户数据。</li>
+<li>用户数据迁移成功后再<code>迁移记录表</code>中写入迁移记录信息。</li>
+</ul>
+<h4 id="被动迁移伪代码"><strong>被动迁移伪代码：</strong> <a href="#%e8%a2%ab%e5%8a%a8%e8%bf%81%e7%a7%bb%e4%bc%aa%e4%bb%a3%e7%a0%81" class="anchor">🔗</a></h4><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span> <span style="color:#a2f;font-weight:bold">private</span> <span style="color:#a2f;font-weight:bold">static</span> <span style="color:#b8860b">$tbNamePrefix</span> <span style="color:#666">=</span> <span style="color:#b44">&#39;user_skin_&#39;</span>;<span style="color:#080;font-style:italic">//表前缀
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">//非热点数据，被动转移
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    <span style="color:#a2f;font-weight:bold">public</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">Hook</span>(<span style="color:#b8860b">$uid</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#b8860b">$tmpLock</span> <span style="color:#666">=</span> <span style="color:#b44">&#39;setuSkin:&#39;</span> <span style="color:#666">.</span> <span style="color:#b8860b">$uid</span> <span style="color:#666">.</span> <span style="color:#b44">&#39;.lock&#39;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">if</span> (Redis<span style="color:#666">::</span><span style="color:#b44">set</span>(<span style="color:#b8860b">$tmpLock</span>, <span style="color:#666">1</span>, <span style="color:#b44">&#34;nx&#34;</span>, <span style="color:#b44">&#34;ex&#34;</span>, <span style="color:#666">10</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">if</span> (Redis<span style="color:#666">::</span><span style="color:#b44">get</span>(<span style="color:#b44">&#39;isOkMove&#39;</span> <span style="color:#666">.</span> <span style="color:#b8860b">$uid</span>)) {
+</span></span><span style="display:flex;"><span>                Redis<span style="color:#666">::</span><span style="color:#b44">del</span>(<span style="color:#b8860b">$tmpLock</span>);<span style="color:#080;font-style:italic">//解锁
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                dd(<span style="color:#b44">&#39;has move&#39;</span>);<span style="color:#080;font-style:italic">//已经转移了
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$moId</span> <span style="color:#666">=</span> <span style="color:#b8860b">$this</span><span style="color:#666">-&gt;</span><span style="color:#b44">idMod</span>(<span style="color:#b8860b">$uid</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">if</span> (<span style="color:#b8860b">$moId</span> <span style="color:#666">===</span> <span style="color:#a2f;font-weight:bold">false</span>) {<span style="color:#080;font-style:italic">//不合法的取模
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                Redis<span style="color:#666">::</span><span style="color:#b44">del</span>(<span style="color:#b8860b">$tmpLock</span>);<span style="color:#080;font-style:italic">//解锁
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                dd(<span style="color:#b44">&#39;mod fail&#39;</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$tbName</span> <span style="color:#666">=</span> <span style="color:#b8860b">$this</span><span style="color:#666">-&gt;</span><span style="color:#b44">tbName</span>(<span style="color:#b8860b">$moId</span>);<span style="color:#080;font-style:italic">//获得表名
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            <span style="color:#b8860b">$this</span><span style="color:#666">-&gt;</span><span style="color:#b44">isTable</span>(<span style="color:#b8860b">$tbName</span>);<span style="color:#080;font-style:italic">//判断MySQL中表是否存在，不存在则创建新表
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            <span style="color:#b8860b">$res</span> <span style="color:#666">=</span> <span style="color:#b8860b">$this</span><span style="color:#666">-&gt;</span><span style="color:#b44">moveUserSkinData</span>(<span style="color:#b8860b">$tbName</span>, <span style="color:#b8860b">$uid</span>);<span style="color:#080;font-style:italic">//开始进行数据转移
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            Redis<span style="color:#666">::</span><span style="color:#b44">del</span>(<span style="color:#b8860b">$tmpLock</span>);<span style="color:#080;font-style:italic">//解锁
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            dd([<span style="color:#b8860b">$res</span>, <span style="color:#b8860b">$tbName</span>]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><h2 id="注被动迁移与被动迁移公用方法"><strong>注：被动迁移与被动迁移公用方法</strong> <a href="#%e6%b3%a8%e8%a2%ab%e5%8a%a8%e8%bf%81%e7%a7%bb%e4%b8%8e%e8%a2%ab%e5%8a%a8%e8%bf%81%e7%a7%bb%e5%85%ac%e7%94%a8%e6%96%b9%e6%b3%95" class="anchor">🔗</a></h2><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span>    <span style="color:#b44;font-style:italic">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * 开始转移数据
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">private</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">moveUserSkinData</span>(<span style="color:#b8860b">$tbName</span>, <span style="color:#b8860b">$uid</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#b8860b">$loop</span> <span style="color:#666">=</span> <span style="color:#666">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">while</span> (<span style="color:#b8860b">$loop</span> <span style="color:#666">&lt;</span> <span style="color:#666">3</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$loop</span><span style="color:#666">++</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$userSkinList</span> <span style="color:#666">=</span> DB<span style="color:#666">::</span><span style="color:#b44">table</span>(<span style="color:#b44">&#39;user_skin&#39;</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#666">-&gt;</span><span style="color:#b44">where</span>([<span style="color:#b44">&#39;uid&#39;</span> <span style="color:#666">=&gt;</span> <span style="color:#b8860b">$uid</span>])
+</span></span><span style="display:flex;"><span>                <span style="color:#666">-&gt;</span><span style="color:#b44">get</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">if</span> (<span style="color:#666">!</span><span style="color:#b8860b">$userSkinList</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#a2f;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$items</span> <span style="color:#666">=</span> [];
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">foreach</span> (<span style="color:#b8860b">$userSkinList</span> <span style="color:#a2f;font-weight:bold">as</span> <span style="color:#b8860b">$userSkinListInfo</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a2f;font-weight:bold">foreach</span> (<span style="color:#b8860b">$userSkinListInfo</span> <span style="color:#a2f;font-weight:bold">as</span> <span style="color:#b8860b">$vield</span> <span style="color:#666">=&gt;</span> <span style="color:#b8860b">$value</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#b8860b">$info</span>[<span style="color:#b8860b">$vield</span>] <span style="color:#666">=</span> <span style="color:#b8860b">$value</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                array_push(<span style="color:#b8860b">$items</span>, <span style="color:#b8860b">$info</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">if</span> (<span style="color:#a2f;font-weight:bold">empty</span>(<span style="color:#b8860b">$items</span>)) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#a2f;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$insertRes</span> <span style="color:#666">=</span> DB<span style="color:#666">::</span><span style="color:#b44">table</span>(<span style="color:#b8860b">$tbName</span>)<span style="color:#666">-&gt;</span><span style="color:#b44">insert</span>(<span style="color:#b8860b">$items</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">if</span> (<span style="color:#b8860b">$insertRes</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#b8860b">$this</span><span style="color:#666">-&gt;</span><span style="color:#b44">recordMoveLog</span>(<span style="color:#b8860b">$uid</span>, <span style="color:#666">1</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#a2f;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">private</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">recordMoveLog</span>(<span style="color:#b8860b">$uid</span>, <span style="color:#b8860b">$fun</span> <span style="color:#666">=</span> <span style="color:#666">1</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#b8860b">$result</span> <span style="color:#666">=</span> Redis<span style="color:#666">::</span><span style="color:#b44">pipeline</span>(<span style="color:#a2f;font-weight:bold">function</span> (<span style="color:#b8860b">$pipe</span>) <span style="color:#a2f;font-weight:bold">use</span> (<span style="color:#b8860b">$uid</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$key</span> <span style="color:#666">=</span> <span style="color:#b44">&#39;isOkMove&#39;</span> <span style="color:#666">.</span> <span style="color:#b8860b">$uid</span>;<span style="color:#080;font-style:italic">//完成转移记录
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            <span style="color:#b8860b">$pipe</span><span style="color:#666">-&gt;</span><span style="color:#b44">set</span>(<span style="color:#b8860b">$key</span>, <span style="color:#b8860b">$uid</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$pipe</span><span style="color:#666">-&gt;</span><span style="color:#b44">expire</span>(<span style="color:#b8860b">$key</span>, <span style="color:#666">86400</span>);
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">if</span> (is_array(<span style="color:#b8860b">$result</span>) <span style="color:#666">&amp;&amp;</span> <span style="color:#666">!</span><span style="color:#a2f;font-weight:bold">empty</span>(<span style="color:#b8860b">$result</span>[<span style="color:#b44">&#39;0&#39;</span>])) {
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$data</span> <span style="color:#666">=</span> [
+</span></span><span style="display:flex;"><span>                <span style="color:#b44">&#39;uid&#39;</span> <span style="color:#666">=&gt;</span> <span style="color:#b8860b">$uid</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#b44">&#39;fun&#39;</span> <span style="color:#666">=&gt;</span> <span style="color:#b8860b">$fun</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#b44">&#39;tm&#39;</span> <span style="color:#666">=&gt;</span> date(<span style="color:#b44">&#39;Y-m-d H:i:s&#39;</span>),
+</span></span><span style="display:flex;"><span>            ];
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">return</span> DB<span style="color:#666">::</span><span style="color:#b44">table</span>(<span style="color:#b44">&#39;user_skin_move_log&#39;</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#666">-&gt;</span><span style="color:#b44">insert</span>(<span style="color:#b8860b">$data</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#a2f;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">//判断MySQL中表是否存在，不存在则创建新表
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    <span style="color:#a2f;font-weight:bold">private</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">isTable</span>(<span style="color:#b8860b">$tableName</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">if</span> (Redis<span style="color:#666">::</span><span style="color:#b44">expire</span>(<span style="color:#b8860b">$tableName</span>, <span style="color:#666">86400</span>))<span style="color:#080;font-style:italic">//判断表是否存在
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#a2f;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">if</span> (<span style="color:#666">!</span>Schema<span style="color:#666">::</span><span style="color:#b44">hasTable</span>(<span style="color:#b8860b">$tableName</span>)) {<span style="color:#080;font-style:italic">//不存在创建表
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            DB<span style="color:#666">::</span><span style="color:#b44">statement</span>(<span style="color:#b8860b">$this</span><span style="color:#666">-&gt;</span><span style="color:#b44">createTb</span>(<span style="color:#b8860b">$tableName</span>));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#b8860b">$result</span> <span style="color:#666">=</span> Redis<span style="color:#666">::</span><span style="color:#b44">pipeline</span>(<span style="color:#a2f;font-weight:bold">function</span> (<span style="color:#b8860b">$pipe</span>) <span style="color:#a2f;font-weight:bold">use</span> (<span style="color:#b8860b">$tableName</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$pipe</span><span style="color:#666">-&gt;</span><span style="color:#b44">set</span>(<span style="color:#b8860b">$tableName</span>, <span style="color:#b8860b">$tableName</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#b8860b">$pipe</span><span style="color:#666">-&gt;</span><span style="color:#b44">expire</span>(<span style="color:#b8860b">$tableName</span>, <span style="color:#666">86400</span>);
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> is_array(<span style="color:#b8860b">$result</span>) <span style="color:#666">&amp;&amp;</span> <span style="color:#666">!</span><span style="color:#a2f;font-weight:bold">empty</span>(<span style="color:#b8860b">$result</span>[<span style="color:#b44">&#39;0&#39;</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">//创建表
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    <span style="color:#a2f;font-weight:bold">private</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">createTb</span>(<span style="color:#b8860b">$tableName</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#b44">&#34;CREATE TABLE IF NOT EXISTS `&#34;</span> <span style="color:#666">.</span> <span style="color:#b8860b">$tableName</span> <span style="color:#666">.</span> <span style="color:#b44">&#34;` (
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  `id` int(11) NOT NULL AUTO_INCREMENT,
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  `uid` int(10) unsigned NOT NULL COMMENT &#39;帐号UID&#39;,
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  `sceneId` int(11) NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;应用场景id&#39;,
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  `skinId` int(11) unsigned NOT NULL COMMENT &#39;皮肤id&#39;,
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  `tm` datetime DEFAULT NULL COMMENT &#39;获得的时间&#39;,
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  PRIMARY KEY (`id`),
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  UNIQUE KEY `a_t` (`uid`,`skinId`) USING BTREE
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT=&#39;道具皮肤表&#39;;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">//用户数据转移记录表
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    <span style="color:#a2f;font-weight:bold">private</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">moveLogTb</span>()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#b44">&#34;CREATE TABLE `user_skin_move_log` (
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  `id` int(11) NOT NULL AUTO_INCREMENT,
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  `uid` int(10) unsigned NOT NULL COMMENT &#39;帐号UID&#39;,
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  `fun` int(10) unsigned NOT NULL COMMENT &#39;转移的功能&#39;,
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  `tm` datetime DEFAULT NULL COMMENT &#39;获得的时间&#39;,
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  PRIMARY KEY (`id`),
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                  UNIQUE KEY `uid` (`uid`) USING BTREE
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT=&#39;用户数据转移记录表&#39;;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#b44;font-style:italic">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @desc 创建表名
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @param $moId 模值
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @return string
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">private</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">tbName</span>(<span style="color:#b8860b">$moId</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> self<span style="color:#666">::</span><span style="color:#b8860b">$tbNamePrefix</span> <span style="color:#666">.</span> <span style="color:#b8860b">$moId</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#b44;font-style:italic">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @desc 数字取模
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @param $account
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @param int $tail
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @param int $mod
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @return float
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">private</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">idMod</span>(<span style="color:#b8860b">$account</span>, <span style="color:#b8860b">$tail</span> <span style="color:#666">=</span> <span style="color:#666">4</span>, <span style="color:#b8860b">$mod</span> <span style="color:#666">=</span> <span style="color:#666">2</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">if</span> (<span style="color:#666">!</span>is_numeric(<span style="color:#b8860b">$account</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#a2f;font-weight:bold">false</span>;<span style="color:#080;font-style:italic">//不合法用户id
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> fmod(<span style="color:#b8860b">$account</span>, <span style="color:#b8860b">$mod</span>);<span style="color:#080;font-style:italic">//取模计算数值
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#b44;font-style:italic">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @desc 字符串取模
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @param $account
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @param int $tail
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @param int $mod
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     * @return float
+</span></span></span><span style="display:flex;"><span><span style="color:#b44;font-style:italic">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">private</span> <span style="color:#a2f;font-weight:bold">function</span> <span style="color:#00a000">strMod</span>(<span style="color:#b8860b">$account</span>, <span style="color:#b8860b">$tail</span> <span style="color:#666">=</span> <span style="color:#666">4</span>, <span style="color:#b8860b">$mod</span> <span style="color:#666">=</span> <span style="color:#666">2</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#b8860b">$crc32</span> <span style="color:#666">=</span> sprintf(<span style="color:#b44">&#34;%u&#34;</span>, crc32(<span style="color:#b8860b">$account</span>));<span style="color:#080;font-style:italic">//使用%u解决32位下出现负数的问题
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#a2f;font-weight:bold">return</span> fmod(<span style="color:#b8860b">$crc32</span>, <span style="color:#b8860b">$mod</span>);<span style="color:#080;font-style:italic">//取模计算数值
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    }
+</span></span></code></pre></div>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://liutongke.github.io/tags/mysql">MySQL</a>
+            
+                <a href="https://liutongke.github.io/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8">分库分表</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

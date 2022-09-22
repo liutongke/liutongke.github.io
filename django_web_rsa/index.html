@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>我用Django搭网站(3)-表单RSA加密 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="我用Django搭网站(3)-表单RSA加密">
+
+
+
+  <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">我用Django搭网站(3)-表单RSA加密</h1>
+
+    <div class="tip">
+        <time datetime="2018-08-15 00:00:00 &#43;0000 UTC">2018年08月15日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1512字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          4分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <blockquote>
+<p>之前开发项目时因为种种原因一直使用明文提交，表单直接明文提交非常不安全,只要稍加操作就能轻易获取用户的信息。在众里寻他千百度之后决定使用RSA加密方式，简单可靠。</p>
+</blockquote>
+<h5 id="项目准备">项目准备 <a href="#%e9%a1%b9%e7%9b%ae%e5%87%86%e5%a4%87" class="anchor">🔗</a></h5><p>一.安装PyCrypto库（加密算法库）</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>1.下载该python的软码包
+</span></span><span style="display:flex;"><span>wget https://pypi.python.org/packages/60/db/645aa9af249f059cc3a368b118de33889219e0362141e75d4eaf6f80f163/pycrypto-2.6.1.tar.gz#md5<span style="color:#666">=</span>55a61a054aa66812daf5161a0d5d7eda
+</span></span><span style="display:flex;"><span>2.解压该包
+</span></span><span style="display:flex;"><span>tar  -zxvf  pycrypto-2.6.1.tar.gz
+</span></span><span style="display:flex;"><span>3.进入该包，通过python3 安装
+</span></span><span style="display:flex;"><span>python3  setup.py install
+</span></span><span style="display:flex;"><span>4.验证是否成功
+</span></span><span style="display:flex;"><span>from Crypto.Hash import SHA256  <span style="color:#080;font-style:italic">#没有错误提示则代表安装成功</span>
+</span></span></code></pre></div><p>二.安装成功后生成一对密钥,使用Python命令行模式执行以下代码获取公钥和私钥：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#080;font-style:italic"># 伪随机数生成器</span>
+</span></span><span style="display:flex;"><span>random_generator <span style="color:#666">=</span> Random<span style="color:#666">.</span>new()<span style="color:#666">.</span>read
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># rsa算法生成实例</span>
+</span></span><span style="display:flex;"><span>rsa <span style="color:#666">=</span> RSA<span style="color:#666">.</span>generate(<span style="color:#666">1024</span>, random_generator)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># master的秘钥对的生成</span>
+</span></span><span style="display:flex;"><span>private_pem <span style="color:#666">=</span> rsa<span style="color:#666">.</span>exportKey()
+</span></span><span style="display:flex;"><span>public_pem <span style="color:#666">=</span> rsa<span style="color:#666">.</span>publickey()<span style="color:#666">.</span>exportKey()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>pub <span style="color:#666">=</span> public_pem<span style="color:#666">.</span>decode()
+</span></span><span style="display:flex;"><span>pri <span style="color:#666">=</span> private_pem<span style="color:#666">.</span>decode()
+</span></span><span style="display:flex;"><span><span style="color:#a2f">print</span>(public_key )
+</span></span><span style="display:flex;"><span><span style="color:#a2f">print</span>(private_key )
+</span></span></code></pre></div><p>以下为生成后的公钥和私钥和私钥样式：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>-----BEGIN PUBLIC KEY-----
+</span></span><span style="display:flex;"><span>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCp9zaKU2VMwEM0XLgjSmhdxDX0
+</span></span><span style="display:flex;"><span>dN6Dpo2qNI+dXLt/qANPZAhUityutyutywerqweFSDERWERWSDL00hpPBqLHRkM/
+</span></span><span style="display:flex;"><span>3pvKUkraCs27Eu+aaCguLP8lylpHRQ3ad+ckamFSrNiWZqx0fxYjhnGm+ut/WJ/H
+</span></span><span style="display:flex;"><span>Jm9IFfrwAugANCjRPwIDAQAB
+</span></span><span style="display:flex;"><span>-----END PUBLIC KEY-----
+</span></span><span style="display:flex;"><span>-----BEGIN RSA PRIVATE KEY-----
+</span></span><span style="display:flex;"><span>MIICWgIBAAKBgQCp9zaKU2VMwEM0XLgjSmhdxDX0dN6Dpo2qNI+dXLt/qANPZAhU
+</span></span><span style="display:flex;"><span>iUTYaYTfEqRn5ML00hwerwerwerwerpPBqLHRkM/3pvKUkraCs27Eu+aaCguLP8l
+</span></span><span style="display:flex;"><span>ylpHRQ3ad+ckamFSrNiWZqx0fxYjhnGm+ut/WJ/HJm9IFfrwAugANCjRPwIDAQAB
+</span></span><span style="display:flex;"><span>AoGADPTvj3P0EPnHJcK7ttUBR8ShaFVQcTDNM+B14kUjdgPU3MR/bhJY0TaqBEv0
+</span></span><span style="display:flex;"><span>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCp9zaKU2VMwEM0XLgjSmhdxDX0
+</span></span><span style="display:flex;"><span>xHDSm2EFCjEmgJLIJUxsdfsfsdfsdfewrerefsdfsdfsdfECQQDOY4u+fvj8+3pW
+</span></span><span style="display:flex;"><span>Nf9HshxMLB638FFsCSJfD+MaQXumsyUrokZW57yWCn9qKANvvOHnW5v6/7m5MvXW
+</span></span><span style="display:flex;"><span>f0FrDjPXAkEA0tJPsQKB4Yo1LT3rasyJs3ZPmXPqo+OCtyF2vVeAWzKS+yTuYvK/
+</span></span><span style="display:flex;"><span>OSZIQgbgnCJg1sdfsfsdfffLcA9osfwg2QI/dbRP/lRrq9u/6WriLAFoIgkHe9+S
+</span></span><span style="display:flex;"><span>kAqlj5F/83llC60fhcMGWonPA8L455HqY89VBp04V+1//h8SFUJ+DJANAkB5Lztv
+</span></span><span style="display:flex;"><span>3KkcJH38y6MPeROOfWu0IdW274isDChdsdfsdwekllqC9lbFWyQeECX8miZf4oih
+</span></span><span style="display:flex;"><span>BNm3dwhMGg9sgCnBAkBj1xfOqmNC7rhqtXEtMP6ZXK27ZY2KPye6bPHtkSujuwDE
+</span></span><span style="display:flex;"><span>BDAoMKOOGS+TMJ+WktCoQfKcgHLW9PcxpLv4TDmj
+</span></span><span style="display:flex;"><span>-----END RSA PRIVATE KEY-----
+</span></span></code></pre></div><p>如果嫌代码生成太麻烦了可以使用淘宝的密钥生成器直接生产，<a href="https://os.alipayobjects.com/download/secret_key_tools_RSA_win.zip?spm=a219a.7629140.0.0.qFVp7d&amp;file=secret_key_tools_RSA_win.zip" target="_blank" rel="noopener">密钥生成器下载地址</a>，不过要注意的是这个windows7可以正常使用，我的windows10直接闪退。<br>
+三.github上下载一个前端的RSA加密包<a href="https://github.com/travist/jsencrypt" target="_blank" rel="noopener">jsencrypt</a>。</p>
+<h5 id="正式开发">正式开发 <a href="#%e6%ad%a3%e5%bc%8f%e5%bc%80%e5%8f%91" class="anchor">🔗</a></h5><ul>
+<li>1.将得到的公钥和私钥复制并粘贴保存到settings.py文件中，设置常量。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#b44">&#39;&#39;&#39;RSA密钥&#39;&#39;&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#b44">&#39;&#39;&#39;公钥&#39;&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>RSA_PUBLIC_KEY <span style="color:#666">=</span> <span style="color:#b44">&#39;&#39;</span>公钥<span style="color:#b44">&#39;&#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">&#39;&#39;&#39;</span>私钥<span style="color:#b44">&#39;&#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#b44">RSA_PRIVATE_KEY = &#39;&#39;&#39;</span>私钥<span style="color:#b44">&#39;&#39;&#39;
+</span></span></span></code></pre></div><ul>
+<li>2.在对应的应用urls.py下设置路由</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">django.urls</span> <span style="color:#a2f;font-weight:bold">import</span> path
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">.</span> <span style="color:#a2f;font-weight:bold">import</span> views
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>urlpatterns <span style="color:#666">=</span> [
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic"># 前端登录以及注册路由,手机验证码</span>
+</span></span><span style="display:flex;"><span>    path(<span style="color:#b44">&#39;login.html&#39;</span>, views<span style="color:#666">.</span>phone_login<span style="color:#666">.</span>as_view(), name<span style="color:#666">=</span><span style="color:#b44">&#39;login&#39;</span>),<span style="color:#080;font-style:italic">#显示登录路由</span>
+</span></span><span style="display:flex;"><span>    path(<span style="color:#b44">&#39;get/phone/code&#39;</span>, views<span style="color:#666">.</span>getcode, name<span style="color:#666">=</span><span style="color:#b44">&#39;login/get/code&#39;</span>),  <span style="color:#080;font-style:italic"># 获取短信验证码</span>
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><ul>
+<li>3.将公钥渲染给前端页面，其实这个也可以直接在前端页面写固定了。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">django.conf</span> <span style="color:#a2f;font-weight:bold">import</span> settings  <span style="color:#080;font-style:italic"># 引入常量</span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">django.shortcuts</span> <span style="color:#a2f;font-weight:bold">import</span> render
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">class</span> <span style="color:#00f">phone_login</span>(View):  <span style="color:#080;font-style:italic"># 手机号登录</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">def</span> <span style="color:#00a000">get</span>(self, request):
+</span></span><span style="display:flex;"><span>        public <span style="color:#666">=</span> settings<span style="color:#666">.</span>RSA_PUBLIC_KEY
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> render(request, <span style="color:#b44">&#39;login/login-register.html&#39;</span>, {<span style="color:#b44">&#39;public&#39;</span>: public})
+</span></span></code></pre></div><ul>
+<li>4.将下载的jsencrypt加密包放入项目中，并且引入，利用该库实现前端的RSA加密。前端页面如下：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>        &lt;<span style="color:#008000;font-weight:bold">div</span> <span style="color:#b44">class</span><span style="color:#666">=</span><span style="color:#b44">&#34;form-package&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#008000;font-weight:bold">form</span> <span style="color:#b44">method</span><span style="color:#666">=</span><span style="color:#b44">&#34;post&#34;</span> <span style="color:#b44">action</span><span style="color:#666">=</span><span style="color:#b44">&#34;{% url &#39;login&#39; %}&#34;</span> <span style="color:#b44">class</span><span style="color:#666">=</span><span style="color:#b44">&#34;form-style&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>                <span style="color:#080;font-style:italic">&lt;!-- 公钥 --&gt;</span>
+</span></span><span style="display:flex;"><span>                &lt;<span style="color:#008000;font-weight:bold">input</span> <span style="color:#b44">type</span><span style="color:#666">=</span><span style="color:#b44">&#34;hidden&#34;</span> <span style="color:#b44">name</span><span style="color:#666">=</span><span style="color:#b44">&#34;pubkey&#34;</span> <span style="color:#b44">id</span><span style="color:#666">=</span><span style="color:#b44">&#34;pubkey&#34;</span> <span style="color:#b44">value</span><span style="color:#666">=</span><span style="color:#b44">&#34;{{ public }}&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>                &lt;<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>                    &lt;<span style="color:#008000;font-weight:bold">input</span> <span style="color:#b44">name</span><span style="color:#666">=</span><span style="color:#b44">&#34;phone&#34;</span> <span style="color:#b44">type</span><span style="color:#666">=</span><span style="color:#b44">&#34;text&#34;</span> <span style="color:#b44">class</span><span style="color:#666">=</span><span style="color:#b44">&#34;form-input-control&#34;</span> <span style="color:#b44">id</span><span style="color:#666">=</span><span style="color:#b44">&#34;exampleInputPhone&#34;</span> <span style="color:#b44">placeholder</span><span style="color:#666">=</span><span style="color:#b44">&#34;手机号&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>                    &lt;<span style="color:#008000;font-weight:bold">div</span> <span style="color:#b44">class</span><span style="color:#666">=</span><span style="color:#b44">&#34;CountButton-3e-kd&#34;</span> <span style="color:#b44">onclick</span><span style="color:#666">=</span><span style="color:#b44">&#34;getcode()&#34;</span>&gt;获取验证码&lt;/<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>                &lt;/<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>                &lt;<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>                    &lt;<span style="color:#008000;font-weight:bold">input</span> <span style="color:#b44">name</span><span style="color:#666">=</span><span style="color:#b44">&#34;code&#34;</span> <span style="color:#b44">type</span><span style="color:#666">=</span><span style="color:#b44">&#34;code&#34;</span> <span style="color:#b44">class</span><span style="color:#666">=</span><span style="color:#b44">&#34;form-input-control&#34;</span> <span style="color:#b44">id</span><span style="color:#666">=</span><span style="color:#b44">&#34;exampleInputCode&#34;</span> <span style="color:#b44">placeholder</span><span style="color:#666">=</span><span style="color:#b44">&#34;验证码&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>                &lt;/<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>                &lt;<span style="color:#008000;font-weight:bold">div</span> <span style="color:#b44">class</span><span style="color:#666">=</span><span style="color:#b44">&#34;login-prompt&#34;</span>&gt;温馨提示：登陆后将可以评论和订阅博文&lt;/<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>                <span style="color:#080;font-style:italic">&lt;!-- 错误信息 --&gt;</span>
+</span></span><span style="display:flex;"><span>                {% if error is not None %}
+</span></span><span style="display:flex;"><span>                    &lt;<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>                        &lt;<span style="color:#008000;font-weight:bold">span</span> <span style="color:#b44">style</span><span style="color:#666">=</span><span style="color:#b44">&#34;color:red;font-size: 14px;&#34;</span>&gt;{{ error }}&lt;/<span style="color:#008000;font-weight:bold">span</span>&gt;
+</span></span><span style="display:flex;"><span>                    &lt;/<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>                {% endif %}
+</span></span><span style="display:flex;"><span>                &lt;<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>                    &lt;<span style="color:#008000;font-weight:bold">button</span> <span style="color:#b44">type</span><span style="color:#666">=</span><span style="color:#b44">&#34;submit&#34;</span> <span style="color:#b44">class</span><span style="color:#666">=</span><span style="color:#b44">&#34;form-btn-sytle&#34;</span>&gt;登录/注册&lt;/<span style="color:#008000;font-weight:bold">button</span>&gt;
+</span></span><span style="display:flex;"><span>                &lt;/<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;/<span style="color:#008000;font-weight:bold">form</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span></code></pre></div><p>js中ajax提交表单部分</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#080;font-style:italic">&lt;!--</span>引入jsencrypt<span style="color:#666">--&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#666">&lt;</span>script type<span style="color:#666">=</span><span style="color:#b44">&#34;text/javascript&#34;</span> src<span style="color:#666">=</span><span style="color:#b44">&#34;https:www.yoyo666.cn/jsencrypt.min.js&#34;</span><span style="color:#666">&gt;&lt;</span><span style="">/script&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#666">&lt;</span>script src<span style="color:#666">=</span><span style="color:#b44">&#34;https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js&#34;</span><span style="color:#666">&gt;&lt;</span><span style="">/script&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#666">&lt;</span>script type<span style="color:#666">=</span><span style="color:#b44">&#34;text/javascript&#34;</span><span style="color:#666">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">function</span> getcode() {
+</span></span><span style="display:flex;"><span>      <span style="color:#080;font-style:italic">&lt;!--</span>加密手机号<span style="color:#666">--&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">var</span> phone <span style="color:#666">=</span> <span style="color:#a2f">document</span>.getElementById(<span style="color:#b44">&#34;exampleInputPhone&#34;</span>).value;
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">var</span> encrypt <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">new</span> JSEncrypt();
+</span></span><span style="display:flex;"><span>        encrypt.setPublicKey($(<span style="color:#b44">&#39;#pubkey&#39;</span>).val());
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">var</span> phone <span style="color:#666">=</span> encrypt.encrypt(phone );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $.ajax({
+</span></span><span style="display:flex;"><span>            url<span style="color:#666">:</span> <span style="color:#b44">&#34;{% url &#39;login/get/code&#39; %}&#34;</span>,
+</span></span><span style="display:flex;"><span>            type<span style="color:#666">:</span> <span style="color:#b44">&#34;post&#34;</span>,
+</span></span><span style="display:flex;"><span>            data<span style="color:#666">:</span> {<span style="color:#b44">&#39;phone&#39;</span><span style="color:#666">:</span> phone},
+</span></span><span style="display:flex;"><span>            dataType<span style="color:#666">:</span> <span style="color:#b44">&#39;json&#39;</span>,
+</span></span><span style="display:flex;"><span>            success<span style="color:#666">:</span> <span style="color:#a2f;font-weight:bold">function</span> (data) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a2f;font-weight:bold">if</span> (data.status) {
+</span></span><span style="display:flex;"><span>                    alert(data.msg)
+</span></span><span style="display:flex;"><span>                } <span style="color:#a2f;font-weight:bold">else</span> {
+</span></span><span style="display:flex;"><span>                    alert(data.msg)
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            error<span style="color:#666">:</span> <span style="color:#a2f;font-weight:bold">function</span> (date) {
+</span></span><span style="display:flex;"><span>                alert(data.msg);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span><span style="color:#666">&lt;</span><span style="">/script&gt;</span>
+</span></span></code></pre></div><ul>
+<li>5.Python后端的业务逻辑处理</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">django.conf</span> <span style="color:#a2f;font-weight:bold">import</span> settings  <span style="color:#080;font-style:italic"># 引入常量</span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">django.shortcuts</span> <span style="color:#a2f;font-weight:bold">import</span> render
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">django.http</span> <span style="color:#a2f;font-weight:bold">import</span> JsonResponse
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">def</span> <span style="color:#00a000">getcode</span>(request):  <span style="color:#080;font-style:italic"># 获取验证码</span>
+</span></span><span style="display:flex;"><span>    response_data <span style="color:#666">=</span> {}
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">try</span>:
+</span></span><span style="display:flex;"><span>        ras_phone <span style="color:#666">=</span> request<span style="color:#666">.</span>POST<span style="color:#666">.</span>get(<span style="color:#b44">&#39;phone&#39;</span>, <span style="color:#a2f;font-weight:bold">None</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">if</span> ras_phone <span style="color:#a2f;font-weight:bold">is</span> <span style="color:#a2f;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">raise</span> <span style="color:#d2413a;font-weight:bold">Exception</span>(<span style="color:#b44">&#39;手机号不可为空&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic"># 伪随机数生成器</span>
+</span></span><span style="display:flex;"><span>            random_generator <span style="color:#666">=</span> Random<span style="color:#666">.</span>new()<span style="color:#666">.</span>read
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic"># rsa算法生成实例</span>
+</span></span><span style="display:flex;"><span>            RSA<span style="color:#666">.</span>generate(<span style="color:#666">1024</span>, random_generator)
+</span></span><span style="display:flex;"><span>            rsakey <span style="color:#666">=</span> RSA<span style="color:#666">.</span>importKey(settings<span style="color:#666">.</span>RSA_PRIVATE_KEY)
+</span></span><span style="display:flex;"><span>            cipher <span style="color:#666">=</span> Cipher_pkcs1_v1_5<span style="color:#666">.</span>new(rsakey)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic"># 解密后得到的手机号</span>
+</span></span><span style="display:flex;"><span>            phone <span style="color:#666">=</span> cipher<span style="color:#666">.</span>decrypt(base64<span style="color:#666">.</span>b64decode(ras_phone), random_generator)
+</span></span><span style="display:flex;"><span>            code <span style="color:#666">=</span> random<span style="color:#666">.</span>randint(<span style="color:#666">000000</span>, <span style="color:#666">999999</span>)
+</span></span><span style="display:flex;"><span>            __business_id <span style="color:#666">=</span> uuid<span style="color:#666">.</span>uuid1()  <span style="color:#080;font-style:italic"># 发送验证码</span>
+</span></span><span style="display:flex;"><span>            send_res <span style="color:#666">=</span> Sms()<span style="color:#666">.</span>send_sms(__business_id, phone, settings<span style="color:#666">.</span>ALI_TEMPLATE_ID, settings<span style="color:#666">.</span>ALI_APP_ID, code)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a2f;font-weight:bold">if</span> json<span style="color:#666">.</span>loads(send_res)[<span style="color:#b44">&#39;Code&#39;</span>] <span style="color:#666">==</span> <span style="color:#b44">&#39;OK&#39;</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#080;font-style:italic">#发送成功后业务逻辑代码</span>
+</span></span><span style="display:flex;"><span>                response_data[<span style="color:#b44">&#39;status&#39;</span>] <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>                response_data[<span style="color:#b44">&#39;msg&#39;</span>] <span style="color:#666">=</span> <span style="color:#b44">&#39;短信发送成功&#39;</span>
+</span></span><span style="display:flex;"><span>                response_data[<span style="color:#b44">&#39;data&#39;</span>] <span style="color:#666">=</span> {}
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">except</span> <span style="color:#d2413a;font-weight:bold">Exception</span> <span style="color:#a2f;font-weight:bold">as</span> e:
+</span></span><span style="display:flex;"><span>        response_data[<span style="color:#b44">&#39;status&#39;</span>] <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">False</span>
+</span></span><span style="display:flex;"><span>        response_data[<span style="color:#b44">&#39;msg&#39;</span>] <span style="color:#666">=</span> <span style="color:#a2f">str</span>(e)
+</span></span><span style="display:flex;"><span>        response_data[<span style="color:#b44">&#39;data&#39;</span>] <span style="color:#666">=</span> {}
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">finally</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">return</span> JsonResponse(response_data)
+</span></span></code></pre></div><p>这个就是RSA加密的整个过程了，不过这个只有请求验证码的时候的对手机号进行了加密，真正使用的话对提交的表单也需要加密。</p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://liutongke.github.io/tags/django">Django</a>
+            
+                <a href="https://liutongke.github.io/tags/rsa%E5%8A%A0%E5%AF%86">RSA加密</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

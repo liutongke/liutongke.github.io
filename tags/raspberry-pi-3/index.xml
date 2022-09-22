@@ -9,37 +9,37 @@
     <lastBuildDate>Thu, 30 Nov 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/raspberry-pi-3/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>树莓派(Raspberry Pi 3) 使用wifi模块连接网络</title>
-      <link>https://liutongke.github.io/posts/raspberrypi3_wifi/</link>
+      <link>https://liutongke.github.io/raspberrypi3_wifi/</link>
       <pubDate>Thu, 30 Nov 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/raspberrypi3_wifi/</guid>
+      <guid>https://liutongke.github.io/raspberrypi3_wifi/</guid>
       <description>树莓派3B内置了wifi和蓝牙模块，启动WIFI模块有两种方式，一种是图形界面，一种是命令行模式。 使用图形界面： 在桌面右上角的菜单栏里面选择</description>
     </item>
     
     <item>
       <title>树莓派(Raspberry Pi 3) - 系统烧录及xshell连接</title>
-      <link>https://liutongke.github.io/posts/raspberrypi3_os_xshell/</link>
+      <link>https://liutongke.github.io/raspberrypi3_os_xshell/</link>
       <pubDate>Sun, 26 Nov 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/raspberrypi3_os_xshell/</guid>
+      <guid>https://liutongke.github.io/raspberrypi3_os_xshell/</guid>
       <description>树莓派(Raspberry pi)是一块集成度极高的ARM开发板，不仅包含了HDMI，RCA，CSI，HDMI，GPIO等端口，还支持蓝牙以及</description>
     </item>
     
     <item>
       <title>树莓派(Raspberry Pi 3) centos7 扩容内存卡</title>
-      <link>https://liutongke.github.io/posts/raspberrypi3_incr_memory/</link>
+      <link>https://liutongke.github.io/raspberrypi3_incr_memory/</link>
       <pubDate>Fri, 24 Nov 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/raspberrypi3_incr_memory/</guid>
+      <guid>https://liutongke.github.io/raspberrypi3_incr_memory/</guid>
       <description>在使用Win32DiskImager为一张空白的SD卡刷入新的centos7系统后，发现卡上的可用剩余空间并不大，用df -h查看，根目录下的</description>
     </item>
     
     <item>
       <title>树莓派(Raspberry Pi 3) centos7使用yum命令报错</title>
-      <link>https://liutongke.github.io/posts/raspberrypi3_yum_err/</link>
+      <link>https://liutongke.github.io/raspberrypi3_yum_err/</link>
       <pubDate>Fri, 24 Nov 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/raspberrypi3_yum_err/</guid>
+      <guid>https://liutongke.github.io/raspberrypi3_yum_err/</guid>
       <description>使用yum命令报错 File &amp;#34;/usr/bin/yum&amp;#34;, line 30 except KeyboardInterrupt, e: ^ SyntaxError: invalid syntax 问题如下： 问题出现原因： yum包管理是使用python2.x写的，将python2.x升级到pyth</description>
     </item>
     

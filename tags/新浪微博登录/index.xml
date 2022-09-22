@@ -9,10 +9,10 @@
     <lastBuildDate>Sat, 11 Aug 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/%E6%96%B0%E6%B5%AA%E5%BE%AE%E5%8D%9A%E7%99%BB%E5%BD%95/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>我用Django搭网站(1)-新浪微博登录</title>
-      <link>https://liutongke.github.io/posts/django_web_weibo/</link>
+      <link>https://liutongke.github.io/django_web_weibo/</link>
       <pubDate>Sat, 11 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/django_web_weibo/</guid>
+      <guid>https://liutongke.github.io/django_web_weibo/</guid>
       <description>新浪微博第三方登录使用的是OAuth2.0，开发前提已经注册开发者帐号，是开发者。 OAuth简介 🔗OAuth： OAuth（开放授权）是一个开</description>
     </item>
     

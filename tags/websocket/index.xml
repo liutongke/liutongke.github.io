@@ -9,10 +9,10 @@
     <lastBuildDate>Sat, 10 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/websocket/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>api-swoole框架文档</title>
-      <link>https://liutongke.github.io/posts/api_swoole_doc/</link>
+      <link>https://liutongke.github.io/api_swoole_doc/</link>
       <pubDate>Sat, 10 Sep 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/api_swoole_doc/</guid>
+      <guid>https://liutongke.github.io/api_swoole_doc/</guid>
       <description>(一).开始 🔗1.1下载与安装 🔗源码地址： api-swoole框架github源码地址 api-swoole框架gitee源码地址 需要确保运行</description>
     </item>
     

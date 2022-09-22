@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Hugo添加不蒜子（Busuanzi）站点访问量与阅读量统计 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="Hugo添加不蒜子（Busuanzi）站点访问量与阅读量统计">
+
+
+
+  <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">Hugo添加不蒜子（Busuanzi）站点访问量与阅读量统计</h1>
+
+    <div class="tip">
+        <time datetime="2022-09-22 00:00:00 &#43;0000 UTC">2022年09月22日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          847字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#环境">环境</a></li>
+    <li><a href="#一head">(一).head</a></li>
+    <li><a href="#二footer">(二).footer</a></li>
+    <li><a href="#三single">(三).single</a></li>
+    <li><a href="#四configyaml配置">(四).config.yaml配置</a></li>
+    <li><a href="#五添加后效果">(五).添加后效果</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h2 id="环境">环境 <a href="#%e7%8e%af%e5%a2%83" class="anchor">🔗</a></h2><p>【统计平台】：<a href="http://busuanzi.ibruce.info/" target="_blank" rel="noopener">不蒜子</a></p>
+<p>【站点主题】：<a href="https://github.com/nodejh/hugo-theme-mini" target="_blank" rel="noopener">nodejh/hugo-theme-mini</a></p>
+<h2 id="一head">(一).head <a href="#%e4%b8%80head" class="anchor">🔗</a></h2><p>  打开项目根目录找到主题安装的目录中<code>head.html</code>文件，添加不蒜子统计引入文件。</p>
+<p>  <strong><code>head.html</code>文件目录路径：<code>$PATH:\myblog\themes\hugo-theme-mini\layouts\partials\head.html</code></strong></p>
+<p><strong>添加如下代码块：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#080;font-style:italic">&lt;!-- busuanzi --&gt;</span>
+</span></span><span style="display:flex;"><span>{{- if .Site.Params.busuanzi.enable -}}
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#008000;font-weight:bold">script</span> <span style="color:#b44">async</span> <span style="color:#b44">src</span><span style="color:#666">=</span><span style="color:#b44">&#34;//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js&#34;</span>&gt;&lt;/<span style="color:#008000;font-weight:bold">script</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#008000;font-weight:bold">meta</span> <span style="color:#b44">name</span><span style="color:#666">=</span><span style="color:#b44">&#34;referrer&#34;</span> <span style="color:#b44">content</span><span style="color:#666">=</span><span style="color:#b44">&#34;no-referrer-when-downgrade&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>{{- end -}}
+</span></span></code></pre></div><p><strong>添加代码后：</strong>
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/go_head_code.jpg" alt="go_head_code.jpg"  />
+</p></p>
+<h2 id="二footer">(二).footer <a href="#%e4%ba%8cfooter" class="anchor">🔗</a></h2><p>  站点底部公共位置显示用户总访问量和总访客数，<code>footer.html</code>文件一般和<code>head.html</code>文件处在同一个目录中。</p>
+<p>  <strong><code>footer.html</code>文件目录路径：<code>$PATH:\myblog\themes\hugo-theme-mini\layouts\partials\footer.html</code></strong></p>
+<p><strong>添加如下代码块：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#080;font-style:italic">&lt;!-- busuanzi --&gt;</span>
+</span></span><span style="display:flex;"><span>{{ if .Site.Params.busuanzi.enable -}}
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#008000;font-weight:bold">div</span> <span style="color:#b44">class</span><span style="color:#666">=</span><span style="color:#b44">&#34;busuanzi-footer&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#008000;font-weight:bold">span</span> <span style="color:#b44">id</span><span style="color:#666">=</span><span style="color:#b44">&#34;busuanzi_container_site_pv&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    本站总访问量&lt;<span style="color:#008000;font-weight:bold">span</span> <span style="color:#b44">id</span><span style="color:#666">=</span><span style="color:#b44">&#34;busuanzi_value_site_pv&#34;</span>&gt;&lt;/<span style="color:#008000;font-weight:bold">span</span>&gt;次
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#008000;font-weight:bold">span</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#008000;font-weight:bold">span</span> <span style="color:#b44">id</span><span style="color:#666">=</span><span style="color:#b44">&#34;busuanzi_container_site_uv&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    本站访客数&lt;<span style="color:#008000;font-weight:bold">span</span> <span style="color:#b44">id</span><span style="color:#666">=</span><span style="color:#b44">&#34;busuanzi_value_site_uv&#34;</span>&gt;&lt;/<span style="color:#008000;font-weight:bold">span</span>&gt;人次
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#008000;font-weight:bold">span</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#008000;font-weight:bold">div</span>&gt;
+</span></span></code></pre></div><p><strong>添加代码后：</strong>
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/go_footer_code.jpg" alt="go_footer_code.jpg"  />
+</p></p>
+<h2 id="三single">(三).single <a href="#%e4%b8%89single" class="anchor">🔗</a></h2><p>  在文章详情页中增加文章阅读量。</p>
+<p>  <strong><code>single.html</code>文件目录路径：<code>$PATH:\myblog\themes\hugo-theme-mini\layouts\_default\single.html</code></strong></p>
+<p><strong>添加如下代码块：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#008000;font-weight:bold">span</span> <span style="color:#b44">class</span><span style="color:#666">=</span><span style="color:#b44">&#34;split&#34;</span>&gt; · &lt;/<span style="color:#008000;font-weight:bold">span</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#008000;font-weight:bold">span</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#008000;font-weight:bold">span</span> <span style="color:#b44">id</span><span style="color:#666">=</span><span style="color:#b44">&#34;busuanzi_container_page_pv&#34;</span>
+</span></span><span style="display:flex;"><span>    &gt;本文阅读量&lt;<span style="color:#008000;font-weight:bold">span</span> <span style="color:#b44">id</span><span style="color:#666">=</span><span style="color:#b44">&#34;busuanzi_value_page_pv&#34;</span>&gt;&lt;/<span style="color:#008000;font-weight:bold">span</span>&gt;次&lt;/<span style="color:#008000;font-weight:bold">span</span>
+</span></span><span style="display:flex;"><span>  &gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#008000;font-weight:bold">span</span>&gt;
+</span></span></code></pre></div><p><strong>添加代码后：</strong>
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/go_single_code.jpg" alt="go_single_code.jpg"  />
+</p></p>
+<h2 id="四configyaml配置">(四).config.yaml配置 <a href="#%e5%9b%9bconfigyaml%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h2><p>打开项目根目录<code>config.yaml</code>文件，配置网站统计属性，<code>enable: true</code>打开访问量统计，<code>enable: false</code>关闭访问量统计。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#080;font-style:italic"># Site parameters</span>
+</span></span><span style="display:flex;"><span>params:
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">#网站统计</span>
+</span></span><span style="display:flex;"><span>  busuanzi:
+</span></span><span style="display:flex;"><span>    enable: <span style="color:#a2f">true</span>
+</span></span></code></pre></div><h2 id="五添加后效果">(五).添加后效果 <a href="#%e4%ba%94%e6%b7%bb%e5%8a%a0%e5%90%8e%e6%95%88%e6%9e%9c" class="anchor">🔗</a></h2><p><strong>全站页脚：</strong></p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/%E5%85%A8%E7%AB%99%E9%A1%B5%E8%84%9A%E7%BB%9F%E8%AE%A1.jpg" alt="全站页脚"  />
+</p></p>
+<p><strong>文章详情：</strong>
+<p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/%E6%96%87%E7%AB%A0%E8%AF%A6%E6%83%85%E7%BB%9F%E8%AE%A1.jpg" alt="文章详情"  />
+</p></p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://liutongke.github.io/tags/hugo">Hugo</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

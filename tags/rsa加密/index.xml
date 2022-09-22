@@ -9,10 +9,10 @@
     <lastBuildDate>Wed, 15 Aug 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/rsa%E5%8A%A0%E5%AF%86/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>我用Django搭网站(3)-表单RSA加密</title>
-      <link>https://liutongke.github.io/posts/django_web_rsa/</link>
+      <link>https://liutongke.github.io/django_web_rsa/</link>
       <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://liutongke.github.io/posts/django_web_rsa/</guid>
+      <guid>https://liutongke.github.io/django_web_rsa/</guid>
       <description>之前开发项目时因为种种原因一直使用明文提交，表单直接明文提交非常不安全,只要稍加操作就能轻易获取用户的信息。在众里寻他千百度之后决定使用RS</description>
     </item>
     

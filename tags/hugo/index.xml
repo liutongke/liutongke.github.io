@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hugo on keke的个人博客</title>
+    <link>https://liutongke.github.io/tags/hugo/</link>
+    <description>Recent content in Hugo on keke的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 22 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://liutongke.github.io/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo添加不蒜子（Busuanzi）站点访问量与阅读量统计</title>
+      <link>https://liutongke.github.io/hugo_busuanzi_count/</link>
+      <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://liutongke.github.io/hugo_busuanzi_count/</guid>
+      <description>环境 🔗【统计平台】：不蒜子 【站点主题】：nodejh/hugo-theme-mini (一).head 🔗 打开项目根目录找到主题安装的目录中he</description>
+    </item>
+    
+  </channel>
+</rss>
