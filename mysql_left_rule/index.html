@@ -97,11 +97,7 @@ if (!doNotTrack) {
           <div>
               <nav id="TableOfContents">
   <ul>
-    <li>
-      <ul>
-        <li></li>
-      </ul>
-    </li>
+    <li><a href="#最左前缀匹配原则">最左前缀匹配原则</a></li>
   </ul>
 </nav>
           </div>
@@ -126,7 +122,7 @@ if (!doNotTrack) {
 </span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#a2f;font-weight:bold">PRIMARY</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">KEY</span><span style="color:#bbb"> </span>(<span style="color:#666">`</span>id<span style="color:#666">`</span>),<span style="color:#bbb">
 </span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#a2f;font-weight:bold">UNIQUE</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">KEY</span><span style="color:#bbb"> </span><span style="color:#666">`</span>test_uId_chatId_tId<span style="color:#666">`</span><span style="color:#bbb"> </span>(<span style="color:#666">`</span>uId<span style="color:#666">`</span>,<span style="color:#666">`</span>chatId<span style="color:#666">`</span>,<span style="color:#666">`</span>tId<span style="color:#666">`</span>)<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">USING</span><span style="color:#bbb"> </span>BTREE<span style="color:#bbb">
 </span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>)<span style="color:#bbb"> </span><span style="color:#a2f">ENGINE</span><span style="color:#666">=</span>InnoDB<span style="color:#bbb"> </span><span style="color:#a2f">AUTO_INCREMENT</span><span style="color:#666">=</span><span style="color:#666">8</span><span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">DEFAULT</span><span style="color:#bbb"> </span><span style="color:#a2f">CHARSET</span><span style="color:#666">=</span>utf8mb4;<span style="color:#bbb">
-</span></span></span></code></pre></div><h4 id="最左前缀匹配原则">最左前缀匹配原则 <a href="#%e6%9c%80%e5%b7%a6%e5%89%8d%e7%bc%80%e5%8c%b9%e9%85%8d%e5%8e%9f%e5%88%99" class="anchor">🔗</a></h4><p>  在MySQL建立联合索引时会遵循最左前缀匹配的原则，即最左优先，在检索数据时从联合索引的最左边开始匹配，示例：
+</span></span></span></code></pre></div><h2 id="最左前缀匹配原则">最左前缀匹配原则 <a href="#%e6%9c%80%e5%b7%a6%e5%89%8d%e7%bc%80%e5%8c%b9%e9%85%8d%e5%8e%9f%e5%88%99" class="anchor">🔗</a></h2><p>  在MySQL建立联合索引时会遵循最左前缀匹配的原则，即最左优先，在检索数据时从联合索引的最左边开始匹配，示例：
 对列uId、列chatId和列tId建一个联合索引
 <code>shell KEY test_uId_chatId_tId on test(uId,chatId,tId); </code>
 联合索引***test_uId_chatId_tId <em><strong>实际建立了</strong></em>(uId)、(uId,chatId)、(uId,chatId,tId)<em><strong>三个索引。
@@ -138,7 +134,7 @@ if (!doNotTrack) {
 <code>SELECT * FROM test WHERE chatId=“2” AND uId=“1”; </code>
 这两个查询语句都会用到索引(uId,chatId)，MySQL创建联合索引的规则是首先会对联合合索引的最左边的，也就是第一个字段uId的数据进行排序，在第一个字段的排序基础上，然后再对后面第二个字段chatId进行排序。其实就相当于实现了类似 order by uId chatId这样一种排序规则。
   有人会疑惑第二个查询语句不符合最左前缀匹配：首先可以肯定是两个查询语句都包涵索引(uId,chatId)中的uId、chatId两个字段，只是顺序不一样，查询条件一样，最后所查询的结果肯定是一样的。既然结果是一样的，到底以何种顺序的查询方式最好呢？此时我们可以借助mysql查询优化器explain，explain会纠正sql语句该以什么样的顺序执行效率最高，最后才生成真正的执行计划。</p>
-<p><em><strong>为什么要使用联合索引</strong></em></p>
+<p><strong>为什么要使用联合索引</strong></p>
 <ul>
 <li>减少开销，联合索引test_uId_chatId_tId 实际建立了(uId)、(uId,chatId)、(uId,chatId,tId)三个索引。每多一个索引，都会增加写操作的开销和磁盘空间的开销。对于大量数据的表，使用联合索引会大大的减少开销！</li>
 <li>覆盖索引,对联合索引(col1,col2,col3)，如果有如下的sql: select col1,col2,col3 from test where col1=1 and col2=2。那么MySQL可以直接通过遍历索引取得数据，而无需回表，这减少了很多的随机io操作。减少io操作，特别的随机io其实是dba主要的优化策略。所以，在真正的实际应用中，覆盖索引是主要的提升性能的优化手段之一。</li>

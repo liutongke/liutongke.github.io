@@ -58,7 +58,7 @@
       <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/go_redis_middleware/</guid>
-      <description>##（一）.RESP协议解释 RESP协议在Redis1.2被引入，直到Redis2.0才成为和Redis服务器通信的标准。这个协议需要在你的</description>
+      <description>（一）.RESP协议解释 🔗 RESP协议在Redis1.2被引入，直到Redis2.0才成为和Redis服务器通信的标准。这个协议需要在你的R</description>
     </item>
     
     <item>
@@ -67,7 +67,7 @@
       <pubDate>Sun, 28 Aug 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/windows_php8.0_nginx/</guid>
-      <description>一.PHP8.1安装部署 🔗2.下载PHP 🔗打开PHP官网，选择对应的PHP版本下载。 None Thread Safe和Thread Safe版本区别 1.None Thread Safe就</description>
+      <description>一.PHP8.1安装部署 🔗1.1下载PHP 🔗打开PHP官网，选择对应的PHP版本下载。 None Thread Safe和Thread Safe版本区别 1.None Thread Safe</description>
     </item>
     
     <item>
@@ -112,7 +112,7 @@
       <pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/centos7_git/</guid>
-      <description>Git安装方式有两种一种是yum安装一种是编译安装： 一、yum命令安装，此方法简单，会自动安装依赖的包，而且会从源里安装最新的版本，如果仓库</description>
+      <description>Git安装方式有两种一种是yum安装一种是编译安装： 一、yum命令安装 🔗yum命令安装，此方法简单，会自动安装依赖的包，而且会从源里安装最新</description>
     </item>
     
     <item>

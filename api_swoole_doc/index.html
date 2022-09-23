@@ -97,17 +97,14 @@ if (!doNotTrack) {
           <div>
               <nav id="TableOfContents">
   <ul>
-    <li>
+    <li><a href="#一开始"><strong>(一).开始</strong></a>
       <ul>
         <li><a href="#11下载与安装"><strong>1.1下载与安装</strong></a></li>
         <li><a href="#12通过-composer-创建项目"><strong>1.2通过 Composer 创建项目</strong></a></li>
         <li><a href="#13启动"><strong>1.3启动</strong></a></li>
       </ul>
     </li>
-  </ul>
-
-  <ul>
-    <li>
+    <li><a href="#二hello-world"><strong>(二).Hello World</strong></a>
       <ul>
         <li><a href="#21编写一个接口"><strong>2.1编写一个接口</strong></a></li>
         <li><a href="#22定义路由"><strong>2.2定义路由</strong></a></li>
@@ -115,20 +112,16 @@ if (!doNotTrack) {
         <li><a href="#24访问接口"><strong>2.4访问接口</strong></a></li>
       </ul>
     </li>
-  </ul>
-
-  <ul>
-    <li>
+    <li><a href="#三反向代理nginx--swoole-配置"><strong>(三).反向代理（Nginx + Swoole 配置）</strong></a></li>
+    <li><a href="#四配置"><strong>(四).配置</strong></a>
       <ul>
         <li><a href="#41配置文件"><strong>4.1配置文件</strong></a></li>
         <li><a href="#42参数说明"><strong>4.2参数说明</strong></a></li>
         <li><a href="#43配置读取示例"><strong>4.3配置读取示例</strong></a></li>
       </ul>
     </li>
-  </ul>
-
-  <ul>
-    <li>
+    <li><a href="#五日志"><strong>(五).日志</strong></a></li>
+    <li><a href="#六httpwebsocket服务器参考地址httpswikiswoolecomwebsocket_server"><strong>(六).HTTP/websocket服务器<a href="https://wiki.swoole.com/#/websocket_server">(参考地址)</a></strong></a>
       <ul>
         <li><a href="#61httpwebsocket服务器配置"><strong>6.1HTTP/websocket服务器配置</strong></a></li>
         <li><a href="#62http路由"><strong>6.2HTTP路由</strong></a></li>
@@ -140,24 +133,20 @@ if (!doNotTrack) {
         <li><a href="#68httpwebsocket勾子函数"><strong>6.8http/websocket勾子函数</strong></a></li>
       </ul>
     </li>
-  </ul>
-
-  <ul>
-    <li>
+    <li><a href="#七tcpudp服务器"><strong>(七).TCP/UDP服务器</strong></a>
       <ul>
         <li><a href="#71tcp服务器配置"><strong>7.1TCP服务器配置</strong></a></li>
         <li><a href="#71udp服务器配置"><strong>7.1UDP服务器配置</strong></a></li>
       </ul>
     </li>
-  </ul>
-
-  <ul>
-    <li>
+    <li><a href="#八数据库"><strong>(八).数据库</strong></a>
       <ul>
         <li><a href="#81redis"><strong>8.1Redis</strong></a></li>
         <li><a href="#82mysql"><strong>8.2MySQL</strong></a></li>
       </ul>
     </li>
+    <li><a href="#九addprocess"><strong>(九).addProcess</strong></a></li>
+    <li><a href="#十订制事件注册"><strong>(十).订制事件注册</strong></a></li>
   </ul>
 </nav>
           </div>
@@ -170,9 +159,9 @@ if (!doNotTrack) {
 
 
     <div class="content">
-      <h1 id="一开始"><strong>(一).开始</strong> <a href="#%e4%b8%80%e5%bc%80%e5%a7%8b" class="anchor">🔗</a></h1><h3 id="11下载与安装"><strong>1.1下载与安装</strong> <a href="#11%e4%b8%8b%e8%bd%bd%e4%b8%8e%e5%ae%89%e8%a3%85" class="anchor">🔗</a></h3><p><strong>源码地址：</strong>
-<a href="https://github.com/liutongke/api-swoole" target="_blank" rel="noopener">api-swoole框架github源码地址</a>
-<a href="https://gitee.com/tongke/api-swoole" target="_blank" rel="noopener">api-swoole框架gitee源码地址</a></p>
+      <h2 id="一开始"><strong>(一).开始</strong> <a href="#%e4%b8%80%e5%bc%80%e5%a7%8b" class="anchor">🔗</a></h2><h3 id="11下载与安装"><strong>1.1下载与安装</strong> <a href="#11%e4%b8%8b%e8%bd%bd%e4%b8%8e%e5%ae%89%e8%a3%85" class="anchor">🔗</a></h3><p><strong>源码地址：</strong></p>
+<p><a href="https://github.com/liutongke/api-swoole" target="_blank" rel="noopener">api-swoole框架github源码地址</a></p>
+<p><a href="https://gitee.com/tongke/api-swoole" target="_blank" rel="noopener">api-swoole框架gitee源码地址</a></p>
 <p>需要确保运行环境达到了以下的要求：</p>
 <ul>
 <li>PHP &gt;= 7.4</li>
@@ -183,7 +172,7 @@ if (!doNotTrack) {
 <h3 id="12通过-composer-创建项目"><strong>1.2通过 Composer 创建项目</strong> <a href="#12%e9%80%9a%e8%bf%87-composer-%e5%88%9b%e5%bb%ba%e9%a1%b9%e7%9b%ae" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>composer create-project api-swoole/skeleton
 </span></span></code></pre></div><h3 id="13启动"><strong>1.3启动</strong> <a href="#13%e5%90%af%e5%8a%a8" class="anchor">🔗</a></h3><p>支持 HTTP 服务、WebSocket 服务、tcp服务,项目根目录<code>./apiswoole.php</code>执行命令。</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>php apiswoole.php
-</span></span></code></pre></div><h1 id="二hello-world"><strong>(二).Hello World</strong> <a href="#%e4%ba%8chello-world" class="anchor">🔗</a></h1><h3 id="21编写一个接口"><strong>2.1编写一个接口</strong> <a href="#21%e7%bc%96%e5%86%99%e4%b8%80%e4%b8%aa%e6%8e%a5%e5%8f%a3" class="anchor">🔗</a></h3><p>在api-swoole框架中，业务主要代码在app目录中。里面各个命名空间对应一个子目录，项目的默认命名空间是App，创建项目后app目录中包含Common、Controller、Ext三个子目录，Common目录存放函数的functions.php文件，Ext一般放置工具等。目录结构如下：</p>
+</span></span></code></pre></div><h2 id="二hello-world"><strong>(二).Hello World</strong> <a href="#%e4%ba%8chello-world" class="anchor">🔗</a></h2><h3 id="21编写一个接口"><strong>2.1编写一个接口</strong> <a href="#21%e7%bc%96%e5%86%99%e4%b8%80%e4%b8%aa%e6%8e%a5%e5%8f%a3" class="anchor">🔗</a></h3><p>在api-swoole框架中，业务主要代码在app目录中。里面各个命名空间对应一个子目录，项目的默认命名空间是App，创建项目后app目录中包含Common、Controller、Ext三个子目录，Common目录存放函数的functions.php文件，Ext一般放置工具等。目录结构如下：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>./
 </span></span><span style="display:flex;"><span>└── app
 </span></span><span style="display:flex;"><span>    ├── Controller # 放置接口源代码，相当于控制器层
@@ -229,7 +218,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        <span style="color:#008000;font-weight:bold">&#34;data&#34;</span>: <span style="color:#b44">&#34;hello world&#34;</span>
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h1 id="三反向代理nginx--swoole-配置"><strong>(三).反向代理（Nginx + Swoole 配置）</strong> <a href="#%e4%b8%89%e5%8f%8d%e5%90%91%e4%bb%a3%e7%90%86nginx--swoole-%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h1><p>由于 <code>Http\Server</code> 对 <code>HTTP</code> 协议的支持并不完整，建议仅作为应用服务器，用于处理动态请求，并且在前端增加 <code>Nginx</code> 作为代理。（<a href="https://wiki.swoole.com/#/http_server" target="_blank" rel="noopener">参考地址</a>）</p>
+</span></span></code></pre></div><h2 id="三反向代理nginx--swoole-配置"><strong>(三).反向代理（Nginx + Swoole 配置）</strong> <a href="#%e4%b8%89%e5%8f%8d%e5%90%91%e4%bb%a3%e7%90%86nginx--swoole-%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h2><p>由于 <code>Http\Server</code> 对 <code>HTTP</code> 协议的支持并不完整，建议仅作为应用服务器，用于处理动态请求，并且在前端增加 <code>Nginx</code> 作为代理。（<a href="https://wiki.swoole.com/#/http_server" target="_blank" rel="noopener">参考地址</a>）</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>server {
 </span></span><span style="display:flex;"><span>    listen 80;
 </span></span><span style="display:flex;"><span>    server_name swoole.test;
@@ -243,7 +232,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>可以通过读取 <code>$request-&gt;header['x-real-ip']</code> 来获取客户端的真实 <code>IP</code></p>
-<h1 id="四配置"><strong>(四).配置</strong> <a href="#%e5%9b%9b%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h1><h3 id="41配置文件"><strong>4.1配置文件</strong> <a href="#41%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6" class="anchor">🔗</a></h3><p>默认config文件夹下包含conf.php、db.php、events.php三个文件，conf.php放置项目的配置信息，http、tcp、udp、websocket等配置。db.php负责配置MySQL、Redis连接，events.php负责定义定制特定事件注册监听，现支持<code>workerStart、open、close、task、finish</code>事件注册 。可以通过<code>DI()-&gt;config-&gt;get('conf.ws')</code>或者<code>\Sapi\Di::one()-&gt;config-&gt;get('conf.ws')</code>方式读取配置信息。</p>
+<h2 id="四配置"><strong>(四).配置</strong> <a href="#%e5%9b%9b%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h2><h3 id="41配置文件"><strong>4.1配置文件</strong> <a href="#41%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6" class="anchor">🔗</a></h3><p>默认config文件夹下包含conf.php、db.php、events.php三个文件，conf.php放置项目的配置信息，http、tcp、udp、websocket等配置。db.php负责配置MySQL、Redis连接，events.php负责定义定制特定事件注册监听，现支持<code>workerStart、open、close、task、finish</code>事件注册 。可以通过<code>DI()-&gt;config-&gt;get('conf.ws')</code>或者<code>\Sapi\Di::one()-&gt;config-&gt;get('conf.ws')</code>方式读取配置信息。</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>./config/
 </span></span><span style="display:flex;"><span>├── conf.php #http、tcp、udp、websocket等配置
 </span></span><span style="display:flex;"><span>├── db.php #数据库配置
@@ -334,7 +323,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>    ],
 </span></span><span style="display:flex;"><span>    <span style="color:#008000;font-weight:bold">&#34;settings&#34;</span>: []
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h1 id="五日志"><strong>(五).日志</strong> <a href="#%e4%ba%94%e6%97%a5%e5%bf%97" class="anchor">🔗</a></h1><p>根据PSR规范中详尽定义了日志接口，日志记录在<code>./storage/log</code>目录中，按照每日生成对应<code>日期.log</code>日志文件。目前支持以下几种日志记录：</p>
+</span></span></code></pre></div><h2 id="五日志"><strong>(五).日志</strong> <a href="#%e4%ba%94%e6%97%a5%e5%bf%97" class="anchor">🔗</a></h2><p>根据PSR规范中详尽定义了日志接口，日志记录在<code>./storage/log</code>目录中，按照每日生成对应<code>日期.log</code>日志文件。目前支持以下几种日志记录：</p>
 <ul>
 <li><strong>error</strong>： 系统异常类日记</li>
 <li><strong>info</strong>： 业务纪录类日记</li>
@@ -354,7 +343,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>[swoole] | [2022-09-06 01:32:05] | notice |  日志测试notice
 </span></span><span style="display:flex;"><span>[swoole] | [2022-09-06 01:32:05] | warning |  日志测试waring
 </span></span><span style="display:flex;"><span>[swoole] | [2022-09-06 01:32:05] | error |  日志测试error
-</span></span></code></pre></div><h1 id="六httpwebsocket服务器参考地址httpswikiswoolecomwebsocket_server"><strong>(六).HTTP/websocket服务器<a href="https://wiki.swoole.com/#/websocket_server" target="_blank" rel="noopener">(参考地址)</a></strong> <a href="#%e5%85%adhttpwebsocket%e6%9c%8d%e5%8a%a1%e5%99%a8%e5%8f%82%e8%80%83%e5%9c%b0%e5%9d%80httpswikiswoolecomwebsocket_server" class="anchor">🔗</a></h1><p><code>WebSocket\Server</code> 继承自 <a href="https://wiki.swoole.com/#/http_server" target="_blank" rel="noopener">Http\Server</a>，所以 <code>Http\Server</code> 提供的所有 <code>API</code> 和配置项都可以使用。请参考 <a href="https://wiki.swoole.com/#/http_server" target="_blank" rel="noopener">Http\Server</a> 章节。</p>
+</span></span></code></pre></div><h2 id="六httpwebsocket服务器参考地址httpswikiswoolecomwebsocket_server"><strong>(六).HTTP/websocket服务器<a href="https://wiki.swoole.com/#/websocket_server" target="_blank" rel="noopener">(参考地址)</a></strong> <a href="#%e5%85%adhttpwebsocket%e6%9c%8d%e5%8a%a1%e5%99%a8%e5%8f%82%e8%80%83%e5%9c%b0%e5%9d%80httpswikiswoolecomwebsocket_server" class="anchor">🔗</a></h2><p><code>WebSocket\Server</code> 继承自 <a href="https://wiki.swoole.com/#/http_server" target="_blank" rel="noopener">Http\Server</a>，所以 <code>Http\Server</code> 提供的所有 <code>API</code> 和配置项都可以使用。请参考 <a href="https://wiki.swoole.com/#/http_server" target="_blank" rel="noopener">Http\Server</a> 章节。</p>
 <ul>
 <li>设置了 <a href="https://wiki.swoole.com/#/http_server?id=on" target="_blank" rel="noopener">onRequest</a> 回调，<code>WebSocket\Server</code> 也可以同时作为 <code>HTTP</code> 服务器</li>
 <li>未设置 <a href="https://wiki.swoole.com/#/http_server?id=on" target="_blank" rel="noopener">onRequest</a> 回调，<code>WebSocket\Server</code> 收到 <code>HTTP</code> 请求后会返回 <code>HTTP 400</code> 错误页面</li>
@@ -576,7 +565,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        ];
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h1 id="七tcpudp服务器"><strong>(七).TCP/UDP服务器</strong> <a href="#%e4%b8%83tcpudp%e6%9c%8d%e5%8a%a1%e5%99%a8" class="anchor">🔗</a></h1><p><code>Server</code> 可以监听多个端口，每个端口都可以设置不同的协议处理方式，例如 80 端口处理 HTTP 协议，9500 端口处理 TCP 协议,9502 端口处理 UDP 协议。<code>SSL/TLS</code> 传输加密也可以只对特定的端口启用。参考Swoole官方文档<a href="https://wiki.swoole.com/#/server/port" target="_blank" rel="noopener">(多端口监听)</a></p>
+</span></span></code></pre></div><h2 id="七tcpudp服务器"><strong>(七).TCP/UDP服务器</strong> <a href="#%e4%b8%83tcpudp%e6%9c%8d%e5%8a%a1%e5%99%a8" class="anchor">🔗</a></h2><p><code>Server</code> 可以监听多个端口，每个端口都可以设置不同的协议处理方式，例如 80 端口处理 HTTP 协议，9500 端口处理 TCP 协议,9502 端口处理 UDP 协议。<code>SSL/TLS</code> 传输加密也可以只对特定的端口启用。参考Swoole官方文档<a href="https://wiki.swoole.com/#/server/port" target="_blank" rel="noopener">(多端口监听)</a></p>
 <h3 id="71tcp服务器配置"><strong>7.1TCP服务器配置</strong> <a href="#71tcp%e6%9c%8d%e5%8a%a1%e5%99%a8%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h3><p>TCP服务器配置选项在<code>./config/conf.php</code>中增加<strong>tcp</strong>字段。具体配置信息可以参考Swoole文档<a href="https://wiki.swoole.com/#/server/setting" target="_blank" rel="noopener">TCP配置。</a></p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    &#39;tcp&#39; =&gt; [
 </span></span><span style="display:flex;"><span>        &#39;host&#39; =&gt; &#39;0.0.0.0&#39;,
@@ -597,7 +586,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        ],
 </span></span><span style="display:flex;"><span>        &#39;settings&#39; =&gt; [],
 </span></span><span style="display:flex;"><span>    ],
-</span></span></code></pre></div><h1 id="八数据库"><strong>(八).数据库</strong> <a href="#%e5%85%ab%e6%95%b0%e6%8d%ae%e5%ba%93" class="anchor">🔗</a></h1><p>Swoole 开发组采用 Hook 原生 PHP 函数的方式实现协程客户端，通过一行代码就可以让原来的同步 IO 的代码变成可以协程调度的异步 IO，即一键协程化。<code>Swoole</code> 提供的 <a href="https://wiki.swoole.com/#/server/init" target="_blank" rel="noopener">Swoole\Server 类簇</a>都是自动做好的，不需要手动做，参考 <a href="https://wiki.swoole.com/#/server/setting?id=enable_coroutine" target="_blank" rel="noopener">enable_coroutine</a>。具体内容可参考Swoole官网<a href="https://wiki.swoole.com/#/runtime" target="_blank" rel="noopener">一键协程化</a></p>
+</span></span></code></pre></div><h2 id="八数据库"><strong>(八).数据库</strong> <a href="#%e5%85%ab%e6%95%b0%e6%8d%ae%e5%ba%93" class="anchor">🔗</a></h2><p>Swoole 开发组采用 Hook 原生 PHP 函数的方式实现协程客户端，通过一行代码就可以让原来的同步 IO 的代码变成可以协程调度的异步 IO，即一键协程化。<code>Swoole</code> 提供的 <a href="https://wiki.swoole.com/#/server/init" target="_blank" rel="noopener">Swoole\Server 类簇</a>都是自动做好的，不需要手动做，参考 <a href="https://wiki.swoole.com/#/server/setting?id=enable_coroutine" target="_blank" rel="noopener">enable_coroutine</a>。具体内容可参考Swoole官网<a href="https://wiki.swoole.com/#/runtime" target="_blank" rel="noopener">一键协程化</a></p>
 <p>框架数据库引入<code>simple-swoole</code>第三方拓展包具体详情可参考<a href="https://github.com/simple-swoole/db" target="_blank" rel="noopener">simple-swoole/db</a></p>
 <h3 id="81redis"><strong>8.1Redis</strong> <a href="#81redis" class="anchor">🔗</a></h3><h4 id="配置"><strong>配置</strong> <a href="#%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h4><p>Redis服务器配置选项在<code>./config/db.php</code>中。</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&lt;?php
@@ -799,7 +788,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        ];
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h1 id="九addprocess"><strong>(九).addProcess</strong> <a href="#%e4%b9%9daddprocess" class="anchor">🔗</a></h1><p>添加一个用户自定义的工作进程。此函数通常用于创建一个特殊的工作进程，用于监控、上报或者其他特殊的任务。具体内容可参考Swoole官网<a href="https://wiki.swoole.com/#/server/methods?id=addprocess" target="_blank" rel="noopener"><strong>addProcess</strong></a></p>
+</span></span></code></pre></div><h2 id="九addprocess"><strong>(九).addProcess</strong> <a href="#%e4%b9%9daddprocess" class="anchor">🔗</a></h2><p>添加一个用户自定义的工作进程。此函数通常用于创建一个特殊的工作进程，用于监控、上报或者其他特殊的任务。具体内容可参考Swoole官网<a href="https://wiki.swoole.com/#/server/methods?id=addprocess" target="_blank" rel="noopener"><strong>addProcess</strong></a></p>
 <p><strong>注意事项：</strong></p>
 <ul>
 <li>创建的子进程可以调用 <code>$server</code> 对象提供的各个方法，如 <code>getClientList/getClientInfo/stats</code></li>
@@ -832,7 +821,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>        }, false, 2, 1);
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h1 id="十订制事件注册"><strong>(十).订制事件注册</strong> <a href="#%e5%8d%81%e8%ae%a2%e5%88%b6%e4%ba%8b%e4%bb%b6%e6%b3%a8%e5%86%8c" class="anchor">🔗</a></h1><p>框架已默认埋点<code>workerStart、open、close、task、finish</code>五个订制事件注册。可根据具体的业务特征在对应的事件回调增加处理业务代码，<code>./confg/events.php</code>，每个事件允许有多个回调。</p>
+</span></span></code></pre></div><h2 id="十订制事件注册"><strong>(十).订制事件注册</strong> <a href="#%e5%8d%81%e8%ae%a2%e5%88%b6%e4%ba%8b%e4%bb%b6%e6%b3%a8%e5%86%8c" class="anchor">🔗</a></h2><p>框架已默认埋点<code>workerStart、open、close、task、finish</code>五个订制事件注册。可根据具体的业务特征在对应的事件回调增加处理业务代码，<code>./confg/events.php</code>，每个事件允许有多个回调。</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&lt;?php
 </span></span><span style="display:flex;"><span>return [
 </span></span><span style="display:flex;"><span>    &#39;workerStart&#39; =&gt; [

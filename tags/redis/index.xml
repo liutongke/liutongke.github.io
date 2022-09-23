@@ -13,7 +13,7 @@
       <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/go_redis_middleware/</guid>
-      <description>##（一）.RESP协议解释 RESP协议在Redis1.2被引入，直到Redis2.0才成为和Redis服务器通信的标准。这个协议需要在你的</description>
+      <description>（一）.RESP协议解释 🔗 RESP协议在Redis1.2被引入，直到Redis2.0才成为和Redis服务器通信的标准。这个协议需要在你的R</description>
     </item>
     
     <item>

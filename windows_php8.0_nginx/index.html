@@ -70,7 +70,7 @@ if (!doNotTrack) {
           ·
         </span>
         <span>
-          1300字
+          1317字
         </span>
         <span class="split">
           ·
@@ -97,17 +97,18 @@ if (!doNotTrack) {
           <div>
               <nav id="TableOfContents">
   <ul>
-    <li>
+    <li><a href="#一php81安装部署">一.PHP8.1安装部署</a>
       <ul>
-        <li></li>
+        <li><a href="#11下载php">1.1下载PHP</a></li>
+        <li><a href="#12安装部署">1.2安装部署</a></li>
       </ul>
     </li>
-  </ul>
-
-  <ul>
-    <li>
+    <li><a href="#二nginx安装部署">二.nginx安装部署</a>
       <ul>
-        <li></li>
+        <li><a href="#21下载nginx">2.1下载nginx</a></li>
+        <li><a href="#22nginx版本类型介绍">2.2nginx版本类型介绍</a></li>
+        <li><a href="#23安装部署">2.3安装部署</a></li>
+        <li><a href="#24nginx部分管理命令补充">2.4nginx部分管理命令补充。</a></li>
       </ul>
     </li>
   </ul>
@@ -122,7 +123,7 @@ if (!doNotTrack) {
 
 
     <div class="content">
-      <h1 id="一php81安装部署">一.PHP8.1安装部署 <a href="#%e4%b8%80php81%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2" class="anchor">🔗</a></h1><h4 id="2下载php">2.下载PHP <a href="#2%e4%b8%8b%e8%bd%bdphp" class="anchor">🔗</a></h4><p>打开<a href="https://windows.php.net/download#php-7.0" target="_blank" rel="noopener">PHP官网</a>，选择对应的PHP版本下载。
+      <h2 id="一php81安装部署">一.PHP8.1安装部署 <a href="#%e4%b8%80php81%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2" class="anchor">🔗</a></h2><h3 id="11下载php">1.1下载PHP <a href="#11%e4%b8%8b%e8%bd%bdphp" class="anchor">🔗</a></h3><p>打开<a href="https://windows.php.net/download#php-7.0" target="_blank" rel="noopener">PHP官网</a>，选择对应的PHP版本下载。
 <p class="markdown-image">
   <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-9343df6dd8c01ad7.png" alt="PHP官网下载图片"  />
 </p></p>
@@ -132,7 +133,7 @@ if (!doNotTrack) {
 <p>1.None Thread Safe就是非线程安全，在执行时不进行线程（thread）安全检查。
 2.Thread Safe就是线程安全，执行时会进行线程（thread）安全检查，以防止有新要求就启动新线程，耗尽系统资源。
         为了能与外部交换数据，PHP提供了一种叫SAPI的接口。SAPI是一个中间过程，提供了一个和外部通信的接口，有点类似于socket。SAPI使得PHP可以和其他应用进行交互数据（如Apache、Nginx等）。PHP默认提供了很多种SAPI，常见的提供给Apache、Nginx、IIS6/7的FastCGI，单独给IIS的ISAPI，以及Shell的CLI。FastCGI执行方式是以单一线程来执行操作，所以不需要进行线程的安全检查，除去线程安全检查的防护反而可以提高执行效率。而线程安全检查是为ISAPI方式的PHP准备的，也就是为IIS准备的，因为有许多php模块都不是线程安全的，所以需要使用Thread Safe的PHP。所以，如果是以 FastCGI 执行 PHP ，都建议用Non Thread Safe的 PHP （zip安装包）。</p>
-<h4 id="2安装部署">2.安装部署 <a href="#2%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2" class="anchor">🔗</a></h4><p>1、下载完成获得.zip压缩包，解压缩，打开cmd命令行工具，使用命令进行操作。
+<h3 id="12安装部署">1.2安装部署 <a href="#12%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2" class="anchor">🔗</a></h3><p>1、下载完成获得.zip压缩包，解压缩，打开cmd命令行工具，使用命令进行操作。
 <p class="markdown-image">
   <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-13ab69eb434f5f93.png" alt="image.png"  />
 </p>
@@ -142,8 +143,8 @@ cmd命令行启动PHP</p>
 </span></span></code></pre></div><p><p class="markdown-image">
   <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-ff3187069ff8690a.png" alt="image.png"  />
 </p></p>
-<h1 id="二nginx安装部署">二.nginx安装部署 <a href="#%e4%ba%8cnginx%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2" class="anchor">🔗</a></h1><h4 id="2下载nginx">2.下载nginx <a href="#2%e4%b8%8b%e8%bd%bdnginx" class="anchor">🔗</a></h4><p>打开<a href="http://nginx.org/en/download.html" target="_blank" rel="noopener">Nginx官网</a>可以看到有Mainline version、Stable version、Legacy versions三种版本，这里我们选择Mainline version的windows版本，点击下载。</p>
-<h5 id="nginx版本类型介绍">nginx版本类型介绍 <a href="#nginx%e7%89%88%e6%9c%ac%e7%b1%bb%e5%9e%8b%e4%bb%8b%e7%bb%8d" class="anchor">🔗</a></h5><ul>
+<h2 id="二nginx安装部署">二.nginx安装部署 <a href="#%e4%ba%8cnginx%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2" class="anchor">🔗</a></h2><h3 id="21下载nginx">2.1下载nginx <a href="#21%e4%b8%8b%e8%bd%bdnginx" class="anchor">🔗</a></h3><p>打开<a href="http://nginx.org/en/download.html" target="_blank" rel="noopener">Nginx官网</a>可以看到有Mainline version、Stable version、Legacy versions三种版本，这里我们选择Mainline version的windows版本，点击下载。</p>
+<h3 id="22nginx版本类型介绍">2.2nginx版本类型介绍 <a href="#22nginx%e7%89%88%e6%9c%ac%e7%b1%bb%e5%9e%8b%e4%bb%8b%e7%bb%8d" class="anchor">🔗</a></h3><ul>
 <li>Mainline version：Mainline 是Nginx目前主力在做的版本，可以说是开发版。</li>
 <li>Stable version：最新稳定版，生产环境上建议使用的版本。</li>
 <li>Legacy versions：遗留的老版本的稳定版。</li>
@@ -151,7 +152,7 @@ cmd命令行启动PHP</p>
 <p><p class="markdown-image">
   <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-4b9203effe259049.png" alt="nginx官网下载图片"  />
 </p></p>
-<h4 id="2安装部署-1">2.安装部署 <a href="#2%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2-1" class="anchor">🔗</a></h4><p>1、下载完成获得.zip压缩包，解压缩，打开cmd命令行工具，使用命令进行操作，不要直接双击nginx.exe。</p>
+<h3 id="23安装部署">2.3安装部署 <a href="#23%e5%ae%89%e8%a3%85%e9%83%a8%e7%bd%b2" class="anchor">🔗</a></h3><p>1、下载完成获得.zip压缩包，解压缩，打开cmd命令行工具，使用命令进行操作，不要直接双击nginx.exe。</p>
 <p>2.命令行启动nginx</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>cd C:\Users\keke\dev\nginx-1.23.1 #进入解压后的nginx目录
 </span></span><span style="display:flex;"><span>start nginx.exe#启动nginx
@@ -163,8 +164,7 @@ cmd命令行启动PHP</p>
 <p class="markdown-image">
   <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/7783090-7b456d4953f244f6.png" alt="nginx目录结构"  />
 </p></p>
-<p>4.nginx部分管理命令补充。</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>nginx.exe -t #检查配置文件
+<h3 id="24nginx部分管理命令补充">2.4nginx部分管理命令补充。 <a href="#24nginx%e9%83%a8%e5%88%86%e7%ae%a1%e7%90%86%e5%91%bd%e4%bb%a4%e8%a1%a5%e5%85%85" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>nginx.exe -t #检查配置文件
 </span></span><span style="display:flex;"><span>nginx.exe -s reload #重启
 </span></span><span style="display:flex;"><span>nginx.exe -s stop #快速停止
 </span></span><span style="display:flex;"><span>nginx.exe -s quit #完整有序的关闭
