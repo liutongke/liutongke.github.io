@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>阿里云OSS on keke的个人博客</title>
+    <link>https://ltkblog.cn/tags/%E9%98%BF%E9%87%8C%E4%BA%91oss/</link>
+    <description>Recent content in 阿里云OSS on keke的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 23 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/%E9%98%BF%E9%87%8C%E4%BA%91oss/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo-VScode使用PicGo搭建基于阿里云OSS图床</title>
+      <link>https://ltkblog.cn/hugo_vscode_picgo/</link>
+      <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/hugo_vscode_picgo/</guid>
+      <description>【官网地址】：PciGO 【阿里云】：阿里云OSS (一).VScode安装插件： 🔗 按住组合键Ctrl+Shift+X打开插件市场，查找PicG</description>
+    </item>
+    
+  </channel>
+</rss>
