@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>pika on keke的个人博客</title>
+    <link>https://ltkblog.cn/tags/pika/</link>
+    <description>Recent content in pika on keke的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 23 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/pika/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>pika使用</title>
+      <link>https://ltkblog.cn/pika/</link>
+      <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/pika/</guid>
+      <description>pika docker run -i -t -d --name pika-0 -p 9221:9221 c1d1d0852d37 ./output/bin/pika -c ./conf/pika.conf</description>
+    </item>
+    
+  </channel>
+</rss>

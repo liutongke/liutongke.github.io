@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>AES加密 on keke的个人博客</title>
+    <link>https://ltkblog.cn/tags/aes%E5%8A%A0%E5%AF%86/</link>
+    <description>Recent content in AES加密 on keke的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 24 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/aes%E5%8A%A0%E5%AF%86/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go-uniapp端对端加密聊天</title>
+      <link>https://ltkblog.cn/chat_encrypt/</link>
+      <pubDate>Sat, 24 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/chat_encrypt/</guid>
+      <description>客户端发送请求，服务端用 RSA 生成一对公钥和私钥 pub1、pri1，将公钥 pub1 返给客户端 客户端拿到服务端返回的公钥 pub1 后，先用 RSA 算法生成一对公钥和私</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Hugo Google Search Console提示被“noindex”标记排除问题解决 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="Hugo Google Search Console提示被“noindex”标记排除问题解决">
+
+<meta name="keywords" content="Hugo, SEO, noindex, Google Search Console" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">Hugo Google Search Console提示被“noindex”标记排除问题解决</h1>
+
+    <div class="tip">
+        <time datetime="2022-09-25 00:00:00 &#43;0000 UTC">2022年09月25日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          842字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#问题"><strong>问题</strong></a></li>
+    <li><a href="#原因"><strong>原因</strong></a></li>
+    <li><a href="#解决"><strong>解决</strong></a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h2 id="问题"><strong>问题</strong> <a href="#%e9%97%ae%e9%a2%98" class="anchor">🔗</a></h2><p>  向Google提交了站点地图，今天收到Google发送的消息，显示网站被标记了<code>noindex</code>没有被搜索引擎收录。如下：</p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220925180413.png" alt="Img"  />
+</p></p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220925180329.png" alt="Img"  />
+</p></p>
+<p>查询Google的开发文档大概意思如下：</p>
+<ul>
+<li><strong>网址遭到 robots.txt 阻止</strong></li>
+</ul>
+<p>  此网页被网站的 robots.txt 文件屏蔽了。您可以使用 robots.txt 测试工具检查是否确实存在此情况。请注意，这并不意味着该网页不会被通过某些其他方式编入索引。如果 Google 不必加载该网页就能找到与它相关的其他信息，那么该网页仍然可能会被编入索引（尽管这种情况不太常见）。为确保 Google 不会将该网页编入索引，请移除 robots.txt 中的屏蔽指令，然后改用“noindex”指令。</p>
+<ul>
+<li><strong>网址已提交，但带有“noindex”标记</strong></li>
+</ul>
+<p>  Google 在尝试将网页编入索引时遇到了“noindex”指令，因此未将该网页编入索引。如果您确实不希望该网页被编入索引，那么恭喜您得偿所愿！如果您希望该网页被编入索引，您应移除该“noindex”指令。如要确认此标记或指令是否存在，请在浏览器中请求该网页，并在响应正文和响应标头中搜索“noindex”。如果您想将该网页编入索引，必须移除相关的标记或 HTTP 标头。请使用网址检查工具来确认此错误，步骤如下：</p>
+<ul>
+<li>点击表格中相应网址旁边的“检查”图标 。</li>
+<li>在覆盖率 &gt; 编制索引 &gt; 是否允许编入索引？下，报告应表明是 noindex 在阻止系统将该网页编入索引。</li>
+<li>确认实际版本中是否仍有 noindex 标记：</li>
+<li>点击测试实际网址</li>
+<li>在可否编入索引 &gt; 编制索引 &gt; 是否允许编入索引？下，查看是否仍会检测到 noindex 指令。如果 noindex 指令已不复存在，您可点击请求编入索引以请求 Google 再次尝试将该网页编入索引。如果 noindex 指令仍然存在，必须先移除它，然后才能将该网页编入索引。</li>
+</ul>
+<h2 id="原因"><strong>原因</strong> <a href="#%e5%8e%9f%e5%9b%a0" class="anchor">🔗</a></h2><ul>
+<li><input checked="" disabled="" type="checkbox"> 检查网站的<code>robots.txt</code>文件是否有阻止爬虫收录。</li>
+<li><input checked="" disabled="" type="checkbox"> 检查<code>html</code>文件中是否带有<code>noindex、nofollow 标记：&lt;META NAME=&quot;ROBOTS&quot; CONTENT=&quot;NOINDEX, NOFOLLOW&quot;&gt;</code></li>
+</ul>
+<h2 id="解决"><strong>解决</strong> <a href="#%e8%a7%a3%e5%86%b3" class="anchor">🔗</a></h2><p>  查看源码发现线上版本没有设置生产环境<code>set HUGO_ENV=production</code></p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220925181350.png" alt="Img"  />
+</p></p>
+<p>  <strong>Windows编译时增加<code>set HUGO_ENV=production</code>即可。</strong></p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220925181546.png" alt="Img"  />
+</p></p>
+<p>再次查看源码发现问题解决，变成搜索引擎爬虫可以爬取。</p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220925181633.png" alt="Img"  />
+</p></p>
+<p><strong>注：其它系统使用<code>HUGO_ENV=production hugo</code></strong></p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/hugo">Hugo</a>
+            
+                <a href="https://ltkblog.cn/tags/seo">SEO</a>
+            
+                <a href="https://ltkblog.cn/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E4%BC%98%E5%8C%96">搜索引擎优化</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>
