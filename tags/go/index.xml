@@ -26,6 +26,15 @@
     </item>
     
     <item>
+      <title>Go使用channel（管道）实现协程工作池</title>
+      <link>https://ltkblog.cn/go_pool/</link>
+      <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/go_pool/</guid>
+      <description>（一）使用协程池原因分析 🔗 Go协程的创建到运行结束，所占用的内存资源都是需要通过GC来回收，如果没有限制的创造海量的Go协程后，会增加GC的</description>
+    </item>
+    
+    <item>
       <title>Go使用纯真IP数据库获取地理位置</title>
       <link>https://ltkblog.cn/go_chunzhen_ip/</link>
       <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
