@@ -69,7 +69,7 @@ if (!doNotTrack) {
           ·
         </span>
         <span>
-          1303字
+          1307字
         </span>
         <span class="split">
           ·
@@ -123,6 +123,7 @@ if (!doNotTrack) {
 <ul>
 <li><a href="https://dev.mysql.com/doc/internals/en/connection-phase.html" target="_blank" rel="noopener">MySQL 5.7.26</a></li>
 <li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
+<li><a href="https://github.com/liutongke/my-mysql-driver" target="_blank" rel="noopener">源码地址</a></li>
 </ul>
 <h2 id="一服务器响应报文">（一）服务器响应报文 <a href="#%e4%b8%80%e6%9c%8d%e5%8a%a1%e5%99%a8%e5%93%8d%e5%ba%94%e6%8a%a5%e6%96%87" class="anchor">🔗</a></h2><p>当MySQL客户端成功连接MySQL服务端时，就可以可服务端进行sql交互了，比如use切换数据库、show展示所有数据库、CURD操作等，大体上分为，MySQL发送sql语句给MySQL服务端（上文中的<a href="https://ltkblog.cn/mysql_client_packet/" target="_blank" rel="noopener">客户端端请求报文</a>）。MySQL服务端接收到sql语句后进行逻辑处理。处理完成以后MySQL服务端会返回相应的执行结果给客户端，MySQL客户端在收到响应报文后，需要首先检查第1个字节的值，来区分响应报文的类型。响应的数据包分为：<code>OK_Packet</code>、<code>Error_Packet</code>、<code>EOF_Packet</code>、<code>Result Set</code>、<code>Data Field</code>、<code>Field_Packet</code>：</p>
 <table>

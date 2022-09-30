@@ -13,7 +13,7 @@
       <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/mysql_resultsetheader/</guid>
-      <description>准备： MySQL 5.7.26 Wireshark 结构 说明 [Result Set Header] 列数量 [Field] 列信息（多个） [EOF] 列结束 [Row Data] 行数据（多个） [EOF] 数据结束 Result Set Header 结构 🔗 字节 说明 1-9 Field结构计数（Length Coded</description>
+      <description>准备： MySQL 5.7.26 Wireshark 源码地址 结构 说明 [Result Set Header] 列数量 [Field] 列信息（多个） [EOF] 列结束 [Row Data] 行数据（多个） [EOF] 数据结束 Result Set Header 结构 🔗 字节 说明 1-9 Field结构计数（Len</description>
     </item>
     
     <item>
@@ -22,7 +22,7 @@
       <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/mysql_quit/</guid>
-      <description>准备： MySQL 5.7.26 Wireshark 前言 用户端想要断开连接时，需要往服务端发送一个Quit Packet。这个包比较简单，下面直接看其数据结构。 Quit Packet 首先前面的四个字节</description>
+      <description>准备： MySQL 5.7.26 Wireshark 源码地址 Quit Packet 🔗MySQL客户端需要断开与MySQL服务端连接时，需要向服务端发送一个Quit Packet指令。这个包比较简单，关</description>
     </item>
     
     <item>
@@ -31,7 +31,7 @@
       <pubDate>Thu, 29 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/mysql_client_packet/</guid>
-      <description>准备： MySQL 5.7.26 Wireshark （一）客户端命令请求报文 🔗首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是客户端命令请求报</description>
+      <description>准备： MySQL 5.7.26 Wireshark 源码地址 （一）客户端命令请求报文 🔗首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是客户端命</description>
     </item>
     
     <item>
@@ -40,7 +40,7 @@
       <pubDate>Thu, 29 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/mysql_ok_err/</guid>
-      <description>准备： MySQL 5.7.26 Wireshark （一）服务器响应报文 🔗当MySQL客户端成功连接MySQL服务端时，就可以可服务端进行sql交互了，比如use切换数据库、sho</description>
+      <description>准备： MySQL 5.7.26 Wireshark 源码地址 （一）服务器响应报文 🔗当MySQL客户端成功连接MySQL服务端时，就可以可服务端进行sql交互了，比如use切换数据库</description>
     </item>
     
     <item>
@@ -49,7 +49,7 @@
       <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/mysql_handshake/</guid>
-      <description>准备： MySQL 5.7.26 Wireshark Handshake Packet格式 🔗Handshake packet是由Server向Client发送的初始化包，因为所有从Server向Clie</description>
+      <description>准备： MySQL 5.7.26 Wireshark 源码地址 Handshake Packet格式 🔗Handshake packet是由Server向Client发送的初始化包，因为所有从Server向</description>
     </item>
     
     <item>
@@ -58,7 +58,7 @@
       <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/mysql_auth_packet/</guid>
-      <description>准备： MySQL 5.7.26 Wireshark Auth Packet格式 🔗Auth packet是由Client向Server发送的认证包，用于验证数据库账户登录，相应内容的格式： 相对</description>
+      <description>准备： MySQL 5.7.26 Wireshark 源码地址 Auth Packet格式 🔗Auth packet是由Client向Server发送的认证包，用于验证数据库账户登录，相应内容的格</description>
     </item>
     
     <item>
@@ -67,7 +67,7 @@
       <pubDate>Tue, 27 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/mysql_protocol/</guid>
-      <description>准备： MySQL 5.7.26 Wireshark （一）MySQL连接方式 🔗到MySQL5.7为止，总共有五种，分别是TCP/IP，TLS/SSL，Unix Sockets，Sha</description>
+      <description>准备： MySQL 5.7.26 Wireshark 源码地址 （一）MySQL连接方式 🔗到MySQL5.7为止，总共有五种，分别是TCP/IP，TLS/SSL，Unix Sockets</description>
     </item>
     
   </channel>

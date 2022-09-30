@@ -7,7 +7,7 @@
     <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
 <meta name="viewport" content="width=device-width,minimum-scale=1">
-<meta name="description" content="ltkblog的个人博客，php，swoole，golang，python，mysql，redis，Centos，http，websocket">
+<meta name="description" content="php，go，swoole，golang，python，mysql，redis，Centos，http，websocket，ltkblog的个人博客，keke的个人博客，">
 <meta name="keywords" content="" >
 
 
@@ -83,102 +83,6 @@ if (!doNotTrack) {
         
         <section class="item">
           <div>
-            <h1 class="title"><a href='/go_pool/'>Go使用channel（管道）实现协程工作池</a></h1>
-            <div class ="date">
-                <time datetime="2021-09-26 00:00:00 &#43;0000 UTC">2021/09/26</time>  
-            </div>
-          </div>
-
-          
-              <div class="summary">（一）使用协程池原因分析 🔗 Go协程的创建到运行结束，所占用的内存资源都是需要通过GC来回收，如果没有限制的创造海量的Go协程后，会增加GC的</div>
-          
-
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/mysql_sub-table/'>MySQL线上分库分表数据迁移</a></h1>
-            <div class ="date">
-                <time datetime="2021-09-21 00:00:00 &#43;0000 UTC">2021/09/21</time>  
-            </div>
-          </div>
-
-          
-              <div class="summary">(一).项目分析，确定sharding column： 🔗 首先对功能进行分析，现有一张用户场景皮肤道具表属于单表设计。同一个用户可以拥有N张皮肤</div>
-          
-
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/go_chunzhen_ip/'>Go使用纯真IP数据库获取地理位置</a></h1>
-            <div class ="date">
-                <time datetime="2021-04-30 00:00:00 &#43;0000 UTC">2021/04/30</time>  
-            </div>
-          </div>
-
-          
-              <div class="summary">纯真版IP地址数据库是当前网络上最权威、地址最精确、IP记录以及网吧数据最多的IP地址数据库。收集了包括中国电信、中国移动、中国联通、铁通、</div>
-          
-
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/go_input_func/'>Go自定义 input 函数整理用户输入</a></h1>
-            <div class ="date">
-                <time datetime="2021-01-13 00:00:00 &#43;0000 UTC">2021/01/13</time>  
-            </div>
-          </div>
-
-          
-              <div class="summary">学习阶段经常使用输入，把 fmt.Scan 用户输入整理成函数，方便调用，减少重复代码 package main import ( &#34;fmt&#34; ) func input(prompt string) string { var text string fmt.Print(prompt) fmt.Scan(&amp;text) return text } func main() { a := input(&#34;输</div>
-          
-
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/redis_data_reveal/'>使用Redis Data Reveal（rdr）查看Redis中key占用内存空间</a></h1>
-            <div class ="date">
-                <time datetime="2020-06-30 00:00:00 &#43;0000 UTC">2020/06/30</time>  
-            </div>
-          </div>
-
-          
-              <div class="summary">项目响应速度要求比较高，全部使用Redis缓存这也导致缓存。需要分析各种键占用内存情况进行优化。 redisclient虽然可以很方便的对re</div>
-          
-
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/redis5.0_discard_method/'>Redis5.0-弃用方法名和替代方法名（php-redis 5以后废弃了一些方法名）</a></h1>
-            <div class ="date">
-                <time datetime="2020-06-11 00:00:00 &#43;0000 UTC">2020/06/11</time>  
-            </div>
-          </div>
-
-          
-              <div class="summary">php-redis 5以后废弃了一些方法名 被弃用方法名 替代方法名 delete del zUnion zunionstore zInter zinterstore zDeleteRangeByRank zRemRangeByRank zDeleteRangeByScore zRemRangeByScore zDelete zRem setTimeout expire sContains sismember sRemove srem sSize scard lGetRange lrange lGet lindex listTrim ltrim lRemove lrem lSize lLen getKeys keys getMultiple mget renameKey rename</div>
-          
-
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
             <h1 class="title"><a href='/centos7_git/'>CentOS7-安装最新版本GIT(git version 2.18.0)</a></h1>
             <div class ="date">
                 <time datetime="2019-10-18 00:00:00 &#43;0000 UTC">2019/10/18</time>  
@@ -187,6 +91,150 @@ if (!doNotTrack) {
 
           
               <div class="summary">Git安装方式有两种一种是yum安装一种是编译安装： 一、yum命令安装 🔗yum命令安装，此方法简单，会自动安装依赖的包，而且会从源里安装最新</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/mysql_left_rule/'>MySQL联合索引运用-最左匹配原则</a></h1>
+            <div class ="date">
+                <time datetime="2018-12-12 00:00:00 &#43;0000 UTC">2018/12/12</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">前言 🔗 之前看了很多关于MySQL索引的文章也看了《高性能MySQL》这本书，自以为熟悉了MySQL索引使用原理，入职面试时和面试官交流，发现</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/github_tips/'>GitHub小技巧-定义项目语言</a></h1>
+            <div class ="date">
+                <time datetime="2018-08-26 00:00:00 &#43;0000 UTC">2018/08/26</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">GitHub是根据项目里文件数目最多的文件类型,识别项目类型。后端项目难免会包含前端的资源，有时候就会被标记成前端语言，因为项目里 css 等文件比</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/django_web_rsa/'>我用Django搭网站(3)-表单RSA加密</a></h1>
+            <div class ="date">
+                <time datetime="2018-08-15 00:00:00 &#43;0000 UTC">2018/08/15</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">之前开发项目时因为种种原因一直使用明文提交，表单直接明文提交非常不安全,只要稍加操作就能轻易获取用户的信息。在众里寻他千百度之后决定使用RS</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/django_web_qq/'>我用Django搭网站(2)-QQ登录</a></h1>
+            <div class ="date">
+                <time datetime="2018-08-13 00:00:00 &#43;0000 UTC">2018/08/13</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">接入QQ登录前，网站需首先进行申请，获得对应的appid与appkey，以保证后续流程中可正确对网站与用户进行验证与授权。 第一步：准备阶段 🔗</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/django_web_weibo/'>我用Django搭网站(1)-新浪微博登录</a></h1>
+            <div class ="date">
+                <time datetime="2018-08-11 00:00:00 &#43;0000 UTC">2018/08/11</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">新浪微博第三方登录使用的是OAuth2.0，开发前提已经注册开发者帐号，是开发者。 OAuth简介 🔗OAuth： OAuth（开放授权）是一个开</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/centos7_expand_disk/'>CentOS7-扩容挂载磁盘</a></h1>
+            <div class ="date">
+                <time datetime="2018-07-30 00:00:00 &#43;0000 UTC">2018/07/30</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">1.1查看新磁盘,可以看到/dev/sdb是新的未挂载的磁盘； [root@localhost ~]# fdisk -l 1.2硬盘分区 ，进入fdisk模式 进入fdisk模式 [root@localhost ~]# /sbin/fdisk /dev/sdb 输入n进行</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/php_foreach/'>PHP foreach引用&amp;</a></h1>
+            <div class ="date">
+                <time datetime="2018-07-11 00:00:00 &#43;0000 UTC">2018/07/11</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">将以下代码打印 $variable = [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]; foreach ($variable as $key =&gt; &amp;$value) { } foreach ($variable as $key =&gt; $value) { } echo &#34;&lt;pre /&gt;&#34;; var_dump($variable); echo &#34;&lt;pre /&gt;&#34;; #结果 array(3) { [0]=&gt; string(1) &#34;a&#34; [1]=&gt; string(1) &#34;b&#34; [2]=&gt; &amp;string(1) &#34;b&#34; } 打印出来的结果跟预期结果的不一致，这是因</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/centos7_lamp/'>CentOS7 yum安装lamp环境</a></h1>
+            <div class ="date">
+                <time datetime="2018-06-01 00:00:00 &#43;0000 UTC">2018/06/01</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">1.安装apache 🔗 yum install httpd #根据提示，输入Y安装即可成功安装 systemctl start httpd.service #启动apache systemctl stop httpd.service #停止apache systemctl restart httpd.service #重启apache systemctl enable httpd.service</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/wechat_sport_data_python/'>微信运动数据抓取(Python)</a></h1>
+            <div class ="date">
+                <time datetime="2018-05-20 00:00:00 &#43;0000 UTC">2018/05/20</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">“微信运动”能够向朋友分享一个包含有运动数据的网页，网页中就有我们需要的数据。url类似于：http://hw.weixin.qq.com/</div>
           
 
         </section>

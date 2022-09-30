@@ -69,7 +69,7 @@ if (!doNotTrack) {
           ·
         </span>
         <span>
-          169字
+          194字
         </span>
         <span class="split">
           ·
@@ -89,6 +89,20 @@ if (!doNotTrack) {
     
         
   
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#quit-packet">Quit Packet</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
 
 
     
@@ -99,11 +113,9 @@ if (!doNotTrack) {
 <ul>
 <li><a href="https://dev.mysql.com/doc/internals/en/connection-phase.html" target="_blank" rel="noopener">MySQL 5.7.26</a></li>
 <li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
+<li><a href="https://github.com/liutongke/my-mysql-driver" target="_blank" rel="noopener">源码地址</a></li>
 </ul>
-<p>前言
-用户端想要断开连接时，需要往服务端发送一个Quit Packet。这个包比较简单，下面直接看其数据结构。</p>
-<p>Quit Packet
-首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是Quit Packet的四字节后的内容。只有一个标志位数据。</p>
+<h2 id="quit-packet">Quit Packet <a href="#quit-packet" class="anchor">🔗</a></h2><p>MySQL客户端需要断开与MySQL服务端连接时，需要向服务端发送一个Quit Packet指令。这个包比较简单，关闭当前连接（客户端退出），无参数。前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是Quit Packet的四字节后的内容。只有一个包头标识数据。</p>
 <table>
 <thead>
 <tr>
@@ -122,6 +134,10 @@ if (!doNotTrack) {
 </tr>
 </tbody>
 </table>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20221001033055.png" alt="Img"  />
+</p></p>
+
     </div>
 
     

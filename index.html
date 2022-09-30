@@ -7,7 +7,7 @@
     <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
 <meta name="viewport" content="width=device-width,minimum-scale=1">
-<meta name="description" content="ltkblog的个人博客，php，swoole，golang，python，mysql，redis，Centos，http，websocket">
+<meta name="description" content="php，go，swoole，golang，python，mysql，redis，Centos，http，websocket，ltkblog的个人博客，keke的个人博客，">
 <meta name="keywords" content="" >
 
 
@@ -90,7 +90,7 @@ if (!doNotTrack) {
           </div>
 
           
-              <div class="summary">准备： MySQL 5.7.26 Wireshark 结构 说明 [Result Set Header] 列数量 [Field] 列信息（多个） [EOF] 列结束 [Row Data] 行数据（多个） [EOF] 数据结束 Result Set Header 结构 🔗 字节 说明 1-9 Field结构计数（Length Coded</div>
+              <div class="summary">准备： MySQL 5.7.26 Wireshark 源码地址 结构 说明 [Result Set Header] 列数量 [Field] 列信息（多个） [EOF] 列结束 [Row Data] 行数据（多个） [EOF] 数据结束 Result Set Header 结构 🔗 字节 说明 1-9 Field结构计数（Len</div>
           
 
         </section>
@@ -106,7 +106,7 @@ if (!doNotTrack) {
           </div>
 
           
-              <div class="summary">准备： MySQL 5.7.26 Wireshark 前言 用户端想要断开连接时，需要往服务端发送一个Quit Packet。这个包比较简单，下面直接看其数据结构。 Quit Packet 首先前面的四个字节</div>
+              <div class="summary">准备： MySQL 5.7.26 Wireshark 源码地址 Quit Packet 🔗MySQL客户端需要断开与MySQL服务端连接时，需要向服务端发送一个Quit Packet指令。这个包比较简单，关</div>
           
 
         </section>
@@ -122,7 +122,7 @@ if (!doNotTrack) {
           </div>
 
           
-              <div class="summary">准备： MySQL 5.7.26 Wireshark （一）客户端命令请求报文 🔗首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是客户端命令请求报</div>
+              <div class="summary">准备： MySQL 5.7.26 Wireshark 源码地址 （一）客户端命令请求报文 🔗首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是客户端命</div>
           
 
         </section>
@@ -138,7 +138,7 @@ if (!doNotTrack) {
           </div>
 
           
-              <div class="summary">准备： MySQL 5.7.26 Wireshark （一）服务器响应报文 🔗当MySQL客户端成功连接MySQL服务端时，就可以可服务端进行sql交互了，比如use切换数据库、sho</div>
+              <div class="summary">准备： MySQL 5.7.26 Wireshark 源码地址 （一）服务器响应报文 🔗当MySQL客户端成功连接MySQL服务端时，就可以可服务端进行sql交互了，比如use切换数据库</div>
           
 
         </section>
@@ -154,7 +154,7 @@ if (!doNotTrack) {
           </div>
 
           
-              <div class="summary">准备： MySQL 5.7.26 Wireshark Handshake Packet格式 🔗Handshake packet是由Server向Client发送的初始化包，因为所有从Server向Clie</div>
+              <div class="summary">准备： MySQL 5.7.26 Wireshark 源码地址 Handshake Packet格式 🔗Handshake packet是由Server向Client发送的初始化包，因为所有从Server向</div>
           
 
         </section>
@@ -170,7 +170,7 @@ if (!doNotTrack) {
           </div>
 
           
-              <div class="summary">准备： MySQL 5.7.26 Wireshark Auth Packet格式 🔗Auth packet是由Client向Server发送的认证包，用于验证数据库账户登录，相应内容的格式： 相对</div>
+              <div class="summary">准备： MySQL 5.7.26 Wireshark 源码地址 Auth Packet格式 🔗Auth packet是由Client向Server发送的认证包，用于验证数据库账户登录，相应内容的格</div>
           
 
         </section>
@@ -186,7 +186,55 @@ if (!doNotTrack) {
           </div>
 
           
-              <div class="summary">准备： MySQL 5.7.26 Wireshark （一）MySQL连接方式 🔗到MySQL5.7为止，总共有五种，分别是TCP/IP，TLS/SSL，Unix Sockets，Sha</div>
+              <div class="summary">准备： MySQL 5.7.26 Wireshark 源码地址 （一）MySQL连接方式 🔗到MySQL5.7为止，总共有五种，分别是TCP/IP，TLS/SSL，Unix Sockets</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/seo_noindex/'>Hugo Google Search Console提示被“noindex”标记排除问题解决</a></h1>
+            <div class ="date">
+                <time datetime="2022-09-25 00:00:00 &#43;0000 UTC">2022/09/25</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">问题 🔗 向Google提交了站点地图，今天收到Google发送的消息，显示网站被标记了noindex没有被搜索引擎收录。如下： 查询Google</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/hugo_vscode_picgo/'>Hugo-VScode使用PicGo搭建基于阿里云OSS图床</a></h1>
+            <div class ="date">
+                <time datetime="2022-09-23 00:00:00 &#43;0000 UTC">2022/09/23</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">【官网地址】：PciGO 【阿里云】：阿里云OSS (一).VScode安装插件： 🔗 按住组合键Ctrl&#43;Shift&#43;X打开插件市场，查找PicG</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
+            <h1 class="title"><a href='/hugo_busuanzi_count/'>Hugo添加不蒜子（Busuanzi）站点访问量与阅读量统计-SEO优化</a></h1>
+            <div class ="date">
+                <time datetime="2022-09-22 00:00:00 &#43;0000 UTC">2022/09/22</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">环境 🔗【统计平台】：不蒜子 【站点主题】：nodejh/hugo-theme-mini (一).head 🔗 打开项目根目录找到主题安装的目录中he</div>
           
 
         </section>
