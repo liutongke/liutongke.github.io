@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>（五）Go-编写MySQL数据库驱动之MySQL协议解析OK/Error | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="Go-编写MySQL数据库驱动之MySQL协议解析OK/Error">
+<meta name="keywords" content="MySQL, Go, Handshake Packet, Auth Packet, MySQL协议" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">（五）Go-编写MySQL数据库驱动之MySQL协议解析OK/Error</h1>
+
+    <div class="tip">
+        <time datetime="2022-09-29 00:00:00 &#43;0000 UTC">2022年09月29日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1303字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          3分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一服务器响应报文">（一）服务器响应报文</a></li>
+    <li><a href="#二ok-packet">（二）OK Packet</a>
+      <ul>
+        <li><a href="#ok-packet数据格式">OK Packet数据格式</a></li>
+      </ul>
+    </li>
+    <li><a href="#三error-packet">（三）Error Packet</a>
+      <ul>
+        <li><a href="#error-packet数据格式">Error Packet数据格式</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <p><strong>准备：</strong></p>
+<ul>
+<li><a href="https://dev.mysql.com/doc/internals/en/connection-phase.html" target="_blank" rel="noopener">MySQL 5.7.26</a></li>
+<li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
+</ul>
+<h2 id="一服务器响应报文">（一）服务器响应报文 <a href="#%e4%b8%80%e6%9c%8d%e5%8a%a1%e5%99%a8%e5%93%8d%e5%ba%94%e6%8a%a5%e6%96%87" class="anchor">🔗</a></h2><p>当MySQL客户端成功连接MySQL服务端时，就可以可服务端进行sql交互了，比如use切换数据库、show展示所有数据库、CURD操作等，大体上分为，MySQL发送sql语句给MySQL服务端（上文中的<a href="https://ltkblog.cn/mysql_client_packet/" target="_blank" rel="noopener">客户端端请求报文</a>）。MySQL服务端接收到sql语句后进行逻辑处理。处理完成以后MySQL服务端会返回相应的执行结果给客户端，MySQL客户端在收到响应报文后，需要首先检查第1个字节的值，来区分响应报文的类型。响应的数据包分为：<code>OK_Packet</code>、<code>Error_Packet</code>、<code>EOF_Packet</code>、<code>Result Set</code>、<code>Data Field</code>、<code>Field_Packet</code>：</p>
+<table>
+<thead>
+<tr>
+<th>响应报文类型</th>
+<th>第1个字节取值范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OK 响应报文</td>
+<td>0x00</td>
+</tr>
+<tr>
+<td>Error 响应报文</td>
+<td>0xFF</td>
+</tr>
+<tr>
+<td>Result Set 报文</td>
+<td>0x01 - 0xFA</td>
+</tr>
+<tr>
+<td>Field 报文</td>
+<td>0x01 - 0xFA</td>
+</tr>
+<tr>
+<td>Row Data 报文</td>
+<td>0x01 - 0xFA</td>
+</tr>
+<tr>
+<td>EOF 报文</td>
+<td>0xFE</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注：</strong> 响应报文的第1个字节在不同类型中含义不同，比如在OK报文中，该字节并没有实际意义，值恒为0x00；而在Result Set报文中，该字节又是长度编码的二进制数据结构（Length Coded Binary）中的第1字节。</p>
+<h2 id="二ok-packet">（二）OK Packet <a href="#%e4%ba%8cok-packet" class="anchor">🔗</a></h2><h3 id="ok-packet数据格式">OK Packet数据格式 <a href="#ok-packet%e6%95%b0%e6%8d%ae%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h3><p>普通的OK包会在以下几种情况下产生，由Server发送给相应的接收方：</p>
+<ul>
+<li>COM_PING: 连接或者测试数据库</li>
+<li>COM_QUERY： 不需要查询结果集的操作，比如INSERT, UPDATE, ALTER TABLE,DELETE</li>
+<li>COM_REFRESH： 数据刷新</li>
+<li>COM_REGISTER_SLAVE： 注册从服务器</li>
+</ul>
+<p>首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是OK Packet的四字节后的内容：</p>
+<p><strong>MySQL 4.1 及之后的版本：</strong></p>
+<table>
+<thead>
+<tr>
+<th>相对包内容的位置</th>
+<th>长度（字节）</th>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>包头标识</td>
+<td>0x00 代表这是一个OK 包</td>
+</tr>
+<tr>
+<td>1</td>
+<td>rows_len</td>
+<td>影响行数</td>
+<td>相应操作影响的行数，比如一个Update操作的记录是5条，那么这个值就为5</td>
+</tr>
+<tr>
+<td>1 + rows_len</td>
+<td>id_len</td>
+<td>自增id</td>
+<td>插入一条记录时，如果是自增id的话，返回的id值</td>
+</tr>
+<tr>
+<td>1 + rows_len + id_len</td>
+<td>2</td>
+<td>服务器状态</td>
+<td>用于表示服务器状态，比如是否是事务模式或者自动提交模式</td>
+</tr>
+<tr>
+<td>3 + rows_len + id_len</td>
+<td>2</td>
+<td>警告数</td>
+<td>上次命令引起的警告数</td>
+</tr>
+<tr>
+<td>5 + rows_len + id_len</td>
+<td>msg_len</td>
+<td>额外信息</td>
+<td>此次操作的一些额外信息</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Go代码实现：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">type</span> Success <span style="color:#a2f;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	Row          <span style="color:#0b0;font-weight:bold">uint64</span>
+</span></span><span style="display:flex;"><span>	LastInsertId <span style="color:#0b0;font-weight:bold">uint64</span>
+</span></span><span style="display:flex;"><span>	ServerStatus <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>	Warnings     <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>	Message      <span style="color:#0b0;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> (p <span style="color:#666">*</span>Packet) <span style="color:#00a000">success</span>(packet []<span style="color:#0b0;font-weight:bold">byte</span>) <span style="color:#666">*</span>Success {
+</span></span><span style="display:flex;"><span>	sucPacket <span style="color:#666">:=</span> <span style="color:#666">&amp;</span>Success{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	row <span style="color:#666">:=</span> <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">8</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(row, packet[<span style="color:#666">0</span>:<span style="color:#666">1</span>])
+</span></span><span style="display:flex;"><span>	sucPacket.Row = binary.LittleEndian.<span style="color:#00a000">Uint64</span>(row)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	LastInsertId <span style="color:#666">:=</span> <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">8</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(LastInsertId, packet[<span style="color:#666">1</span>:<span style="color:#666">2</span>])
+</span></span><span style="display:flex;"><span>	sucPacket.LastInsertId = binary.LittleEndian.<span style="color:#00a000">Uint64</span>(LastInsertId)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	sucPacket.ServerStatus = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(packet[<span style="color:#666">2</span>:<span style="color:#666">4</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	sucPacket.Warnings = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(packet[<span style="color:#666">4</span>:<span style="color:#666">6</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	sucPacket.Message = <span style="color:#a2f">string</span>(packet[<span style="color:#666">6</span>:])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">return</span> sucPacket
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="三error-packet">（三）Error Packet <a href="#%e4%b8%89error-packet" class="anchor">🔗</a></h2><h3 id="error-packet数据格式">Error Packet数据格式 <a href="#error-packet%e6%95%b0%e6%8d%ae%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h3><p>顾名思义Error 包就是当出现错误的时候返回的信息，比如账户验证不通过，查询命令不合法，非空字段未指定值等相关操作，Server端都会向Client端发送Error 包。</p>
+<p>首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是Error Packet的四字节后的内容：</p>
+<table>
+<thead>
+<tr>
+<th>相对包内容的位置</th>
+<th>长度（字节）</th>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>包头标识</td>
+<td>0xFF 代表这是一个Error 包</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>错误代码</td>
+<td>该错误的相应错误代码</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1</td>
+<td>标识位</td>
+<td>SQL执行状态标识位，用’#’进行标识</td>
+</tr>
+<tr>
+<td>4</td>
+<td>5</td>
+<td>执行状态</td>
+<td>SQL的具体执行状态</td>
+</tr>
+<tr>
+<td>9</td>
+<td>msg_len</td>
+<td>错误信息</td>
+<td>具体的错误信息</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Go代码实现：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">type</span> Error <span style="color:#a2f;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	ErrorCode         <span style="color:#0b0;font-weight:bold">uint16</span> <span style="color:#080;font-style:italic">//该错误的相应错误代码
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	IdentificationBit []<span style="color:#0b0;font-weight:bold">byte</span> <span style="color:#080;font-style:italic">//标识位	SQL执行状态标识位，用’#’进行标识
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	SqlState          <span style="color:#0b0;font-weight:bold">string</span> <span style="color:#080;font-style:italic">//执行状态	SQL的具体执行状态
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	ErrorMessage      <span style="color:#0b0;font-weight:bold">string</span> <span style="color:#080;font-style:italic">//错误信息	具体的错误信息
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> (p <span style="color:#666">*</span>Packet) <span style="color:#a2f">error</span>(packet []<span style="color:#0b0;font-weight:bold">byte</span>) <span style="color:#666">*</span>Error {
+</span></span><span style="display:flex;"><span>	errorPacket <span style="color:#666">:=</span> <span style="color:#666">&amp;</span>Error{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	errorPacket.ErrorCode = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(packet[<span style="color:#666">0</span>:<span style="color:#666">2</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	errorPacket.IdentificationBit = packet[<span style="color:#666">2</span>:<span style="color:#666">3</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	errorPacket.SqlState = <span style="color:#a2f">string</span>(packet[<span style="color:#666">3</span>:<span style="color:#666">8</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	errorPacket.ErrorMessage = <span style="color:#a2f">string</span>(packet[<span style="color:#666">8</span>:])
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">return</span> errorPacket
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/mysql">MySQL</a>
+            
+                <a href="https://ltkblog.cn/tags/mysql-driver">MySQL Driver</a>
+            
+                <a href="https://ltkblog.cn/tags/go">Go</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

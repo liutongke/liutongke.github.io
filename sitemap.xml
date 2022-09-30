@@ -2,22 +2,52 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://ltkblog.cn/mysql_resultsetheader/</loc>
+    <lastmod>2022-09-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/mysql_quit/</loc>
+    <lastmod>2022-09-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/go/</loc>
+    <lastmod>2022-09-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/</loc>
+    <lastmod>2022-09-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/mysql/</loc>
+    <lastmod>2022-09-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/mysql-driver/</loc>
+    <lastmod>2022-09-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/posts/</loc>
+    <lastmod>2022-09-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/</loc>
+    <lastmod>2022-09-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/mysql_client_packet/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/mysql_ok_err/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/mysql_handshake/</loc>
+    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/mysql_auth_packet/</loc>
+    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/mysql_protocol/</loc>
+    <lastmod>2022-09-27T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://ltkblog.cn/tags/hugo/</loc>
     <lastmod>2022-09-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ltkblog.cn/seo_noindex/</loc>
     <lastmod>2022-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ltkblog.cn/</loc>
-    <lastmod>2022-09-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ltkblog.cn/posts/</loc>
-    <lastmod>2022-09-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ltkblog.cn/tags/seo/</loc>
-    <lastmod>2022-09-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ltkblog.cn/tags/</loc>
     <lastmod>2022-09-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ltkblog.cn/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E4%BC%98%E5%8C%96/</loc>
@@ -65,9 +95,6 @@
     <loc>https://ltkblog.cn/tags/websocket/</loc>
     <lastmod>2022-09-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ltkblog.cn/tags/go/</loc>
-    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ltkblog.cn/go_tinypng_mult_zip/</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
   </url><url>
@@ -94,9 +121,6 @@
   </url><url>
     <loc>https://ltkblog.cn/go_pool/</loc>
     <lastmod>2021-09-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ltkblog.cn/tags/mysql/</loc>
-    <lastmod>2021-09-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ltkblog.cn/mysql_sub-table/</loc>
     <lastmod>2021-09-21T00:00:00+00:00</lastmod>

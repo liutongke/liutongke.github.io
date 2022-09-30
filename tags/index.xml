@@ -6,7 +6,34 @@
     <description>Recent content in Tags on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 25 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go</title>
+      <link>https://ltkblog.cn/tags/go/</link>
+      <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/tags/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MySQL</title>
+      <link>https://ltkblog.cn/tags/mysql/</link>
+      <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/tags/mysql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MySQL Driver</title>
+      <link>https://ltkblog.cn/tags/mysql-driver/</link>
+      <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/tags/mysql-driver/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Hugo</title>
       <link>https://ltkblog.cn/tags/hugo/</link>
@@ -134,15 +161,6 @@
     </item>
     
     <item>
-      <title>Go</title>
-      <link>https://ltkblog.cn/tags/go/</link>
-      <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ltkblog.cn/tags/go/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>tinypng</title>
       <link>https://ltkblog.cn/tags/tinypng/</link>
       <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
@@ -184,15 +202,6 @@
       <pubDate>Sun, 28 Aug 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/tags/windows/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>MySQL</title>
-      <link>https://ltkblog.cn/tags/mysql/</link>
-      <pubDate>Tue, 21 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ltkblog.cn/tags/mysql/</guid>
       <description></description>
     </item>
     

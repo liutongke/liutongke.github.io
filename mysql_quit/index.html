@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <title>keke的个人博客</title>
+    <title>（七）Go-编写MySQL数据库驱动之MySQL协议解析quit | keke的个人博客</title>
 
     <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
 <meta name="viewport" content="width=device-width,minimum-scale=1">
-<meta name="description" content="ltkblog的个人博客，php，swoole，golang，python，mysql，redis，Centos，http，websocket">
-<meta name="keywords" content="" >
+<meta name="description" content="Go-编写MySQL数据库驱动之MySQL协议解析quit">
+<meta name="keywords" content="MySQL, Go, Handshake Packet, Auth Packet, MySQL协议" >
 
 
   <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
@@ -60,91 +60,86 @@ if (!doNotTrack) {
     <main class="main">
       
 
-<div id="page-404">
-  <div class="text">
-      
-          <h1>404</h1>
-      
+<section id="single">
+    <h1 class="title">（七）Go-编写MySQL数据库驱动之MySQL协议解析quit</h1>
 
-      
-          <div>页面不存在</div>
-      
+    <div class="tip">
+        <time datetime="2022-09-30 00:00:00 &#43;0000 UTC">2022年09月30日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          169字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
     </div>
 
-  
-      <h2 class="read-more">更多内容</h2> 
+    
+    
+        
   
 
-  
-
 
     
+
+
+    <div class="content">
+      <p><strong>准备：</strong></p>
+<ul>
+<li><a href="https://dev.mysql.com/doc/internals/en/connection-phase.html" target="_blank" rel="noopener">MySQL 5.7.26</a></li>
+<li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
+</ul>
+<p>前言
+用户端想要断开连接时，需要往服务端发送一个Quit Packet。这个包比较简单，下面直接看其数据结构。</p>
+<p>Quit Packet
+首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是Quit Packet的四字节后的内容。只有一个标志位数据。</p>
+<table>
+<thead>
+<tr>
+<th>相对包内容的位置</th>
+<th>长度（字节）</th>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>包头标识</td>
+<td>0x01 代表这是一个Quit 包</td>
+</tr>
+</tbody>
+</table>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/mysql">MySQL</a>
+            
+                <a href="https://ltkblog.cn/tags/mysql-driver">MySQL Driver</a>
+            
+                <a href="https://ltkblog.cn/tags/go">Go</a>
+            
+        </div>
     
     
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/mysql_resultsetheader/'>（六）Go-编写MySQL数据库驱动之MySQL协议解析Result Set消息结构</a></h1>   
-            <div class="date">9月 30, 2022</div>
-          </div>
-        </section>
     
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/mysql_quit/'>（七）Go-编写MySQL数据库驱动之MySQL协议解析quit</a></h1>   
-            <div class="date">9月 30, 2022</div>
-          </div>
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/mysql_client_packet/'>（四）Go-编写MySQL数据库驱动之MySQL协议解析客户端请求报文</a></h1>   
-            <div class="date">9月 29, 2022</div>
-          </div>
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/mysql_ok_err/'>（五）Go-编写MySQL数据库驱动之MySQL协议解析OK/Error</a></h1>   
-            <div class="date">9月 29, 2022</div>
-          </div>
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/mysql_handshake/'>（二）Go-编写MySQL数据库驱动之MySQL协议解析Handshake Packet</a></h1>   
-            <div class="date">9月 28, 2022</div>
-          </div>
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/mysql_auth_packet/'>（三）Go-编写MySQL数据库驱动之MySQL协议解析Auth Packet</a></h1>   
-            <div class="date">9月 28, 2022</div>
-          </div>
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/mysql_protocol/'>（一）Go-编写MySQL数据库驱动之Client/Server协议分析</a></h1>   
-            <div class="date">9月 27, 2022</div>
-          </div>
-        </section>
-    
-</div>
+
+</section>
+
 
     </main>
     

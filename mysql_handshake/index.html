@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>（二）Go-编写MySQL数据库驱动之MySQL协议解析Handshake Packet | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="Go-编写MySQL数据库驱动之MySQL协议解析Handshake Packet">
+<meta name="keywords" content="MySQL, MySQL Driver, Go, Handshake Packet" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">（二）Go-编写MySQL数据库驱动之MySQL协议解析Handshake Packet</h1>
+
+    <div class="tip">
+        <time datetime="2022-09-28 00:00:00 &#43;0000 UTC">2022年09月28日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1433字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          3分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#handshake-packet格式">Handshake Packet格式</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <p><strong>准备：</strong></p>
+<ul>
+<li><a href="https://dev.mysql.com/doc/internals/en/connection-phase.html" target="_blank" rel="noopener">MySQL 5.7.26</a></li>
+<li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
+</ul>
+<h2 id="handshake-packet格式">Handshake Packet格式 <a href="#handshake-packet%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h2><p>Handshake packet是由Server向Client发送的初始化包，因为所有从Server向Client端发送的包都是一样的格式，前面的四个字节是包头，其中前三位代表Handshake packet数据长度，第四位是包序列号。下面是Handshake packet具体内容的格式：</p>
+<p><a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html" target="_blank" rel="noopener">MySQL官网参考地址</a></p>
+<table>
+<thead>
+<tr>
+<th>相对包内容的位置</th>
+<th>长度（字节）</th>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>协议版本（Protocol）</td>
+<td>协议版本的版本号，通常为10（0x0A）协议版本的版本号，通常为10（0x0A）</td>
+</tr>
+<tr>
+<td>1</td>
+<td>len = strlen (server_version) + 1（0x00表示结束)</td>
+<td>数据库版本（Version）</td>
+<td>长度为数据库版本字符串的长度+上标示结束的的一个字节</td>
+</tr>
+<tr>
+<td>len + 1</td>
+<td>4</td>
+<td>线程ID（Thread ID）</td>
+<td>此次连接MySQL Server启动的线程ID</td>
+</tr>
+<tr>
+<td>len + 5</td>
+<td>8 + 1（0x00表示结束)</td>
+<td>密码盐值（第一部分）（Salt）</td>
+<td>用于后续账户密码验证</td>
+</tr>
+<tr>
+<td>len + 14</td>
+<td>2</td>
+<td>数据库提供的功能（Server Capabilities）</td>
+<td>用于与客户端协商通讯方式</td>
+</tr>
+<tr>
+<td>len + 16</td>
+<td>1</td>
+<td>编码格式（Server Language）</td>
+<td>标识数据库目前的编码方式</td>
+</tr>
+<tr>
+<td>len + 17</td>
+<td>2</td>
+<td>服务器状态（Server Status）</td>
+<td>用于表示服务器状态，比如是否是事务模式或者自动提交模式</td>
+</tr>
+<tr>
+<td>len + 19</td>
+<td>2</td>
+<td>扩展的协议，数据库提供的功能（Extended Server Capabilities）</td>
+<td>用于与客户端协商通讯方式</td>
+</tr>
+<tr>
+<td>len + 21</td>
+<td>1</td>
+<td>身份验证插件长度（Authentication Plugin Length）</td>
+<td>身份验证插件长度</td>
+</tr>
+<tr>
+<td>len + 22</td>
+<td>10</td>
+<td>保留字节（Unused）</td>
+<td>未来可能会用到，预留字节</td>
+</tr>
+<tr>
+<td>len + 32</td>
+<td>12 + 1（0x00表示结束)</td>
+<td>密码盐值（第二部分）（Salt）</td>
+<td>用于后续账户密码验证</td>
+</tr>
+<tr>
+<td>len + 45</td>
+<td>21 + 1（0x00表示结束)</td>
+<td>身份验证插件（Authentication Plugin）</td>
+<td><a href="https://dev.mysql.com/doc/internals/en/authentication-method.html" target="_blank" rel="noopener">密码加密方式</a></td>
+</tr>
+</tbody>
+</table>
+<p>使用的MySQL 5.7.26增加了<code>Extended Server Capabilities</code>和<code>Authentication Plugin Length</code>字段，占用了len+19~len+21位的保留字节,现在预留字节还剩余10个字节。其它低版本MySQL预留字节剩余13个。</p>
+<p><strong>报文结构：</strong>
+<p class="markdown-image">
+  <img src="http://hutaow.com/images/articles/201311/mysql_protocol_handshake.png" alt="Img"  />
+</p></p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220928020943.png" alt="Img"  />
+</p></p>
+<p>点击<code>Server Greeting  proto=10 version=5.7.26</code>可以看到从Frame物理层到<code>MySQL Protocol</code>应用层各层的具体内容。点击MySQL Protocol可以看到具体的十六进制的内容，以及它的ASCII码。</p>
+<p><code>Wireshark</code>抓包软件中的<code>Packet Length</code>和<code>Packet Number</code>中的值74、0分别就是<code>payload_length</code> <code>sequence_id</code>。<code>Server Greeting</code>内是具体的包内容<code>payload</code>。</p>
+<p>MySQL完整的Handshake Packet包内容<code>4a0000000a352e372e3236003a0000006d6d5c126f20082f00fff7c00200ff81150000000000000000000065446a040c41620a5a0a653f006d7973716c5f6e61746976655f70617373776f726400</code></p>
+<p>根据以上信息解析的某次连接数据库的Handshake packet包<code>payload</code>内容，仅供参考：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&amp;{10 5.7.26  56 [94 14 72 8 12 22 51 99] 63487 192 2 33279 21            [20 92 85 1 34 62 25 56 111 43 14 64]  mysql_native_password }
+</span></span></code></pre></div><p><strong>Go代码实现：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> (HandshakePacket <span style="color:#666">*</span>HandshakePacket) <span style="color:#00a000">Handshake</span>(packet []<span style="color:#0b0;font-weight:bold">byte</span>, username, pwd <span style="color:#0b0;font-weight:bold">string</span>) []<span style="color:#0b0;font-weight:bold">byte</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	protocolPacket <span style="color:#666">:=</span> []<span style="color:#0b0;font-weight:bold">byte</span>{<span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>}
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(protocolPacket, packet[<span style="color:#666">0</span>:<span style="color:#666">1</span>])
+</span></span><span style="display:flex;"><span>	HandshakePacket.Protocol = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(protocolPacket)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	idx <span style="color:#666">:=</span> bytes.<span style="color:#00a000">IndexByte</span>(packet[<span style="color:#666">1</span>:], <span style="color:#666">0x00</span>)
+</span></span><span style="display:flex;"><span>	dbVer <span style="color:#666">:=</span> packet[<span style="color:#666">1</span>:idx]
+</span></span><span style="display:flex;"><span>	HandshakePacket.Version = <span style="color:#a2f">string</span>(dbVer)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	idx = idx <span style="color:#666">+</span> <span style="color:#666">2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	HandshakePacket.ThreadId = binary.LittleEndian.<span style="color:#00a000">Uint32</span>(packet[idx : idx<span style="color:#666">+</span><span style="color:#666">4</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	HandshakePacket.Salt1 = packet[idx<span style="color:#666">+</span><span style="color:#666">4</span> : idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	HandshakePacket.ServerCapabilities = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(packet[idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span> : idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	languagePacket <span style="color:#666">:=</span> []<span style="color:#0b0;font-weight:bold">byte</span>{<span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>}
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(languagePacket, packet[idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span>:idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span>])
+</span></span><span style="display:flex;"><span>	HandshakePacket.ServerLanguage = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(<span style="color:#a2f">append</span>(languagePacket, <span style="color:#666">0x00</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	HandshakePacket.ServerStatus = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(packet[idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span> : idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	HandshakePacket.ExtendedServerCapabilities = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(packet[idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span> : idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">2</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pluginLengthPacket <span style="color:#666">:=</span> []<span style="color:#0b0;font-weight:bold">byte</span>{<span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>}
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(pluginLengthPacket, packet[idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">2</span>:idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span>])
+</span></span><span style="display:flex;"><span>	HandshakePacket.AuthPluginLength = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(pluginLengthPacket)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	HandshakePacket.Unused = <span style="color:#a2f">string</span>(packet[idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span> : idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">10</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	salt2Idx <span style="color:#666">:=</span> bytes.<span style="color:#00a000">IndexByte</span>(packet[idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">10</span>:], <span style="color:#666">0x00</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	HandshakePacket.Salt2 = packet[idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">10</span> : idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">10</span><span style="color:#666">+</span>salt2Idx]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	HandshakePacket.AuthenticationPlugin = <span style="color:#a2f">string</span>(packet[idx<span style="color:#666">+</span><span style="color:#666">4</span><span style="color:#666">+</span><span style="color:#666">8</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">2</span><span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span><span style="color:#666">10</span><span style="color:#666">+</span><span style="color:#a2f">len</span>(HandshakePacket.Salt2):])
+</span></span><span style="display:flex;"><span>	HandshakePacket.<span style="color:#00a000">echo</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">return</span> <span style="color:#00a000">GetAuthPacket</span>(<span style="color:#a2f">append</span>(HandshakePacket.Salt1, HandshakePacket.Salt2<span style="color:#666">...</span>), username, pwd)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/mysql">MySQL</a>
+            
+                <a href="https://ltkblog.cn/tags/mysql-driver">MySQL Driver</a>
+            
+                <a href="https://ltkblog.cn/tags/go">Go</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

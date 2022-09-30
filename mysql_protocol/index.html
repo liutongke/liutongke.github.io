@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>（一）Go-编写MySQL数据库驱动之Client/Server协议分析 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="Go-编写MySQL数据库驱动之Client/Server协议分析">
+<meta name="keywords" content="MySQL, Go, Handshake Packet, Auth Packet, MySQL协议" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">（一）Go-编写MySQL数据库驱动之Client/Server协议分析</h1>
+
+    <div class="tip">
+        <time datetime="2022-09-27 00:00:00 &#43;0000 UTC">2022年09月27日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1766字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          4分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一mysql连接方式">（一）MySQL连接方式</a></li>
+    <li><a href="#二mysql数据包格式">（二）MySQL数据包格式</a></li>
+    <li><a href="#三mysql连接交互过程">（三）MySQL连接交互过程</a></li>
+    <li><a href="#四补充字节序">（四）补充字节序</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <p><strong>准备：</strong></p>
+<ul>
+<li><a href="https://dev.mysql.com/doc/internals/en/connection-phase.html" target="_blank" rel="noopener">MySQL 5.7.26</a></li>
+<li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
+</ul>
+<h2 id="一mysql连接方式">（一）MySQL连接方式 <a href="#%e4%b8%80mysql%e8%bf%9e%e6%8e%a5%e6%96%b9%e5%bc%8f" class="anchor">🔗</a></h2><p>到MySQL5.7为止，总共有五种，分别是TCP/IP，TLS/SSL，Unix Sockets，Shared Memory，Named pipes，下面我们就来看看这五种的区别：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">方式</th>
+<th style="text-align:left">默认开启</th>
+<th style="text-align:left">支持系统</th>
+<th style="text-align:left">只支持本机</th>
+<th style="text-align:left">如何开启</th>
+<th style="text-align:left">参数配置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">TCP/IP</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left">所有系统</td>
+<td style="text-align:left">否</td>
+<td style="text-align:left">–skip-networking=yes/no.</td>
+<td style="text-align:left">–port–bind-address</td>
+</tr>
+<tr>
+<td style="text-align:left">TLS/SSL</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left">所有系统（基于TCP/IP)之上</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left">–ssl=yes/no.</td>
+<td style="text-align:left">–ssl-* options</td>
+</tr>
+<tr>
+<td style="text-align:left">Unix Sockets</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left">类Unix系统</td>
+<td style="text-align:left">是</td>
+<td style="text-align:left">设置–socket=<empty> 来关闭.</td>
+<td style="text-align:left">–socket=socket path</td>
+</tr>
+<tr>
+<td style="text-align:left">Shared Memory</td>
+<td style="text-align:left">否</td>
+<td style="text-align:left">Windows系统</td>
+<td style="text-align:left">否</td>
+<td style="text-align:left">–shared-memory=on/off.</td>
+<td style="text-align:left">–shared-memory-base-name=<name></td>
+</tr>
+<tr>
+<td style="text-align:left">Named pipes</td>
+<td style="text-align:left">否</td>
+<td style="text-align:left">Windows系统</td>
+<td style="text-align:left">否</td>
+<td style="text-align:left">–enable-named-pipe=on/off.</td>
+<td style="text-align:left">–socket=<name></td>
+</tr>
+</tbody>
+</table>
+<h2 id="二mysql数据包格式">（二）MySQL数据包格式 <a href="#%e4%ba%8cmysql%e6%95%b0%e6%8d%ae%e5%8c%85%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h2><p><a href="https://dev.mysql.com/doc/internals/en/mysql-packet.html" target="_blank" rel="noopener"><strong>Server to Client</strong>数据包</a></p>
+<p>Server向Client发送的数据包有两个原则：</p>
+<ul>
+<li>每个数据包大小不能超过2^24字节(16MB)。</li>
+<li>每个数据包前都需要加上数据包信息，也就是包头，由<code>payload_length</code>和<code>sequence_id</code>构成。</li>
+</ul>
+<p><strong>Server to Client数据包格式：</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Type</th>
+<th style="text-align:left">Name</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">int&lt;3&gt;</td>
+<td style="text-align:left">payload_length</td>
+<td style="text-align:left">具体的包内容长度，即<code>payload</code>长度</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;1&gt;</td>
+<td style="text-align:left">sequence_id</td>
+<td style="text-align:left">序列 ID 随每个数据包递增，并可能环绕。它从 0 开始，并在命令阶段中开始新命令时重置为 0。（Sequence ID）</td>
+</tr>
+<tr>
+<td style="text-align:left">string<var></td>
+<td style="text-align:left">payload</td>
+<td style="text-align:left">去除包头（payload_length+sequence_id）后的数据[len=payload_length] payload of the packet</td>
+</tr>
+</tbody>
+</table>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220928230649.png" alt="MySQL Packet"  />
+</p></p>
+<p>如上图红色区域蓝色为整个MySQL数据包，可以看到具体的十六进制的内容，以及它的ASCII码。</p>
+<p><strong>十六进制数据包：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>4a0000000a352e372e3236002f000000740b50355a73387100fff7c00200ff81150000000000000000000072232a7e3709052f333f535a006d7973716c5f6e61746976655f70617373776f726400
+</span></span></code></pre></div><p><strong>拆分解析数据包：</strong>
+整个MySQL Packet由<strong>包头+具体数据</strong>构成，采用的是<strong>小端存储形式</strong>。已知包头由<code>payload_length</code>和<code>sequence_id</code>构成，其中<code>payload_length</code>占三个字节，<code>sequence_id</code>是占用一个字节。所以整个包头占用四个字节，包头的十六进制数据<code>4a000000</code>，转换为字节流<code>[74 0 0 0]</code>。数据内容长度74，sequence_id为0。</p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220928221310.png" alt="包头转换"  />
+</p></p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220928195628.png" alt="Img"  />
+</p></p>
+<p>拆分后三部分的内容构成如下：</p>
+<p><code>payload_length=4a0000</code></p>
+<p><code>sequence_id=00</code></p>
+<p><code>payload=0a352e372e3236002f000000740b50355a73387100fff7c00200ff81150000000000000000000072232a7e3709052f333f535a006d7973716c5f6e61746976655f70617373776f726400</code></p>
+<h2 id="三mysql连接交互过程">（三）MySQL连接交互过程 <a href="#%e4%b8%89mysql%e8%bf%9e%e6%8e%a5%e4%ba%a4%e4%ba%92%e8%bf%87%e7%a8%8b" class="anchor">🔗</a></h2><p><a href="https://dev.mysql.com/doc/internals/en/successful-authentication.html" target="_blank" rel="noopener">Connection Phase文档</a></p>
+<p>MySQL客户端与服务器的交互主要分为两个阶段：握手认证阶段和命令执行阶段。</p>
+<p><strong>握手认证阶段</strong>
+握手认证阶段为客户端与服务器建立连接后进行，交互过程如下：</p>
+<ol>
+<li>服务器 -&gt; 客户端：握手初始化消息</li>
+<li>客户端 -&gt; 服务器：登陆认证消息</li>
+<li>服务器 -&gt; 客户端：认证结果消息</li>
+</ol>
+<p><strong>命令执行阶段</strong>
+客户端认证成功后，会进入命令执行阶段，交互过程如下：</p>
+<ol>
+<li>客户端 -&gt; 服务器：执行命令消息</li>
+<li>服务器 -&gt; 客户端：命令执行结果</li>
+</ol>
+<p>MySQL客户端与服务器的完整交互过程如下：</p>
+<p><p class="markdown-image">
+  <img src="https://dev.mysql.com/doc/internals/en/images/mscgen-56607376c463ee17d9b311cdedce38839a0ca896.png" alt=""  />
+</p></p>
+<p>连接MySQL并发送一条<code>SHOW VARIABLES LIKE 'lower_case_%</code>语句过程如下：</p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220928235150.png" alt="Img"  />
+</p></p>
+<ol>
+<li>第一步客户端与MySQL服务端进行TCP三次握手，建立起稳定的连接。</li>
+<li>MySQL服务端向客户端发送<code>Server Greeting  proto=10 version=5.7.26</code>的Handshake Packet。</li>
+<li>客户端解析的Handshake包进行逻辑处理，<code>Login Request user=root</code>是客户端发送的Auth Packet。</li>
+<li>服务端认证成功客户端的Auth Packet之后，返回一个OK Packet。</li>
+<li>可以看到我们只发送了一次请求:<code>SHOW VARIABLES LIKE 'lower_case_%'</code>，但是客户端居然有两次Request Query，实际上第一次的Query是客户端发送<code>SET NAMES utf8</code>的请求到服务端，指定了客户端和服务器之间传递字符的编码规则为UTF8。第二次的Request Query是我们发送的SQL语句。</li>
+<li>服务端接受并解析了我们的请求，把结果放在Response Packet传回来。</li>
+</ol>
+<h2 id="四补充字节序">（四）补充字节序 <a href="#%e5%9b%9b%e8%a1%a5%e5%85%85%e5%ad%97%e8%8a%82%e5%ba%8f" class="anchor">🔗</a></h2><p>MySQL的数据传输基于<strong>小端存储形式</strong>。</p>
+<ol>
+<li>大端序（Big-Endian）将数据的低位字节存放在内存的高位地址，高位字节存放在低位地址。这种排列方式与数据用字节表示时的书写顺序一致，符合人类的阅读习惯。</li>
+<li>小端序（Little-Endian），将一个多位数的低位放在较小的地址处，高位放在较大的地址处，则称小端序。小端序与人类的阅读习惯相反，但更符合计算机读取内存的方式，因为CPU读取内存中的数据时，是从低地址向高地址方向进行读取的。</li>
+</ol>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/mysql">MySQL</a>
+            
+                <a href="https://ltkblog.cn/tags/mysql-driver">MySQL Driver</a>
+            
+                <a href="https://ltkblog.cn/tags/go">Go</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

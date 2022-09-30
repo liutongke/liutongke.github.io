@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>（三）Go-编写MySQL数据库驱动之MySQL协议解析Auth Packet | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="Go-编写MySQL数据库驱动之MySQL协议解析Auth Packet">
+<meta name="keywords" content="MySQL, Go, Handshake Packet, Auth Packet, MySQL协议" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">（三）Go-编写MySQL数据库驱动之MySQL协议解析Auth Packet</h1>
+
+    <div class="tip">
+        <time datetime="2022-09-28 00:00:00 &#43;0000 UTC">2022年09月28日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1535字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          4分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#auth-packet格式">Auth Packet格式</a></li>
+    <li><a href="#字符串">字符串</a></li>
+    <li><a href="#加密方式">加密方式</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <p><strong>准备：</strong></p>
+<ul>
+<li><a href="https://dev.mysql.com/doc/internals/en/connection-phase.html" target="_blank" rel="noopener">MySQL 5.7.26</a></li>
+<li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
+</ul>
+<h2 id="auth-packet格式">Auth Packet格式 <a href="#auth-packet%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h2><p>Auth packet是由Client向Server发送的认证包，用于验证数据库账户登录，相应内容的格式：</p>
+<table>
+<thead>
+<tr>
+<th>相对包内容的位置</th>
+<th>长度（字节）</th>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>2</td>
+<td>协议协商（Client Capabilities）</td>
+<td>用于与服务端协商通讯方式</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>扩展的协议（Extended Client Capabilities）</td>
+<td>用于与服务端协商通讯方式</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4</td>
+<td>消息最长长度（MAX Packet）</td>
+<td>客户端可以发送或接收的最长长度，0表示不做任何限制</td>
+</tr>
+<tr>
+<td>8</td>
+<td>1</td>
+<td>字符编码（Charset）</td>
+<td>客服端字符编码方式</td>
+</tr>
+<tr>
+<td>9</td>
+<td>23</td>
+<td>保留字节（Unused）</td>
+<td>未来可能会用到，预留字节，用0代替</td>
+</tr>
+<tr>
+<td>32</td>
+<td>不定长</td>
+<td>认证字符串（Username）</td>
+<td>用户名：NullTerminatedString格式编码</td>
+</tr>
+<tr>
+<td>不定</td>
+<td>不定长</td>
+<td>认证密码（Password）</td>
+<td>加密后的密码：LengthEncodedString格式编码</td>
+</tr>
+<tr>
+<td>不定</td>
+<td>不定长</td>
+<td>数据库名称</td>
+<td>NullTerminatedString格式编码,当客户端的权能标志位 CLIENT_CONNECT_WITH_DB 被置位时，该字段必须出现。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>报文结构：</strong>
+<p class="markdown-image">
+  <img src="http://hutaow.com/images/articles/201311/mysql_protocol_auth_41.png" alt="Img"  />
+</p></p>
+<p>这部分内容是由客户端自己生成，所以说如果我们如果要写一个程序连接数据库，那么这个包就得按照这个格式，不然服务端将会无法识别。</p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220929042040.png" alt="Img"  />
+</p>
+<strong>特别注意：认证字符串（Username）和认证密码（Password）之间有个字节<code>14</code>，<code>Username</code>已经有<code>00</code>结尾仍然有这个字节，官网文档没找到解释资料。</strong></p>
+<h2 id="字符串">字符串 <a href="#%e5%ad%97%e7%ac%a6%e4%b8%b2" class="anchor">🔗</a></h2><ol>
+<li>String的编码格式相对Integer来说会复杂一点，主要有以下几种：</li>
+<li>FixedLengthString（定长方式）：需先知道String的长度，MySQL中的一个例子就是ERR_Packet包（后续会讲到）就使用了这种编码方式，因为它的长度固定，用5个字节存储所有数据。</li>
+<li>NullTerminatedString（Null结尾方式）: 字符串以遇到Null作为结束标志，相应的字节为00。</li>
+<li>VariableLengthString（动态计算字符串长度方式）: 字符串的长度取决于其他变量计算而定，比如一个字符串由Integer + Value组成，我们通过计算Integer的值来获取Value的具体的长度。</li>
+<li>LengthEncodedString（指定字符串长度方式）： 与VariableLengthString原理相似，是它的一种特殊情况，具体例子就是我上条举的这个例子。</li>
+<li>RestOfPacketString（包末端字符串方式）：一个包末端的字符串，可根据包的总长度金和当前位置得到字符串的长度，实际中并不常用。</li>
+</ol>
+<h2 id="加密方式">加密方式 <a href="#%e5%8a%a0%e5%af%86%e6%96%b9%e5%bc%8f" class="anchor">🔗</a></h2><p>生成Auth Packet的过程中，需要将密码加密再发送。在MySQL 4.0之前，MySQL协议仅支持旧密码身份验证，在MySQL 4.1中添加了安全密码身份验证方法，在MySQL 5.5中，可以通过身份验证插件（Authentication Plugin）实现任意身份验证方法。<a href="https://dev.mysql.com/doc/internals/en/determining-authentication-method.html" target="_blank" rel="noopener">文档</a></p>
+<p>加密方式通过<code>Handshake Packet</code>包中的身份验证插件（Authentication Plugin）字段确认。<a href="https://dev.mysql.com/doc/internals/en/authentication-method.html" target="_blank" rel="noopener">文档</a>，由上一章知道服务器返回<code>mysql_native_password</code>字段，所以密码使用该方式进行加密。可以参考<a href="https://github.com/go-sql-driver/mysql/blob/master/auth.go" target="_blank" rel="noopener">go-sql-driver/mysql</a>包内容开发加密组件。</p>
+<p><strong>mysql_native_password</strong></p>
+<p>Password，首先这个数据长度是指定的，即为20个字节。而这个加密的密码是根据HandShake中的两个Salt通过约定的加密方式的来，HandShake中第一个Salt是8位的，第二个Salt是12位的。</p>
+<p><code>scramble</code>为Salt1+Salt2。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f">append</span>(HandshakePacket.Salt1, HandshakePacket.Salt2<span style="color:#666">...</span>)
+</span></span></code></pre></div><p><code>password</code>为客户端输入的密码。</p>
+<p><strong>实现代码：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Hash password using 4.1+ method (SHA1)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">scramblePassword</span>(scramble []<span style="color:#0b0;font-weight:bold">byte</span>, password <span style="color:#0b0;font-weight:bold">string</span>) []<span style="color:#0b0;font-weight:bold">byte</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">if</span> <span style="color:#a2f">len</span>(password) <span style="color:#666">==</span> <span style="color:#666">0</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a2f;font-weight:bold">return</span> <span style="color:#a2f;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// stage1Hash = SHA1(password)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	crypt <span style="color:#666">:=</span> sha1.<span style="color:#00a000">New</span>()
+</span></span><span style="display:flex;"><span>	crypt.<span style="color:#00a000">Write</span>([]<span style="color:#a2f">byte</span>(password))
+</span></span><span style="display:flex;"><span>	stage1 <span style="color:#666">:=</span> crypt.<span style="color:#00a000">Sum</span>(<span style="color:#a2f;font-weight:bold">nil</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// scrambleHash = SHA1(scramble + SHA1(stage1Hash))
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	<span style="color:#080;font-style:italic">// inner Hash
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	crypt.<span style="color:#00a000">Reset</span>()
+</span></span><span style="display:flex;"><span>	crypt.<span style="color:#00a000">Write</span>(stage1)
+</span></span><span style="display:flex;"><span>	hash <span style="color:#666">:=</span> crypt.<span style="color:#00a000">Sum</span>(<span style="color:#a2f;font-weight:bold">nil</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// outer Hash
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	crypt.<span style="color:#00a000">Reset</span>()
+</span></span><span style="display:flex;"><span>	crypt.<span style="color:#00a000">Write</span>(scramble)
+</span></span><span style="display:flex;"><span>	crypt.<span style="color:#00a000">Write</span>(hash)
+</span></span><span style="display:flex;"><span>	scramble = crypt.<span style="color:#00a000">Sum</span>(<span style="color:#a2f;font-weight:bold">nil</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// token = scrambleHash XOR stage1Hash
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	<span style="color:#a2f;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#a2f;font-weight:bold">range</span> scramble {
+</span></span><span style="display:flex;"><span>		scramble[i] ^= stage1[i]
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">return</span> scramble
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/mysql">MySQL</a>
+            
+                <a href="https://ltkblog.cn/tags/mysql-driver">MySQL Driver</a>
+            
+                <a href="https://ltkblog.cn/tags/go">Go</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>（四）Go-编写MySQL数据库驱动之MySQL协议解析客户端请求报文 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="Go-编写MySQL数据库驱动之MySQL协议解析客户端请求报文">
+<meta name="keywords" content="MySQL, Go, Handshake Packet, Auth Packet, MySQL协议" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">（四）Go-编写MySQL数据库驱动之MySQL协议解析客户端请求报文</h1>
+
+    <div class="tip">
+        <time datetime="2022-09-29 00:00:00 &#43;0000 UTC">2022年09月29日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          922字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一客户端命令请求报文">（一）客户端命令请求报文</a></li>
+    <li><a href="#二执行命令">（二）执行命令</a></li>
+    <li><a href="#三wireshark数据流分析">（三）Wireshark数据流分析</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <p><strong>准备：</strong></p>
+<ul>
+<li><a href="https://dev.mysql.com/doc/internals/en/connection-phase.html" target="_blank" rel="noopener">MySQL 5.7.26</a></li>
+<li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
+</ul>
+<h2 id="一客户端命令请求报文">（一）客户端命令请求报文 <a href="#%e4%b8%80%e5%ae%a2%e6%88%b7%e7%ab%af%e5%91%bd%e4%bb%a4%e8%af%b7%e6%b1%82%e6%8a%a5%e6%96%87" class="anchor">🔗</a></h2><p>首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是<strong>客户端命令请求报文</strong>的四字节后的内容。</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int&lt;1&gt;<!--1--></td>
+<td>执行命令</td>
+<td>执行的操作，比如切换数据库，查询表等操作</td>
+</tr>
+<tr>
+<td>string</td>
+<td>参数</td>
+<td>命令相应的参数</td>
+</tr>
+</tbody>
+</table>
+<p><p class="markdown-image">
+  <img src="http://hutaow.com/images/articles/201311/mysql_protocol_command.png" alt="Img"  />
+</p></p>
+<h2 id="二执行命令">（二）执行命令 <a href="#%e4%ba%8c%e6%89%a7%e8%a1%8c%e5%91%bd%e4%bb%a4" class="anchor">🔗</a></h2><p><strong>执行命令</strong>：用于标识当前请求消息的类型，例如切换数据库（0x02）、查询命令（0x03）等，执行命令如下：</p>
+<table>
+<thead>
+<tr>
+<th>类型值</th>
+<th>命令</th>
+<th>功能</th>
+<th>关联函数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x00</td>
+<td>COM_SLEEP</td>
+<td>（内部线程状态）</td>
+<td>（无）</td>
+</tr>
+<tr>
+<td>0x01</td>
+<td>COM_QUIT</td>
+<td>关闭连接</td>
+<td>mysql_close</td>
+</tr>
+<tr>
+<td>0x02</td>
+<td>COM_INIT_DB</td>
+<td>切换数据库</td>
+<td>mysql_select_db</td>
+</tr>
+<tr>
+<td>0x03</td>
+<td>COM_QUERY</td>
+<td>SQL查询请求</td>
+<td>mysql_real_query</td>
+</tr>
+<tr>
+<td>0x04</td>
+<td>COM_FIELD_LIST</td>
+<td>获取数据表字段信息</td>
+<td>mysql_list_fields</td>
+</tr>
+<tr>
+<td>0x05</td>
+<td>COM_CREATE_DB</td>
+<td>创建数据库</td>
+<td>mysql_create_db</td>
+</tr>
+<tr>
+<td>0x06</td>
+<td>COM_DROP_DB</td>
+<td>删除数据库</td>
+<td>mysql_drop_db</td>
+</tr>
+<tr>
+<td>0x07</td>
+<td>COM_REFRESH</td>
+<td>清除缓存</td>
+<td>mysql_refresh</td>
+</tr>
+<tr>
+<td>0x08</td>
+<td>COM_SHUTDOWN</td>
+<td>停止服务器</td>
+<td>mysql_shutdown</td>
+</tr>
+<tr>
+<td>0x09</td>
+<td>COM_STATISTICS</td>
+<td>获取服务器统计信息</td>
+<td>mysql_stat</td>
+</tr>
+<tr>
+<td>0x0A</td>
+<td>COM_PROCESS_INFO</td>
+<td>获取当前连接的列表</td>
+<td>mysql_list_processes</td>
+</tr>
+<tr>
+<td>0x0B</td>
+<td>COM_CONNECT</td>
+<td>（内部线程状态）</td>
+<td>（无）</td>
+</tr>
+<tr>
+<td>0x0C</td>
+<td>COM_PROCESS_KILL</td>
+<td>中断某个连接</td>
+<td>mysql_kill</td>
+</tr>
+<tr>
+<td>0x0D</td>
+<td>COM_DEBUG</td>
+<td>保存服务器调试信息</td>
+<td>mysql_dump_debug_info</td>
+</tr>
+<tr>
+<td>0x0E</td>
+<td>COM_PING</td>
+<td>测试连通性</td>
+<td>mysql_ping</td>
+</tr>
+<tr>
+<td>0x0F</td>
+<td>COM_TIME</td>
+<td>（内部线程状态）</td>
+<td>（无）</td>
+</tr>
+<tr>
+<td>0x10</td>
+<td>COM_DELAYED_INSERT</td>
+<td>（内部线程状态）</td>
+<td>（无）</td>
+</tr>
+<tr>
+<td>0x11</td>
+<td>COM_CHANGE_USER</td>
+<td>重新登陆（不断连接）</td>
+<td>mysql_change_user</td>
+</tr>
+<tr>
+<td>0x12</td>
+<td>COM_BINLOG_DUMP</td>
+<td>获取二进制日志信息</td>
+<td>（无）</td>
+</tr>
+<tr>
+<td>0x13</td>
+<td>COM_TABLE_DUMP</td>
+<td>获取数据表结构信息</td>
+<td>（无）</td>
+</tr>
+<tr>
+<td>0x14</td>
+<td>COM_CONNECT_OUT</td>
+<td>（内部线程状态）</td>
+<td>（无）</td>
+</tr>
+<tr>
+<td>0x15</td>
+<td>COM_REGISTER_SLAVE</td>
+<td>从服务器向主服务器进行注册</td>
+<td>（无）</td>
+</tr>
+<tr>
+<td>0x16</td>
+<td>COM_STMT_PREPARE</td>
+<td>预处理SQL语句</td>
+<td>mysql_stmt_prepare</td>
+</tr>
+<tr>
+<td>0x17</td>
+<td>COM_STMT_EXECUTE</td>
+<td>执行预处理语句</td>
+<td>mysql_stmt_execute</td>
+</tr>
+<tr>
+<td>0x18</td>
+<td>COM_STMT_SEND_LONG_DATA</td>
+<td>发送BLOB类型的数据</td>
+<td>mysql_stmt_send_long_data</td>
+</tr>
+<tr>
+<td>0x19</td>
+<td>COM_STMT_CLOSE</td>
+<td>销毁预处理语句</td>
+<td>mysql_stmt_close</td>
+</tr>
+<tr>
+<td>0x1A</td>
+<td>COM_STMT_RESET</td>
+<td>清除预处理语句参数缓存</td>
+<td>mysql_stmt_reset</td>
+</tr>
+<tr>
+<td>0x1B</td>
+<td>COM_SET_OPTION</td>
+<td>设置语句选项</td>
+<td>mysql_set_server_option</td>
+</tr>
+<tr>
+<td>0x1C</td>
+<td>COM_STMT_FETCH</td>
+<td>获取预处理语句的执行结果</td>
+<td>mysql_stmt_fetch</td>
+</tr>
+</tbody>
+</table>
+<h2 id="三wireshark数据流分析">（三）Wireshark数据流分析 <a href="#%e4%b8%89wireshark%e6%95%b0%e6%8d%ae%e6%b5%81%e5%88%86%e6%9e%90" class="anchor">🔗</a></h2><p>下面我们向MySQL发送一条<code>SELECT * FROM user;</code>查询语句，使用<code>Wireshark</code>抓包软件查看具体的请求内容。点击<code>Request Query</code>可以看到从Frame物理层到<code>MySQL Protocol</code>应用层各层的详细内容。点击MySQL Protocol可以看到传输的十六进制的内容，以及它的ASCII码。</p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220929171436.png" alt="Img"  />
+</p></p>
+<p><strong>十六进制数据包内容：</strong>
+<code>160000000353454c454354202a2046524f4d206075736572603b</code></p>
+<p><code>Wireshark</code>抓包软件中的<code>Packet Length</code>和<code>Packet Number</code>中的值22、0分别就是<code>payload_length</code> <code>sequence_id</code>。<code>Request Command Query</code>内是具体的包内容<code>payload</code>。包头中的<code>Packet Length</code>和<code>Packet Number</code>总共占用四个字节，去除包头后的消息体内容：
+<code>0353454c454354202a2046524f4d206075736572603b</code></p>
+<p><code>SELECT</code>是条SQL查询请求，通过执行命令知道为<code>0x03</code>，客户端命令请求报文：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>具体包内容的长度 + 包序列id + 执行命令 + 参数
+</span></span><span style="display:flex;"><span>160000 + 00 + 03 + 53454c454354202a2046524f4d206075736572603b
+</span></span></code></pre></div>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/mysql">MySQL</a>
+            
+                <a href="https://ltkblog.cn/tags/mysql-driver">MySQL Driver</a>
+            
+                <a href="https://ltkblog.cn/tags/go">Go</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

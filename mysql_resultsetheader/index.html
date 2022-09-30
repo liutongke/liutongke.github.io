@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>（六）Go-编写MySQL数据库驱动之MySQL协议解析Result Set消息结构 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="Go-编写MySQL数据库驱动之MySQL协议解析Result Set消息结构">
+<meta name="keywords" content="MySQL, Go, Handshake Packet, Auth Packet, MySQL协议" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">（六）Go-编写MySQL数据库驱动之MySQL协议解析Result Set消息结构</h1>
+
+    <div class="tip">
+        <time datetime="2022-09-30 00:00:00 &#43;0000 UTC">2022年09月30日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          853字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#result-set-header-结构">Result Set Header 结构</a></li>
+    <li><a href="#field-结构">Field 结构</a></li>
+    <li><a href="#eof-结构">EOF 结构</a></li>
+    <li><a href="#row-data-结构">Row Data 结构</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <p><strong>准备：</strong></p>
+<ul>
+<li><a href="https://dev.mysql.com/doc/internals/en/connection-phase.html" target="_blank" rel="noopener">MySQL 5.7.26</a></li>
+<li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>结构</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[Result Set Header]</td>
+<td>列数量</td>
+</tr>
+<tr>
+<td>[Field]</td>
+<td>列信息（多个）</td>
+</tr>
+<tr>
+<td>[EOF]</td>
+<td>列结束</td>
+</tr>
+<tr>
+<td>[Row Data]</td>
+<td>行数据（多个）</td>
+</tr>
+<tr>
+<td>[EOF]</td>
+<td>数据结束</td>
+</tr>
+</tbody>
+</table>
+<h2 id="result-set-header-结构">Result Set Header 结构 <a href="#result-set-header-%e7%bb%93%e6%9e%84" class="anchor">🔗</a></h2><table>
+<thead>
+<tr>
+<th>字节</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-9</td>
+<td>Field结构计数（Length Coded Binary）用于标识Field结构的数量，取值范围0x00-0xFA。LengthEncodeInteger表示结果中含有列数量。Number of fields显示该返回字段列数量。</td>
+</tr>
+<tr>
+<td>1-9</td>
+<td>额外信息（Length Coded Binary）可选字段，一般情况下不应该出现。只有像SHOW COLUMNS这种语句的执行结果才会用到额外信息（标识表格的列数量）。</td>
+</tr>
+</tbody>
+</table>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220930235018.png" alt="Img"  />
+</p></p>
+<h2 id="field-结构">Field 结构 <a href="#field-%e7%bb%93%e6%9e%84" class="anchor">🔗</a></h2><p>该包前四个字节表示的包的字节长度以及包的序列号。后四字节为以下内容。</p>
+<p><strong>MySQL 4.1 及之后的版本：</strong></p>
+<table>
+<thead>
+<tr>
+<th>相对包内容的位置</th>
+<th>长度（字节）</th>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>不定长</td>
+<td>catalog</td>
+<td>目录，通常为def</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>不定长</td>
+<td>schema</td>
+<td>操作的数据库</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>不定长</td>
+<td>table</td>
+<td>操作的虚拟表名</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>不定长</td>
+<td>org_table</td>
+<td>操作的物理表名</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>不定长</td>
+<td>name</td>
+<td>虚拟列字段名</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>不定长</td>
+<td>org_name</td>
+<td>物理列字段名</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>0x0c</td>
+<td>length of fixed-length fields</td>
+<td>以下字段长度</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>2</td>
+<td>character</td>
+<td>列字符集</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>4</td>
+<td>length</td>
+<td>字段最大长度</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>1</td>
+<td>type</td>
+<td>字段类型</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>2</td>
+<td>flags</td>
+<td>标志</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>1</td>
+<td>decimals</td>
+<td>??</td>
+</tr>
+<tr>
+<td>不定长</td>
+<td>2</td>
+<td>预留字节数</td>
+<td>预留字节数</td>
+</tr>
+</tbody>
+</table>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220930235516.png" alt="Img"  />
+</p></p>
+<h2 id="eof-结构">EOF 结构 <a href="#eof-%e7%bb%93%e6%9e%84" class="anchor">🔗</a></h2><p><strong>MySQL 4.1 及之后的版本：</strong></p>
+<table>
+<thead>
+<tr>
+<th>相对包内容的位置</th>
+<th>长度（字节）</th>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>包头标识</td>
+<td>0xFE 代表这是一个EOF 包</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>警告数</td>
+<td>上次命令引起的警告数</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2</td>
+<td>服务器状态</td>
+<td>服务器状态</td>
+</tr>
+</tbody>
+</table>
+<p>告警计数：服务器告警数量，在所有数据都发送给客户端后该值才有效。</p>
+<p>状态标志位：包含类似SERVER_MORE_RESULTS_EXISTS这样的标志位。</p>
+<p><strong>注：</strong> 由于EOF值与其它Result Set结构共用1字节，所以在收到报文后需要对EOF包的真实性进行校验，校验条件为：</p>
+<p>第1字节值为0xFE
+包长度小于9字节
+附：EOF结构的相关处理函数：</p>
+<p>服务器：protocol.cc源文件中的send_eof函数</p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220930235814.png" alt="Img"  />
+</p></p>
+<h2 id="row-data-结构">Row Data 结构 <a href="#row-data-%e7%bb%93%e6%9e%84" class="anchor">🔗</a></h2><p>Row Data含着的是我们需要获取的数据，一个Result Set包里面包含着多个Row Data结构。每一个值前面有长度字节值，可以帮助我们区分开不同的列。</p>
+<table>
+<thead>
+<tr>
+<th>相对包内容的位置</th>
+<th>长度（字节）</th>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>不定</td>
+<td>length</td>
+<td>这个字段的数据长度</td>
+</tr>
+<tr>
+<td>不定</td>
+<td>不定</td>
+<td>text</td>
+<td>这个字段的值</td>
+</tr>
+</tbody>
+</table>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220930235942.png" alt="Img"  />
+</p></p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/mysql">MySQL</a>
+            
+                <a href="https://ltkblog.cn/tags/mysql-driver">MySQL Driver</a>
+            
+                <a href="https://ltkblog.cn/tags/go">Go</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>
