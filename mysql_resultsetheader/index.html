@@ -64,18 +64,18 @@ if (!doNotTrack) {
     <h1 class="title">（六）Go-编写MySQL数据库驱动之MySQL协议解析Result Set消息结构</h1>
 
     <div class="tip">
-        <time datetime="2022-09-30 00:00:00 &#43;0000 UTC">2022年09月30日</time>
+        <time datetime="2022-10-01 00:00:00 &#43;0000 UTC">2022年10月01日</time>
         <span class="split">
           ·
         </span>
         <span>
-          857字
+          1243字
         </span>
         <span class="split">
           ·
         </span>
         <span>
-          2分钟
+          3分钟
         </span>
         <span class="split">
           ·
@@ -264,7 +264,80 @@ if (!doNotTrack) {
 <p><p class="markdown-image">
   <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220930235516.png" alt="Img"  />
 </p></p>
-<h2 id="eof-结构">EOF 结构 <a href="#eof-%e7%bb%93%e6%9e%84" class="anchor">🔗</a></h2><p><strong>MySQL 4.1 及之后的版本：</strong></p>
+<p><strong>Go代码实现：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">type</span> ResultField <span style="color:#a2f;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	DefLen       <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>	Def          <span style="color:#0b0;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>	PreFixLen    <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>	Database     <span style="color:#0b0;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>	TableLen     <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>	TableName    <span style="color:#0b0;font-weight:bold">string</span> <span style="color:#080;font-style:italic">//操作的虚拟表名
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	OrgTableLen  <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>	OrgTableName <span style="color:#0b0;font-weight:bold">string</span> <span style="color:#080;font-style:italic">//操作的物理表名
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	FieldLen     <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>	FieldName    <span style="color:#0b0;font-weight:bold">string</span> <span style="color:#080;font-style:italic">//操作的虚拟字段名
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	OrgFieldLen  <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>	OrgFieldName <span style="color:#0b0;font-weight:bold">string</span> <span style="color:#080;font-style:italic">//操作的物理字段名
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> (s <span style="color:#666">*</span>SelectInfo) <span style="color:#00a000">ResultSetField</span>(data []<span style="color:#0b0;font-weight:bold">byte</span>, fieldsInfo <span style="color:#666">*</span>FieldsInfo) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">var</span> idx <span style="color:#0b0;font-weight:bold">uint16</span> = <span style="color:#666">1</span>
+</span></span><span style="display:flex;"><span>	defLen <span style="color:#666">:=</span> <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">2</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(defLen, data[:idx])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s.ResultField.DefLen = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(defLen)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	idx = idx <span style="color:#666">+</span> s.ResultField.DefLen
+</span></span><span style="display:flex;"><span>	s.ResultField.Def = <span style="color:#a2f">string</span>(data[<span style="color:#666">1</span>:idx])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">//------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	preFixLen <span style="color:#666">:=</span> <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(preFixLen, data[idx:idx<span style="color:#666">+</span><span style="color:#666">1</span>])
+</span></span><span style="display:flex;"><span>	s.ResultField.PreFixLen = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(preFixLen)
+</span></span><span style="display:flex;"><span>	idx<span style="color:#666">++</span>
+</span></span><span style="display:flex;"><span>	s.ResultField.Database = <span style="color:#a2f">string</span>(data[idx : idx<span style="color:#666">+</span>s.ResultField.PreFixLen])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">//------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	tableLen <span style="color:#666">:=</span> <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">2</span>)
+</span></span><span style="display:flex;"><span>	idx = idx <span style="color:#666">+</span> s.ResultField.PreFixLen
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(tableLen, data[idx:idx<span style="color:#666">+</span><span style="color:#666">1</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s.ResultField.TableLen = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(tableLen)
+</span></span><span style="display:flex;"><span>	idx<span style="color:#666">++</span>
+</span></span><span style="display:flex;"><span>	s.ResultField.TableName = <span style="color:#a2f">string</span>(data[idx : idx<span style="color:#666">+</span>s.ResultField.TableLen])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">//------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	orgTableLen <span style="color:#666">:=</span> <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">2</span>)
+</span></span><span style="display:flex;"><span>	idx = idx <span style="color:#666">+</span> s.ResultField.TableLen
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(orgTableLen, data[idx:idx<span style="color:#666">+</span><span style="color:#666">1</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s.ResultField.OrgTableLen = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(orgTableLen)
+</span></span><span style="display:flex;"><span>	idx<span style="color:#666">++</span>
+</span></span><span style="display:flex;"><span>	s.ResultField.OrgTableName = <span style="color:#a2f">string</span>(data[idx : idx<span style="color:#666">+</span>s.ResultField.OrgTableLen])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">//------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	fieldLen <span style="color:#666">:=</span> <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">2</span>)
+</span></span><span style="display:flex;"><span>	idx = idx <span style="color:#666">+</span> s.ResultField.OrgTableLen
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(fieldLen, data[idx:idx<span style="color:#666">+</span><span style="color:#666">1</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s.ResultField.FieldLen = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(fieldLen)
+</span></span><span style="display:flex;"><span>	idx<span style="color:#666">++</span>
+</span></span><span style="display:flex;"><span>	s.ResultField.FieldName = <span style="color:#a2f">string</span>(data[idx : idx<span style="color:#666">+</span>s.ResultField.FieldLen])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">//------------------------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	orgFieldLen <span style="color:#666">:=</span> <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">2</span>)
+</span></span><span style="display:flex;"><span>	idx = idx <span style="color:#666">+</span> s.ResultField.FieldLen
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(orgFieldLen, data[idx:idx<span style="color:#666">+</span><span style="color:#666">1</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s.ResultField.OrgFieldLen = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(orgFieldLen)
+</span></span><span style="display:flex;"><span>	idx<span style="color:#666">++</span>
+</span></span><span style="display:flex;"><span>	s.ResultField.OrgFieldName = <span style="color:#a2f">string</span>(data[idx : idx<span style="color:#666">+</span>s.ResultField.OrgFieldLen])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	fieldsInfo.FieldMap = <span style="color:#a2f">append</span>(fieldsInfo.FieldMap, s.ResultField.OrgFieldName)
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">//fmt.Println(s.ResultField.OrgFieldName)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>}
+</span></span></code></pre></div><h2 id="eof-结构">EOF 结构 <a href="#eof-%e7%bb%93%e6%9e%84" class="anchor">🔗</a></h2><p><strong>MySQL 4.1 及之后的版本：</strong></p>
 <table>
 <thead>
 <tr>
@@ -305,7 +378,30 @@ if (!doNotTrack) {
 <p><p class="markdown-image">
   <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220930235814.png" alt="Img"  />
 </p></p>
-<h2 id="row-data-结构">Row Data 结构 <a href="#row-data-%e7%bb%93%e6%9e%84" class="anchor">🔗</a></h2><p>Row Data含着的是我们需要获取的数据，一个Result Set包里面包含着多个Row Data结构。每一个值前面有长度字节值，可以帮助我们区分开不同的列。</p>
+<p><strong>Go代码实现：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">type</span> Eof <span style="color:#a2f;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	ResponseCode []<span style="color:#0b0;font-weight:bold">byte</span>
+</span></span><span style="display:flex;"><span>	EofMarker    <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>	ServerStatus <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>	Payload      <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">NewEof</span>() <span style="color:#666">*</span>Eof {
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">return</span> <span style="color:#666">&amp;</span>Eof{}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> (e <span style="color:#666">*</span>Eof) <span style="color:#00a000">Eof</span>(packet []<span style="color:#0b0;font-weight:bold">byte</span>) {
+</span></span><span style="display:flex;"><span>	e.ResponseCode = packet[<span style="color:#666">0</span>:<span style="color:#666">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	eofMarker <span style="color:#666">:=</span> <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">2</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(eofMarker, e.ResponseCode)
+</span></span><span style="display:flex;"><span>	e.EofMarker = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(eofMarker)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	e.ServerStatus = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(packet[<span style="color:#666">1</span>:<span style="color:#666">3</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	e.Payload = binary.LittleEndian.<span style="color:#00a000">Uint16</span>(packet[<span style="color:#666">3</span>:<span style="color:#666">5</span>])
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">//fmt.Println(e)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>}
+</span></span></code></pre></div><h2 id="row-data-结构">Row Data 结构 <a href="#row-data-%e7%bb%93%e6%9e%84" class="anchor">🔗</a></h2><p>Row Data含着的是我们需要获取的数据，一个Result Set包里面包含着多个Row Data结构。每一个值前面有长度字节值，可以帮助我们区分开不同的列。</p>
 <table>
 <thead>
 <tr>
@@ -333,7 +429,53 @@ if (!doNotTrack) {
 <p><p class="markdown-image">
   <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220930235942.png" alt="Img"  />
 </p></p>
-
+<p><strong>Go代码实现：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">NewRowPacket</span>() <span style="color:#666">*</span>Row {
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">return</span> <span style="color:#666">&amp;</span>Row{RowList: <span style="color:#a2f;font-weight:bold">nil</span>}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">type</span> Row <span style="color:#a2f;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	RowList []<span style="color:#0b0;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> (r <span style="color:#666">*</span>Row) <span style="color:#00a000">RowPacket</span>(mysql <span style="color:#666">*</span>server.Mysql) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">for</span> {
+</span></span><span style="display:flex;"><span>		packetData <span style="color:#666">:=</span> mysql.<span style="color:#00a000">Payload</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		packetType <span style="color:#666">:=</span> hex.<span style="color:#00a000">EncodeToString</span>(packetData[:<span style="color:#666">1</span>])
+</span></span><span style="display:flex;"><span>		<span style="color:#a2f;font-weight:bold">if</span> packetType <span style="color:#666">==</span> <span style="color:#b44">&#34;fe&#34;</span> { <span style="color:#080;font-style:italic">//需要做一个eof判断是否结束
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>			<span style="color:#a2f;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		rowIdx = <span style="color:#666">0</span> <span style="color:#080;font-style:italic">//初始化一下
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>		r.<span style="color:#00a000">row</span>(packetData)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">var</span> rowIdx <span style="color:#0b0;font-weight:bold">uint16</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> (r <span style="color:#666">*</span>Row) <span style="color:#00a000">row</span>(packetData []<span style="color:#0b0;font-weight:bold">byte</span>) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">if</span> <span style="color:#a2f">int</span>(rowIdx) <span style="color:#666">&gt;=</span> <span style="color:#a2f">len</span>(packetData) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a2f;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	lengthBytes <span style="color:#666">:=</span> <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">2</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f">copy</span>(lengthBytes, packetData[rowIdx:rowIdx<span style="color:#666">+</span><span style="color:#666">1</span>])
+</span></span><span style="display:flex;"><span>	length <span style="color:#666">:=</span> binary.LittleEndian.<span style="color:#00a000">Uint16</span>(lengthBytes)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">if</span> <span style="color:#a2f">int</span>(rowIdx<span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span>length) &gt; <span style="color:#a2f">len</span>(packetData) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a2f;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	text <span style="color:#666">:=</span> packetData[rowIdx<span style="color:#666">+</span><span style="color:#666">1</span> : rowIdx<span style="color:#666">+</span><span style="color:#666">1</span><span style="color:#666">+</span>length]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	rowIdx = rowIdx <span style="color:#666">+</span> <span style="color:#666">1</span> <span style="color:#666">+</span> length
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	r.RowList = <span style="color:#a2f">append</span>(r.RowList, fmt.<span style="color:#00a000">Sprintf</span>(<span style="color:#b44">&#34;%s&#34;</span>, text))
+</span></span><span style="display:flex;"><span>	r.<span style="color:#00a000">row</span>(packetData)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
     </div>
 
     

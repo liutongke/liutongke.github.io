@@ -69,7 +69,7 @@ if (!doNotTrack) {
           ·
         </span>
         <span>
-          1539字
+          1560字
         </span>
         <span class="split">
           ·
@@ -117,7 +117,7 @@ if (!doNotTrack) {
 <li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
 <li><a href="https://github.com/liutongke/my-mysql-driver" target="_blank" rel="noopener">源码地址</a></li>
 </ul>
-<h2 id="auth-packet格式">Auth Packet格式 <a href="#auth-packet%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h2><p>Auth packet是由Client向Server发送的认证包，用于验证数据库账户登录，相应内容的格式：</p>
+<h2 id="auth-packet格式">Auth Packet格式 <a href="#auth-packet%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h2><p>Auth packet包是由MySQL客户端向MySQL服务端发送的认证包，用于验证数据库账户登录，相应内容的格式：</p>
 <table>
 <thead>
 <tr>
@@ -195,11 +195,11 @@ if (!doNotTrack) {
 <li>LengthEncodedString（指定字符串长度方式）： 与VariableLengthString原理相似，是它的一种特殊情况，具体例子就是我上条举的这个例子。</li>
 <li>RestOfPacketString（包末端字符串方式）：一个包末端的字符串，可根据包的总长度金和当前位置得到字符串的长度，实际中并不常用。</li>
 </ol>
-<h2 id="加密方式">加密方式 <a href="#%e5%8a%a0%e5%af%86%e6%96%b9%e5%bc%8f" class="anchor">🔗</a></h2><p>生成Auth Packet的过程中，需要将密码加密再发送。在MySQL 4.0之前，MySQL协议仅支持旧密码身份验证，在MySQL 4.1中添加了安全密码身份验证方法，在MySQL 5.5中，可以通过身份验证插件（Authentication Plugin）实现任意身份验证方法。<a href="https://dev.mysql.com/doc/internals/en/determining-authentication-method.html" target="_blank" rel="noopener">文档</a></p>
-<p>加密方式通过<code>Handshake Packet</code>包中的身份验证插件（Authentication Plugin）字段确认。<a href="https://dev.mysql.com/doc/internals/en/authentication-method.html" target="_blank" rel="noopener">文档</a>，由上一章知道服务器返回<code>mysql_native_password</code>字段，所以密码使用该方式进行加密。可以参考<a href="https://github.com/go-sql-driver/mysql/blob/master/auth.go" target="_blank" rel="noopener">go-sql-driver/mysql</a>包内容开发加密组件。</p>
+<h2 id="加密方式">加密方式 <a href="#%e5%8a%a0%e5%af%86%e6%96%b9%e5%bc%8f" class="anchor">🔗</a></h2><p>生成Auth Packet的过程中，需要将密码加密再发送。在MySQL 4.0之前，MySQL协议仅支持旧密码身份验证，在MySQL 4.1中添加了安全密码身份验证方法，在MySQL 5.5中，可以通过身份验证插件（Authentication Plugin）实现任意身份验证方法。<a href="https://dev.mysql.com/doc/internals/en/determining-authentication-method.html" target="_blank" rel="noopener">参考文档资料</a></p>
+<p>加密方式通过<code>Handshake Packet</code>包中的身份验证插件（Authentication Plugin）字段确认<a href="https://dev.mysql.com/doc/internals/en/authentication-method.html" target="_blank" rel="noopener">（参考文档资料）</a>。由上一章知道服务器返回<code>mysql_native_password</code>字段，所以密码使用该方式进行加密。可以参考<a href="https://github.com/go-sql-driver/mysql/blob/master/auth.go" target="_blank" rel="noopener">go-sql-driver/mysql</a>包内容开发加密组件。</p>
 <p><strong>mysql_native_password</strong></p>
 <p>Password，首先这个数据长度是指定的，即为20个字节。而这个加密的密码是根据HandShake中的两个Salt通过约定的加密方式的来，HandShake中第一个Salt是8位的，第二个Salt是12位的。</p>
-<p><code>scramble</code>为Salt1+Salt2。</p>
+<p><code>scramble</code>为<strong>Salt1+Salt2</strong> 组成。如下所示：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f">append</span>(HandshakePacket.Salt1, HandshakePacket.Salt2<span style="color:#666">...</span>)
 </span></span></code></pre></div><p><code>password</code>为客户端输入的密码。</p>
 <p><strong>实现代码：</strong></p>

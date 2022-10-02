@@ -64,12 +64,12 @@ if (!doNotTrack) {
     <h1 class="title">（五）Go-编写MySQL数据库驱动之MySQL协议解析OK/Error</h1>
 
     <div class="tip">
-        <time datetime="2022-09-29 00:00:00 &#43;0000 UTC">2022年09月29日</time>
+        <time datetime="2022-09-30 00:00:00 &#43;0000 UTC">2022年09月30日</time>
         <span class="split">
           ·
         </span>
         <span>
-          1307字
+          1311字
         </span>
         <span class="split">
           ·
@@ -161,7 +161,7 @@ if (!doNotTrack) {
 </tbody>
 </table>
 <p><strong>注：</strong> 响应报文的第1个字节在不同类型中含义不同，比如在OK报文中，该字节并没有实际意义，值恒为0x00；而在Result Set报文中，该字节又是长度编码的二进制数据结构（Length Coded Binary）中的第1字节。</p>
-<h2 id="二ok-packet">（二）OK Packet <a href="#%e4%ba%8cok-packet" class="anchor">🔗</a></h2><h3 id="ok-packet数据格式">OK Packet数据格式 <a href="#ok-packet%e6%95%b0%e6%8d%ae%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h3><p>普通的OK包会在以下几种情况下产生，由Server发送给相应的接收方：</p>
+<h2 id="二ok-packet">（二）OK Packet <a href="#%e4%ba%8cok-packet" class="anchor">🔗</a></h2><h3 id="ok-packet数据格式">OK Packet数据格式 <a href="#ok-packet%e6%95%b0%e6%8d%ae%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h3><p>普通的OK包会在以下几种情况下产生，由MySQL服务端发送给相应的接收方：</p>
 <ul>
 <li>COM_PING: 连接或者测试数据库</li>
 <li>COM_QUERY： 不需要查询结果集的操作，比如INSERT, UPDATE, ALTER TABLE,DELETE</li>
@@ -246,7 +246,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">return</span> sucPacket
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h2 id="三error-packet">（三）Error Packet <a href="#%e4%b8%89error-packet" class="anchor">🔗</a></h2><h3 id="error-packet数据格式">Error Packet数据格式 <a href="#error-packet%e6%95%b0%e6%8d%ae%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h3><p>顾名思义Error 包就是当出现错误的时候返回的信息，比如账户验证不通过，查询命令不合法，非空字段未指定值等相关操作，Server端都会向Client端发送Error 包。</p>
+</span></span></code></pre></div><h2 id="三error-packet">（三）Error Packet <a href="#%e4%b8%89error-packet" class="anchor">🔗</a></h2><h3 id="error-packet数据格式">Error Packet数据格式 <a href="#error-packet%e6%95%b0%e6%8d%ae%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h3><p>顾名思义Error 包就是当出现错误的时候返回的信息，比如账户验证不通过，查询命令不合法，非空字段未指定值等相关操作，MySQL服务端都会向MySQL客户端发送Error 包。</p>
 <p>首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是Error Packet的四字节后的内容：</p>
 <table>
 <thead>

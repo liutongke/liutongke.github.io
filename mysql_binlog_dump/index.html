@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Go-伪装成MySQL Slave同步主库binlog日志实现主从复制 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="Go实现伪装成MySQL Slave同步binlog日志实现主从复制，master_binlog_checksum">
+<meta name="keywords" content="MySQL主从复制主库binlog, master_binlog_checksum, MySQL" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">Go-伪装成MySQL Slave同步主库binlog日志实现主从复制</h1>
+
+    <div class="tip">
+        <time datetime="2022-10-02 00:00:00 &#43;0000 UTC">2022年10月02日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2226字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          5分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一mysql主从复制流程">（一）MySQL主从复制流程</a>
+      <ul>
+        <li><a href="#mysql复制流程概述">MySQL复制流程概述</a></li>
+      </ul>
+    </li>
+    <li><a href="#二com_register_slave请求报文">（二）COM_REGISTER_SLAVE请求报文</a>
+      <ul>
+        <li><a href="#register-slave详细步骤">Register Slave详细步骤</a></li>
+      </ul>
+    </li>
+    <li><a href="#三com_binlog_dump请求报文">（三）COM_BINLOG_DUMP请求报文</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <p><strong>准备：</strong></p>
+<ul>
+<li><a href="https://dev.mysql.com/doc/internals/en/connection-phase.html" target="_blank" rel="noopener">MySQL 5.7.26</a></li>
+<li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
+<li><a href="https://github.com/liutongke/my-mysql-driver" target="_blank" rel="noopener">源码地址</a></li>
+</ul>
+<blockquote>
+<p>本文主要介绍MySQL主从复制中从库与主库的流程交互逻辑实现。</p>
+</blockquote>
+<h2 id="一mysql主从复制流程">（一）MySQL主从复制流程 <a href="#%e4%b8%80mysql%e4%b8%bb%e4%bb%8e%e5%a4%8d%e5%88%b6%e6%b5%81%e7%a8%8b" class="anchor">🔗</a></h2><h3 id="mysql复制流程概述">MySQL复制流程概述 <a href="#mysql%e5%a4%8d%e5%88%b6%e6%b5%81%e7%a8%8b%e6%a6%82%e8%bf%b0" class="anchor">🔗</a></h3><p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20221003002416.png" alt="MySQL 主从复制"  />
+</p></p>
+<ol>
+<li>第一步：MySQL从库与MySQL主库进行TCP三次握手，建立起稳定的连接。</li>
+<li>第二步：主从用户认证，MySQL主库向MySQL从库发送<code>Server Greeting  proto=10 version=5.7.26</code>的Handshake Packet。MySQL从库解析Handshake包进行逻辑处理，<code>Login Request user=root</code>是MySQL从库发送的Auth Packet。MySQL主库会对MySQL从库的用户名密码进行认证，进行MySQL应用层的三次握手。可参考之前的文章<a href="https://ltkblog.cn/mysql_handshake/" target="_blank" rel="noopener">（二）Go-编写MySQL数据库驱动之MySQL协议解析Handshake Packet</a><a href="https://ltkblog.cn/mysql_auth_packet/" target="_blank" rel="noopener">（三）Go-编写MySQL数据库驱动之MySQL协议解析Auth Packet</a></li>
+<li>第三步：register_slave注册MySQL从库，MySQL从库通过register_slave将自己注册到MySQL主库上，以便master在<code>show slave host</code>时可以查看连接的MySQL从库情况。</li>
+<li>第四步：request_dump请求binlog，MySQL从库通过request_dump，请求从主库指定的二进制日志和文件偏移量开始获取所有的二进制日志。</li>
+<li>第五步：master发送Binlog Event，Master启动binlog dump线程，从指定的二进制日志的对应文件偏移量开始向MySQL从库的IO线程发送二进制日志Event。</li>
+<li>第六步：备库接收存储Relaylog，MySQL从库的IO线程持续接收Event并将Event存储relay log中。</li>
+</ol>
+<h2 id="二com_register_slave请求报文">（二）COM_REGISTER_SLAVE请求报文 <a href="#%e4%ba%8ccom_register_slave%e8%af%b7%e6%b1%82%e6%8a%a5%e6%96%87" class="anchor">🔗</a></h2><p>这是上面<strong>第三步</strong>内容，MySQL从库将自己注册到MySQL主库上。首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是<strong>客户端命令请求报文</strong>的四字节后的内容。<a href="https://mariadb.com/kb/en/com_register_slave/" target="_blank" rel="noopener">文档地址</a></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Type</th>
+<th style="text-align:left">Name</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">int&lt;1&gt;<!--1--></td>
+<td style="text-align:left">执行命令[15]COM_REGISTER_SLAVE</td>
+<td style="text-align:left">获取二进制日志信息，固定十六进制0x15</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;4&gt;<!--1--></td>
+<td style="text-align:left">Slave server_id</td>
+<td style="text-align:left">从服务器id值（小字节序）</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;1&gt;<!--1--></td>
+<td style="text-align:left">Slave hostname length</td>
+<td style="text-align:left">从服务器地址长度</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;n&gt;<!--1--></td>
+<td style="text-align:left">Hostname</td>
+<td style="text-align:left">从服务器地址</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;1&gt;<!--1--></td>
+<td style="text-align:left">Slave username len</td>
+<td style="text-align:left">从服务器用户名长度</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;n&gt;<!--1--></td>
+<td style="text-align:left">Username</td>
+<td style="text-align:left">从服务器用户名</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;1&gt;<!--1--></td>
+<td style="text-align:left">Slave password len</td>
+<td style="text-align:left">从服务器密码长度</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;n&gt;<!--1--></td>
+<td style="text-align:left">Slave password</td>
+<td style="text-align:left">从服务器密码</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;2&gt;<!--1--></td>
+<td style="text-align:left">Slave connection port</td>
+<td style="text-align:left">从服务器连接端口</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;4&gt;<!--1--></td>
+<td style="text-align:left">Replication rank</td>
+<td style="text-align:left">复制排名</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;4&gt;<!--1--></td>
+<td style="text-align:left">Master server id</td>
+<td style="text-align:left">主服务器id值</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注:</strong> 从服务器地址、从服务器用户名、从服务器密码、复制排名、主服务器id值通常不需要设置</p>
+<h3 id="register-slave详细步骤">Register Slave详细步骤 <a href="#register-slave%e8%af%a6%e7%bb%86%e6%ad%a5%e9%aa%a4" class="anchor">🔗</a></h3><p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20221003004741.png" alt="Img"  />
+</p></p>
+<p>通过Wireshark抓包可以看到当MySQL从库与MySQL主库完成Handshake Packet、Auth Packet认证后的步骤：</p>
+<ol>
+<li>设置主从心跳</li>
+<li>设置master_binlog_checksum，MySQL在5.6.5版本之后为binlog引入了checksum机制，从库需要与主库相关参数保持一致。在接收到binlog event发送内容进行解码会增加4个额外字节做校验用。mysql5.6.5 以后的版本中 binlog_checksum=crc32,而低版本都是 binlog_checksum=none。如果不想校验，可以使用set命令设置<code>set binlog_checksum=none</code>。</li>
+<li>设置MySQL从库的slave_uuid，在MySQL主库上<code>SHOW SLAVE HOSTS;</code>可以查看连接的MySQL从库信息。</li>
+<li>注册MySQL从库。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>SET @master_heartbeat_period<span style="color:#666">=</span> <span style="color:#666">30000001024</span> <span style="color:#080;font-style:italic">#主从复制心跳</span>
+</span></span><span style="display:flex;"><span>SET @master_binlog_checksum<span style="color:#666">=</span> @@global.binlog_checksum <span style="color:#080;font-style:italic">#设置master_binlog_checksum</span>
+</span></span><span style="display:flex;"><span>SET @slave_uuid<span style="color:#666">=</span> <span style="color:#b44">&#39;62c16f3c-41ab-11ed-8d8e-0242ac110002&#39;</span> <span style="color:#080;font-style:italic">#设置slave_uuid</span>
+</span></span><span style="display:flex;"><span>Request Register Slave <span style="color:#080;font-style:italic">#注册MySQL从库</span>
+</span></span></code></pre></div><p><strong>Go代码实现：</strong></p>
+<p>设置master_binlog_checksum</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> (conn <span style="color:#666">*</span>Mysql) <span style="color:#00a000">SetChecksum</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">var</span> bytes = []<span style="color:#0b0;font-weight:bold">byte</span>{<span style="color:#666">0x03</span>}
+</span></span><span style="display:flex;"><span>	conn.<span style="color:#00a000">Write</span>(<span style="color:#a2f">append</span>(bytes, []<span style="color:#a2f">byte</span>(<span style="color:#b44">&#34;set @master_binlog_checksum= @@global.binlog_checksum;&#34;</span>)<span style="color:#666">...</span>), <span style="color:#666">0</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>设置slave_uuid</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> (conn <span style="color:#666">*</span>Mysql) <span style="color:#00a000">SetSlaveUuid</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">var</span> bytes = []<span style="color:#0b0;font-weight:bold">byte</span>{<span style="color:#666">0x03</span>}
+</span></span><span style="display:flex;"><span>	uuid <span style="color:#666">:=</span> uuid.<span style="color:#00a000">New</span>().<span style="color:#00a000">String</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	conn.<span style="color:#00a000">Write</span>(<span style="color:#a2f">append</span>(bytes, []<span style="color:#a2f">byte</span>(fmt.<span style="color:#00a000">Sprintf</span>(<span style="color:#b44">&#34;SET @slave_uuid= &#39;%s&#39;;&#34;</span>, uuid))<span style="color:#666">...</span>), <span style="color:#666">0</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>注册MySQL从库</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">ComRegisterSlave</span>() []<span style="color:#0b0;font-weight:bold">byte</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">var</span> bytes = []<span style="color:#0b0;font-weight:bold">byte</span>{<span style="color:#666">0x15</span>} <span style="color:#080;font-style:italic">//command
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">var</span> serverId = <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">4</span>)
+</span></span><span style="display:flex;"><span>	binary.LittleEndian.<span style="color:#00a000">PutUint32</span>(serverId, <span style="color:#a2f">uint32</span>(<span style="color:#666">4</span>)) <span style="color:#080;font-style:italic">//server-id
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	bytes = <span style="color:#a2f">append</span>(bytes, serverId<span style="color:#666">...</span>)
+</span></span><span style="display:flex;"><span>	bytes = <span style="color:#a2f">append</span>(bytes, []<span style="color:#0b0;font-weight:bold">byte</span>{<span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>}<span style="color:#666">...</span>) <span style="color:#080;font-style:italic">//Hostname Username password可不设置
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>	SlaveConnectionPort <span style="color:#666">:=</span> []<span style="color:#0b0;font-weight:bold">byte</span>{<span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>}
+</span></span><span style="display:flex;"><span>	binary.LittleEndian.<span style="color:#00a000">PutUint16</span>(SlaveConnectionPort, <span style="color:#a2f">uint16</span>(<span style="color:#666">3306</span>)) <span style="color:#080;font-style:italic">//Slave connection port
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	bytes = <span style="color:#a2f">append</span>(bytes, SlaveConnectionPort<span style="color:#666">...</span>)
+</span></span><span style="display:flex;"><span>	bytes = <span style="color:#a2f">append</span>(bytes, []<span style="color:#0b0;font-weight:bold">byte</span>{<span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>}<span style="color:#666">...</span>) <span style="color:#080;font-style:italic">//Replication rank  Master server id可不设置
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	<span style="color:#a2f;font-weight:bold">return</span> bytes
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="三com_binlog_dump请求报文">（三）COM_BINLOG_DUMP请求报文 <a href="#%e4%b8%89com_binlog_dump%e8%af%b7%e6%b1%82%e6%8a%a5%e6%96%87" class="anchor">🔗</a></h2><p>这是上面<strong>第四步</strong>内容，MySQL从库向MySQL主库请求binlog。首先前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是<strong>客户端命令请求报文</strong>的四字节后的内容。<a href="https://dev.mysql.com/doc/internals/en/com-binlog-dump.html" target="_blank" rel="noopener">文档地址</a></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Type</th>
+<th style="text-align:left">Name</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">int&lt;1&gt;<!--1--></td>
+<td style="text-align:left">执行命令[12]COM_BINLOG_DUMP</td>
+<td style="text-align:left">获取二进制日志信息，固定十六进制0x12</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;4&gt;<!--1--></td>
+<td style="text-align:left">binlog-pos</td>
+<td style="text-align:left">二进制日志数据的起始位置（小字节序）</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;2&gt;<!--1--></td>
+<td style="text-align:left">flags</td>
+<td style="text-align:left">二进制日志数据标志位</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;4&gt;<!--1--></td>
+<td style="text-align:left">server-id</td>
+<td style="text-align:left">从服务器的服务器ID值（小字节序）</td>
+</tr>
+<tr>
+<td style="text-align:left">int&lt;n&gt;<!--1--></td>
+<td style="text-align:left">binlog-filename</td>
+<td style="text-align:left">二进制binlog日志的文件名称</td>
+</tr>
+</tbody>
+</table>
+<p><strong>flags注:</strong>
+<strong>0x00 MySQL binlog非阻塞模式下运行</strong>
+<strong>0x02 MySQL binlog阻塞模式下运行</strong></p>
+<p>在发送dump命令的时候，可以指定flag为BINLOG_DUMP_NON_BLOCK，这样master在没有可发送的binlog event之后，就会返回一个EOF package。不过通常对于slave来说，一直把连接挂着可能更好，这样能更及时收到新产生的binlog event。</p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20221003010729.png" alt="request_dump请求binlog"  />
+</p></p>
+<p>当MySQL从库成功发送request_dump请求binlog后，MySQL主库就会源源不断的发送binlog日志了。如下图中，<code>Request Send Binlog</code>就是发送request_dump命令，<code>166	5.720479	192.168.0.107	192.168.0.105	MySQL	230	Response  OK Response  OK </code>就是MySQL主库发送binlog二进制文件了。</p>
+<p><strong>Go代码实现：</strong></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">Binlog</span>() []<span style="color:#0b0;font-weight:bold">byte</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">var</span> b = <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">4</span>)
+</span></span><span style="display:flex;"><span>	binary.LittleEndian.<span style="color:#00a000">PutUint32</span>(b, <span style="color:#a2f">uint32</span>(<span style="color:#666">2344</span>)) <span style="color:#080;font-style:italic">//binlog-pos
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	<span style="color:#a2f;font-weight:bold">var</span> bytes = []<span style="color:#0b0;font-weight:bold">byte</span>{<span style="color:#666">0x12</span>}
+</span></span><span style="display:flex;"><span>	bytes = <span style="color:#a2f">append</span>(bytes, b<span style="color:#666">...</span>) <span style="color:#080;font-style:italic">//COM_BINLOG_DUMP
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>	bytes = <span style="color:#a2f">append</span>(bytes, <span style="color:#666">0x00</span>, <span style="color:#666">0x00</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">var</span> serverId = <span style="color:#a2f">make</span>([]<span style="color:#0b0;font-weight:bold">byte</span>, <span style="color:#666">4</span>)
+</span></span><span style="display:flex;"><span>	binary.LittleEndian.<span style="color:#00a000">PutUint32</span>(serverId, <span style="color:#a2f">uint32</span>(<span style="color:#666">4</span>)) <span style="color:#080;font-style:italic">//server-id
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	bytes = <span style="color:#a2f">append</span>(bytes, serverId<span style="color:#666">...</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	bytes = <span style="color:#a2f">append</span>(bytes, []<span style="color:#a2f">byte</span>(<span style="color:#b44">&#34;mysql-bin.000001&#34;</span>)<span style="color:#666">...</span>) <span style="color:#080;font-style:italic">//binlog-filename
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	<span style="color:#a2f;font-weight:bold">return</span> bytes
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/mysql">MySQL</a>
+            
+                <a href="https://ltkblog.cn/tags/mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6">MySQL主从复制</a>
+            
+                <a href="https://ltkblog.cn/tags/go">Go</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

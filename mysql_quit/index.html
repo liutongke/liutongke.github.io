@@ -64,12 +64,12 @@ if (!doNotTrack) {
     <h1 class="title">（七）Go-编写MySQL数据库驱动之MySQL协议解析quit</h1>
 
     <div class="tip">
-        <time datetime="2022-09-30 00:00:00 &#43;0000 UTC">2022年09月30日</time>
+        <time datetime="2022-10-01 00:00:00 &#43;0000 UTC">2022年10月01日</time>
         <span class="split">
           ·
         </span>
         <span>
-          194字
+          199字
         </span>
         <span class="split">
           ·
@@ -115,7 +115,7 @@ if (!doNotTrack) {
 <li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
 <li><a href="https://github.com/liutongke/my-mysql-driver" target="_blank" rel="noopener">源码地址</a></li>
 </ul>
-<h2 id="quit-packet">Quit Packet <a href="#quit-packet" class="anchor">🔗</a></h2><p>MySQL客户端需要断开与MySQL服务端连接时，需要向服务端发送一个Quit Packet指令。这个包比较简单，关闭当前连接（客户端退出），无参数。前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是Quit Packet的四字节后的内容。只有一个包头标识数据。</p>
+<h2 id="quit-packet">Quit Packet <a href="#quit-packet" class="anchor">🔗</a></h2><p>MySQL客户端需要断开与MySQL服务端连接时，需要向MySQL服务端发送一个Quit Packet指令。这个包比较简单，关闭当前连接（客户端退出），无参数。前面的四个字节是包头，其中前三位代表packet数据长度，第四位是包序列号。以下是Quit Packet的四字节后的内容。只有一个包头标识数据。</p>
 <table>
 <thead>
 <tr>

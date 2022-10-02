@@ -69,7 +69,7 @@ if (!doNotTrack) {
           ·
         </span>
         <span>
-          1770字
+          1775字
         </span>
         <span class="split">
           ·
@@ -224,6 +224,9 @@ if (!doNotTrack) {
 <p><code>payload_length=4a0000</code></p>
 <p><code>sequence_id=00</code></p>
 <p><code>payload=0a352e372e3236002f000000740b50355a73387100fff7c00200ff81150000000000000000000072232a7e3709052f333f535a006d7973716c5f6e61746976655f70617373776f726400</code></p>
+<p><p class="markdown-image">
+  <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20221001172806.png" alt="Img"  />
+</p></p>
 <h2 id="三mysql连接交互过程">（三）MySQL连接交互过程 <a href="#%e4%b8%89mysql%e8%bf%9e%e6%8e%a5%e4%ba%a4%e4%ba%92%e8%bf%87%e7%a8%8b" class="anchor">🔗</a></h2><p><a href="https://dev.mysql.com/doc/internals/en/successful-authentication.html" target="_blank" rel="noopener">Connection Phase文档</a></p>
 <p>MySQL客户端与服务器的交互主要分为两个阶段：握手认证阶段和命令执行阶段。</p>
 <p><strong>握手认证阶段</strong>
@@ -248,7 +251,7 @@ if (!doNotTrack) {
   <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220928235150.png" alt="Img"  />
 </p></p>
 <ol>
-<li>第一步客户端与MySQL服务端进行TCP三次握手，建立起稳定的连接。</li>
+<li>第一步MySQL客户端与MySQL服务端进行TCP三次握手，建立起稳定的连接。</li>
 <li>MySQL服务端向客户端发送<code>Server Greeting  proto=10 version=5.7.26</code>的Handshake Packet。</li>
 <li>客户端解析的Handshake包进行逻辑处理，<code>Login Request user=root</code>是客户端发送的Auth Packet。</li>
 <li>服务端认证成功客户端的Auth Packet之后，返回一个OK Packet。</li>
