@@ -2,25 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://ltkblog.cn/tags/docker/</loc>
+    <lastmod>2022-10-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/</loc>
+    <lastmod>2022-10-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/kms%E6%9C%8D%E5%8A%A1%E5%99%A8/</loc>
+    <lastmod>2022-10-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/posts/</loc>
+    <lastmod>2022-10-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/</loc>
+    <lastmod>2022-10-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/py-kms/</loc>
+    <lastmod>2022-10-19T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://ltkblog.cn/tags/go/</loc>
     <lastmod>2022-10-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ltkblog.cn/mysql_binlog_dump/</loc>
     <lastmod>2022-10-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ltkblog.cn/</loc>
-    <lastmod>2022-10-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ltkblog.cn/tags/mysql/</loc>
     <lastmod>2022-10-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ltkblog.cn/tags/mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/</loc>
-    <lastmod>2022-10-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ltkblog.cn/posts/</loc>
-    <lastmod>2022-10-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ltkblog.cn/tags/</loc>
     <lastmod>2022-10-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ltkblog.cn/mysql_resultsetheader/</loc>
