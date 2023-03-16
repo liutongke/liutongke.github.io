@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ChatGPT on keke的个人博客</title>
+    <link>https://ltkblog.cn/tags/chatgpt/</link>
+    <description>Recent content in ChatGPT on keke的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 16 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/chatgpt/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>成功OpenAI注册ChatGPT</title>
+      <link>https://ltkblog.cn/register_chatgpt/</link>
+      <pubDate>Thu, 16 Mar 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/register_chatgpt/</guid>
+      <description>准备阶段 🔗 注册ChatGPT需要一个国外的手机号接收短信验证码。如果没有的话可以使用SMS-activate网站购买号码注册。 能够正常访问G</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nas on keke的个人博客</title>
+    <link>https://ltkblog.cn/tags/nas/</link>
+    <description>Recent content in nas on keke的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 02 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/nas/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>搭建私人NAS之jellyfin媒体系统</title>
+      <link>https://ltkblog.cn/nas_jellyfin/</link>
+      <pubDate>Wed, 02 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/nas_jellyfin/</guid>
+      <description>（二）jellyfin媒体系统 🔗jellyfin客户端 media视频内容文件夹 影视内容命名规范 🔗Film (2010) [imdbid-tt0106145]Film (2018) [tmdbid-65567] 影片名+空格+（年份）+为了</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>搭建私人NAS之jellyfin媒体系统 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="搭建私人NAS之jellyfin媒体系统">
+<meta name="keywords" content="nas, jellyfin" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">搭建私人NAS之jellyfin媒体系统</h1>
+
+    <div class="tip">
+        <time datetime="2022-11-02 00:00:00 &#43;0000 UTC">2022年11月02日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          439字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#二jellyfin媒体系统">（二）jellyfin媒体系统</a>
+      <ul>
+        <li><a href="#影视内容命名规范httpsjellyfinorgdocsgeneralservermediamovies"><a href="https://jellyfin.org/docs/general/server/media/movies/">影视内容命名规范</a></a></li>
+        <li><a href="#中文字幕不显示或乱码问题">中文字幕不显示或乱码问题</a></li>
+        <li><a href="#解决元数据削刮媒体信息失败问题">解决元数据削刮媒体信息失败问题</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h2 id="二jellyfin媒体系统">（二）jellyfin媒体系统 <a href="#%e4%ba%8cjellyfin%e5%aa%92%e4%bd%93%e7%b3%bb%e7%bb%9f" class="anchor">🔗</a></h2><p><a href="https://jellyfin.org/clients/" target="_blank" rel="noopener">jellyfin客户端</a>
+<code>media</code>视频内容文件夹</p>
+<h3 id="影视内容命名规范httpsjellyfinorgdocsgeneralservermediamovies"><a href="https://jellyfin.org/docs/general/server/media/movies/" target="_blank" rel="noopener">影视内容命名规范</a> <a href="#%e5%bd%b1%e8%a7%86%e5%86%85%e5%ae%b9%e5%91%bd%e5%90%8d%e8%a7%84%e8%8c%83httpsjellyfinorgdocsgeneralservermediamovies" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Film (2010) [imdbid-tt0106145]Film (2018) [tmdbid-65567]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>影片名+空格+（年份）+为了更好的识别可以把元数据id加上
+</span></span></code></pre></div><p><a href="https://www.themoviedb.org/search/movie?query=%E9%B9%BF%E9%BC%8E%E8%AE%B0" target="_blank" rel="noopener">tmdb搜刮官网</a>，名称可以去这里直接参考。</p>
+<h3 id="中文字幕不显示或乱码问题">中文字幕不显示或乱码问题 <a href="#%e4%b8%ad%e6%96%87%e5%ad%97%e5%b9%95%e4%b8%8d%e6%98%be%e7%a4%ba%e6%88%96%e4%b9%b1%e7%a0%81%e9%97%ae%e9%a2%98" class="anchor">🔗</a></h3><p><a href="https://post.smzdm.com/p/a5dro4d3/" target="_blank" rel="noopener">https://post.smzdm.com/p/a5dro4d3/</a></p>
+<p><strong>解决方案：</strong>
+安装Open Subtitles插件-&gt;<a href="https://assrt.net/sub/?searchword=%E7%81%B0%E7%8C%8E%E7%8A%AC%E5%8F%B7" target="_blank" rel="noopener">外挂字幕网</a>下载字幕-&gt;上传srt字幕</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/lixiaoben123/picgo/master/images/yank-note-picgo-img-20221021121725.png" alt="Img"  />
+</p></p>
+<p><a href="https://www.jihosoft.cn/zimu/subtitles/subtitle-download-sites/" target="_blank" rel="noopener">字幕网站推荐：</a>：</p>
+<ol>
+<li><a href="https://zimuku.org/" target="_blank" rel="noopener">字幕库</a></li>
+<li><a href="http://assrt.net/" target="_blank" rel="noopener">伪射手</a></li>
+<li><a href="https://www.a4k.net/" target="_blank" rel="noopener">A4k字幕网</a></li>
+</ol>
+<h3 id="解决元数据削刮媒体信息失败问题">解决元数据削刮媒体信息失败问题 <a href="#%e8%a7%a3%e5%86%b3%e5%85%83%e6%95%b0%e6%8d%ae%e5%89%8a%e5%88%ae%e5%aa%92%e4%bd%93%e4%bf%a1%e6%81%af%e5%a4%b1%e8%b4%a5%e9%97%ae%e9%a2%98" class="anchor">🔗</a></h3><p>修改hots，<a href="https://ipaddress.com/website/api.tmdb.org" target="_blank" rel="noopener">查询网址ip：</a></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>api.themoviedb.org
+</span></span><span style="display:flex;"><span>api.themoviedb.org
+</span></span></code></pre></div><p>Dockerfile示例(<strong>&ndash;add-host=</strong>)：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>docker run <span style="color:#b62;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#b62;font-weight:bold"></span>    -v /mydata/jellyfin:/config <span style="color:#b62;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#b62;font-weight:bold"></span>    -v /mydata/video:/media <span style="color:#b62;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#b62;font-weight:bold"></span>    -p 8096:8096 -p 8920:8920 <span style="color:#b62;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#b62;font-weight:bold"></span>    --name<span style="color:#666">=</span>jellyfin <span style="color:#b62;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#b62;font-weight:bold"></span>    --add-host<span style="color:#666">=</span>api.themoviedb.org:52.85.151.18 <span style="color:#b62;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#b62;font-weight:bold"></span>    --add-host<span style="color:#666">=</span>api.Tmdb.org:18.160.37.15 <span style="color:#b62;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#b62;font-weight:bold"></span>    --restart always <span style="color:#b62;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#b62;font-weight:bold"></span>    --device<span style="color:#666">=</span>/dev/dri:/dev/dri <span style="color:#b62;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#b62;font-weight:bold"></span>    jellyfin/jellyfin:latest
+</span></span></code></pre></div><p>docker-compose示例(<strong>extra_hosts:</strong>)：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>version: <span style="color:#b44">&#39;3.1&#39;</span>
+</span></span><span style="display:flex;"><span>services:
+</span></span><span style="display:flex;"><span>  jellyfin:
+</span></span><span style="display:flex;"><span>    image: jellyfin/jellyfin:latest
+</span></span><span style="display:flex;"><span>    container_name: jellyfin
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">#类似 Docker 中的 --add-host 参数 ，https://ipaddress.com/website/api.tmdb.org</span>
+</span></span><span style="display:flex;"><span>    extra_hosts:
+</span></span><span style="display:flex;"><span>      - <span style="color:#b44">&#34;api.themoviedb.org:52.85.151.18&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#b44">&#34;api.themoviedb.org:52.85.151.24&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#b44">&#34;api.themoviedb.org:52.85.151.28&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#b44">&#34;api.themoviedb.org:52.85.151.48&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#b44">&#34;api.Tmdb.org:18.160.37.15&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#b44">&#34;api.Tmdb.org:18.160.37.20&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#b44">&#34;api.Tmdb.org:18.160.37.47&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#b44">&#34;api.Tmdb.org:18.160.37.81&#34;</span>
+</span></span><span style="display:flex;"><span>    environment:
+</span></span><span style="display:flex;"><span>      - <span style="color:#b8860b">TZ</span><span style="color:#666">=</span>Asia/Shanghai
+</span></span><span style="display:flex;"><span>    volumes:
+</span></span><span style="display:flex;"><span>      - ./jellyfin/config:/config
+</span></span><span style="display:flex;"><span>      - ./jellyfin/cache:/cache
+</span></span><span style="display:flex;"><span>      - ./jellyfin/media:/media
+</span></span><span style="display:flex;"><span>    ports:
+</span></span><span style="display:flex;"><span>      - 8096:8096
+</span></span><span style="display:flex;"><span>      - 8920:8920
+</span></span><span style="display:flex;"><span>      - 7359:7359/udp
+</span></span><span style="display:flex;"><span>      - 1900:1900/udp
+</span></span><span style="display:flex;"><span>    restart: always
+</span></span></code></pre></div>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/nas">nas</a>
+            
+                <a href="https://ltkblog.cn/tags/jellyfin">jellyfin</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>
