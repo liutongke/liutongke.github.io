@@ -6,14 +6,23 @@
     <description>Recent content in Posts on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 16 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 03 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GitHub小技巧-单独删除某个文件所有历史记录</title>
+      <link>https://ltkblog.cn/git_del_all_history/</link>
+      <pubDate>Wed, 03 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/git_del_all_history/</guid>
+      <description>（一）git filter-branch命令 🔗在日常开发中，有时候不经意地将包含敏感信息如密钥、公网IP等的文件传送到GitHub上，这是非常</description>
+    </item>
+    
     <item>
       <title>成功OpenAI注册ChatGPT</title>
       <link>https://ltkblog.cn/register_chatgpt/</link>
       <pubDate>Thu, 16 Mar 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/register_chatgpt/</guid>
-      <description>准备阶段 🔗 注册ChatGPT需要一个国外的手机号接收短信验证码。如果没有的话可以使用SMS-activate网站购买号码注册。 能够正常访问G</description>
+      <description>准备阶段 🔗 注册ChatGPT需要一个国外的手机号接收短信验证码。如果没有可以使用SMS-activate网站购买号码注册。 能够正常访问 Google 并打</description>
     </item>
     
     <item>

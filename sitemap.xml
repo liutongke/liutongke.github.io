@@ -2,19 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://ltkblog.cn/tags/git/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/git_del_all_history/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/posts/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/</loc>
+    <lastmod>2023-05-03T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://ltkblog.cn/tags/chatgpt/</loc>
     <lastmod>2023-03-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ltkblog.cn/</loc>
-    <lastmod>2023-03-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ltkblog.cn/tags/openai/</loc>
-    <lastmod>2023-03-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ltkblog.cn/posts/</loc>
-    <lastmod>2023-03-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ltkblog.cn/tags/</loc>
     <lastmod>2023-03-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ltkblog.cn/register_chatgpt/</loc>
@@ -189,9 +195,6 @@
     <lastmod>2019-10-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ltkblog.cn/centos7_git/</loc>
-    <lastmod>2019-10-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ltkblog.cn/tags/git/</loc>
     <lastmod>2019-10-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ltkblog.cn/about/</loc>
