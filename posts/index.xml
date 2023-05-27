@@ -6,7 +6,16 @@
     <description>Recent content in Posts on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 03 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 27 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GitHub使用V2rayN加速</title>
+      <link>https://ltkblog.cn/git_link_v2rayn/</link>
+      <pubDate>Sat, 27 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/git_link_v2rayn/</guid>
+      <description>v2rayN 代理端口 仅仅针对github进行配置，让github走本地代理，其他的保持不变； socks5协议 # socks5协议，1080端口修改成自己</description>
+    </item>
+    
     <item>
       <title>GitHub小技巧-单独删除某个文件所有历史记录</title>
       <link>https://ltkblog.cn/git_del_all_history/</link>
