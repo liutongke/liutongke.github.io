@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>embed on keke的个人博客</title>
+    <link>https://ltkblog.cn/tags/embed/</link>
+    <description>Recent content in embed on keke的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 03 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/embed/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>将文件嵌入到Go二进制文件中</title>
+      <link>https://ltkblog.cn/go_embed/</link>
+      <pubDate>Sat, 03 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/go_embed/</guid>
+      <description>例如配置文件这些静态文件是不需要经常频繁变动，如果在编译时能一起编译进二进制文件中，就能减少部署时的依赖。在Go 1.16版本中，引入了emb</description>
+    </item>
+    
+  </channel>
+</rss>
