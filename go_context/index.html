@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Go语言上下文（context）详解 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="Go语言上下文（context）详解">
+<meta name="keywords" content="Go上下文, Go context" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">Go语言上下文（context）详解</h1>
+
+    <div class="tip">
+        <time datetime="2023-06-28 00:00:00 &#43;0000 UTC">2023年06月28日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          3614字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          8分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+
+
+    
+
+
+    <div class="content">
+      <p>在 Go 语言中，上下文（context）对象用于传递请求的上下文信息，并实现请求的超时控制、取消操作以及传递其他相关值。上下文对象是一个可选的参数，可以在函数调用链中传递，以便在各个函数之间共享请求的上下文信息。</p>
+<p>上下文对象的主要作用和使用用途如下：</p>
+<ol>
+<li>
+<p>传递请求的上下文信息：上下文对象可以用于传递请求的相关信息，例如请求的截止时间、请求的跟踪标识、用户身份验证信息等。通过将上下文对象作为函数的参数进行传递，可以将这些上下文信息在函数调用链中传递给需要使用它们的函数或组件。</p>
+</li>
+<li>
+<p>控制请求的超时和取消：上下文对象可以设置一个截止时间（deadline），用于控制请求的超时。当超过截止时间时，可以触发上下文对象的取消操作，取消相关的操作或任务。这对于避免长时间的等待和资源占用是非常有用的。</p>
+</li>
+<li>
+<p>并发安全的传递和访问：上下文对象的设计使得它可以在并发环境中安全地传递和访问。多个 goroutine 可以共享同一个上下文对象，并通过上下文对象来进行协调和同步。这样可以确保并发操作之间的上下文信息是正确的、一致的和可靠的。</p>
+</li>
+<li>
+<p>上下文值的传递：除了传递上下文信息外，上下文对象还可以用于传递其他与请求相关的值。通过上下文对象的 <code>context.WithValue()</code> 方法，可以将键值对存储在上下文对象中，以便在整个函数调用链中传递和访问这些值。</p>
+</li>
+</ol>
+<p>上下文对象的使用场景包括但不限于网络请求处理、并发任务调度、日志记录和错误处理等。它提供了一种方便而可靠的机制，用于在函数调用链中传递和管理请求的上下文信息，并实现对请求的控制和管理。</p>
+<blockquote>
+<hr>
+</blockquote>
+<p>下面是一个示例程序，展示了如何在 Go 语言中使用上下文对象：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 创建一个父级上下文对象
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	parentCtx <span style="color:#666">:=</span> context.<span style="color:#00a000">Background</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 创建一个带有取消功能的子级上下文对象
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	childCtx, cancel <span style="color:#666">:=</span> context.<span style="color:#00a000">WithCancel</span>(parentCtx)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 启动一个 goroutine 执行任务
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	<span style="color:#a2f;font-weight:bold">go</span> <span style="color:#00a000">performTask</span>(childCtx)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 等待一段时间
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	time.<span style="color:#00a000">Sleep</span>(<span style="color:#666">3</span> <span style="color:#666">*</span> time.Second)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 取消任务
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	<span style="color:#00a000">cancel</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 等待任务完成
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	time.<span style="color:#00a000">Sleep</span>(<span style="color:#666">1</span> <span style="color:#666">*</span> time.Second)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">performTask</span>(ctx context.Context) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">for</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a2f;font-weight:bold">select</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a2f;font-weight:bold">case</span> <span style="color:#666">&lt;-</span>ctx.<span style="color:#00a000">Done</span>():
+</span></span><span style="display:flex;"><span>			fmt.<span style="color:#00a000">Println</span>(<span style="color:#b44">&#34;任务已取消&#34;</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#a2f;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a2f;font-weight:bold">default</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#080;font-style:italic">// 模拟任务执行
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>			fmt.<span style="color:#00a000">Println</span>(<span style="color:#b44">&#34;任务执行中...&#34;</span>)
+</span></span><span style="display:flex;"><span>			time.<span style="color:#00a000">Sleep</span>(<span style="color:#666">500</span> <span style="color:#666">*</span> time.Millisecond)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在上面的示例中，我们创建了一个父级上下文对象 <code>parentCtx</code>，然后通过调用 <code>context.WithCancel()</code> 函数创建了一个带有取消功能的子级上下文对象 <code>childCtx</code>，同时返回了一个 <code>cancel</code> 函数用于取消任务。</p>
+<p>我们在 <code>performTask()</code> 函数中使用了一个无限循环，在每次循环中通过 <code>select</code> 语句判断是否收到取消信号。如果收到取消信号（<code>ctx.Done()</code>），则打印提示信息并返回，结束任务。否则，模拟任务执行一段时间。</p>
+<p>在 <code>main()</code> 函数中，我们启动了一个 goroutine 来执行任务，并等待一段时间后调用 <code>cancel()</code> 函数取消任务。最后，我们再等待一段时间以确保任务完成。</p>
+<p>运行上述示例程序，你将看到任务执行中的提示信息，然后在取消任务后，会打印任务已取消的提示信息，并结束任务。</p>
+<blockquote>
+<hr>
+</blockquote>
+<p>上下文（context）对象本身并不用于传递数据，而是用于传递请求的取消信号和截止时间等与请求相关的元数据。但是，我们可以在上下文对象中使用值（value）来传递一些请求相关的数据。</p>
+<p>在 Go 语言中，可以使用 <code>context.WithValue()</code> 函数将键值对数据存储到上下文对象中，并使用 <code>context.Value()</code> 函数从上下文对象中检索存储的值。</p>
+<p>以下是一个示例程序，演示了如何在上下文对象中传递数据：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">type</span> Key <span style="color:#0b0;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 创建一个父级上下文对象
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	parentCtx <span style="color:#666">:=</span> context.<span style="color:#00a000">Background</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 在父级上下文对象中存储数据
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	parentCtx = context.<span style="color:#00a000">WithValue</span>(parentCtx, <span style="color:#00a000">Key</span>(<span style="color:#b44">&#34;username&#34;</span>), <span style="color:#b44">&#34;Alice&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 创建一个子级上下文对象
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	childCtx <span style="color:#666">:=</span> context.<span style="color:#00a000">WithValue</span>(parentCtx, <span style="color:#00a000">Key</span>(<span style="color:#b44">&#34;age&#34;</span>), <span style="color:#666">30</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 在子级上下文对象中检索数据
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	username <span style="color:#666">:=</span> childCtx.<span style="color:#00a000">Value</span>(<span style="color:#00a000">Key</span>(<span style="color:#b44">&#34;username&#34;</span>)).(<span style="color:#0b0;font-weight:bold">string</span>)
+</span></span><span style="display:flex;"><span>	age <span style="color:#666">:=</span> childCtx.<span style="color:#00a000">Value</span>(<span style="color:#00a000">Key</span>(<span style="color:#b44">&#34;age&#34;</span>)).(<span style="color:#0b0;font-weight:bold">int</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#00a000">Printf</span>(<span style="color:#b44">&#34;Username: %s\n&#34;</span>, username)
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#00a000">Printf</span>(<span style="color:#b44">&#34;Age: %d\n&#34;</span>, age)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在上面的示例中，我们创建了一个父级上下文对象 <code>parentCtx</code>，并使用 <code>context.WithValue()</code> 函数将用户名存储到上下文对象中。接着，我们使用 <code>context.WithValue()</code> 函数创建了一个子级上下文对象 <code>childCtx</code>，并将年龄存储到其中。</p>
+<p>然后，我们使用 <code>context.Value()</code> 函数从子级上下文对象中检索存储的值，并将其转换为相应的类型。最后，我们打印出用户名和年龄。</p>
+<p>注意，在使用上下文对象传递值时，需要小心遵循以下几点：</p>
+<ul>
+<li>避免滥用上下文对象来传递大量的数据，以免导致上下文对象过于臃肿。</li>
+<li>需要明确使用自定义的键类型来避免键冲突。</li>
+<li>在多个 goroutine 中共享上下文对象时，需要注意数据的同步和并发安全性。</li>
+</ul>
+<p>通过在上下文对象中传递值，我们可以在请求处理的各个层级中传递和共享相关的数据，例如用户身份信息、请求的追踪 ID 等。</p>
+<blockquote>
+<hr>
+</blockquote>
+<p>在 Go 语言中，可以使用上下文（context）对象来传递用户身份验证信息。一种常见的方法是将用户身份验证令牌（token）存储在上下文对象中，然后在请求处理函数中进行验证。</p>
+<p>以下是一个示例程序，演示了如何使用上下文对象传递和验证用户身份信息：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">type</span> User <span style="color:#a2f;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	ID       <span style="color:#0b0;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	Username <span style="color:#0b0;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">type</span> key <span style="color:#0b0;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">const</span> userKey key = <span style="color:#a2f;font-weight:bold">iota</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Middleware 函数用于验证用户身份，并将用户信息存储在上下文对象中
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">Middleware</span>(next http.Handler) http.Handler {
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">return</span> http.<span style="color:#00a000">HandlerFunc</span>(<span style="color:#a2f;font-weight:bold">func</span>(w http.ResponseWriter, r <span style="color:#666">*</span>http.Request) {
+</span></span><span style="display:flex;"><span>		<span style="color:#080;font-style:italic">// 假设从请求中获取用户身份验证令牌
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>		token <span style="color:#666">:=</span> r.Header.<span style="color:#00a000">Get</span>(<span style="color:#b44">&#34;Authorization&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#080;font-style:italic">// 根据令牌进行身份验证，获取用户信息
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>		user, err <span style="color:#666">:=</span> <span style="color:#00a000">authenticateUser</span>(token)
+</span></span><span style="display:flex;"><span>		<span style="color:#a2f;font-weight:bold">if</span> err <span style="color:#666">!=</span> <span style="color:#a2f;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>			http.<span style="color:#00a000">Error</span>(w, <span style="color:#b44">&#34;Unauthorized&#34;</span>, http.StatusUnauthorized)
+</span></span><span style="display:flex;"><span>			<span style="color:#a2f;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#080;font-style:italic">// 将用户信息存储在上下文对象中
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>		ctx <span style="color:#666">:=</span> context.<span style="color:#00a000">WithValue</span>(r.<span style="color:#00a000">Context</span>(), userKey, user)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#080;font-style:italic">// 使用带有更新上下文对象的请求处理函数
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>		next.<span style="color:#00a000">ServeHTTP</span>(w, r.<span style="color:#00a000">WithContext</span>(ctx))
+</span></span><span style="display:flex;"><span>	})
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 请求处理函数，从上下文对象中获取用户信息并进行处理
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">Handler</span>(w http.ResponseWriter, r <span style="color:#666">*</span>http.Request) {
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 从上下文对象中获取用户信息
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	user, ok <span style="color:#666">:=</span> r.<span style="color:#00a000">Context</span>().<span style="color:#00a000">Value</span>(userKey).(<span style="color:#666">*</span>User)
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">if</span> !ok {
+</span></span><span style="display:flex;"><span>		http.<span style="color:#00a000">Error</span>(w, <span style="color:#b44">&#34;Unauthorized&#34;</span>, http.StatusUnauthorized)
+</span></span><span style="display:flex;"><span>		<span style="color:#a2f;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 使用用户信息进行相应的处理
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	fmt.<span style="color:#00a000">Fprintf</span>(w, <span style="color:#b44">&#34;Hello, %s (ID: %d)!\n&#34;</span>, user.Username, user.ID)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 创建路由和处理函数
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	mux <span style="color:#666">:=</span> http.<span style="color:#00a000">NewServeMux</span>()
+</span></span><span style="display:flex;"><span>	mux.<span style="color:#00a000">HandleFunc</span>(<span style="color:#b44">&#34;/&#34;</span>, Handler)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 添加身份验证中间件
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	handler <span style="color:#666">:=</span> <span style="color:#00a000">Middleware</span>(mux)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 启动 HTTP 服务器
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	http.<span style="color:#00a000">ListenAndServe</span>(<span style="color:#b44">&#34;:8080&#34;</span>, handler)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 模拟身份验证函数
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">authenticateUser</span>(token <span style="color:#0b0;font-weight:bold">string</span>) (<span style="color:#666">*</span>User, <span style="color:#0b0;font-weight:bold">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 根据令牌进行身份验证的逻辑
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	<span style="color:#080;font-style:italic">// 这里只是一个示例，实际场景中可能需要与数据库或其他身份验证服务进行交互
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 假设令牌有效，返回一个用户对象
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	<span style="color:#a2f;font-weight:bold">return</span> <span style="color:#666">&amp;</span>User{
+</span></span><span style="display:flex;"><span>		ID:       <span style="color:#666">1</span>,
+</span></span><span style="display:flex;"><span>		Username: <span style="color:#b44">&#34;alice&#34;</span>,
+</span></span><span style="display:flex;"><span>	}, <span style="color:#a2f;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在上面的示例中，我们定义了一个 <code>User</code> 结构表示用户信息，并创建了一个自定义的键 <code>userKey</code> 用于在上下文对象中存储用户信息。然后，我们编写了一个中间件函数 <code>Middleware</code>，用于验证用户身份，并将用户信息存储在上下文对象中。最后，我们定义了一个请求处理函数 <code>Handler</code>，它从上下文对象中获取用户信息并进行处理。</p>
+<p>在 <code>Middleware</code> 函数中，我们通过调用 <code>authenticateUser</code> 函数来验证用户身份并获取用户信息。如果验证失败，我们返回 401 Unauthorized</p>
+<p>响应。如果验证成功，我们使用 <code>context.WithValue()</code> 函数将用户信息存储在上下文对象中，并通过调用 <code>ServeHTTP</code> 方法继续处理下一个中间件或请求处理函数。</p>
+<p>在 <code>Handler</code> 函数中，我们使用 <code>r.Context().Value()</code> 方法从上下文对象中获取用户信息，并进行类型断言来确保获取的值是 <code>*User</code> 类型。如果类型断言失败，说明用户未经身份验证或身份验证失败，我们返回 401 Unauthorized 响应。否则，我们使用用户信息进行相应的处理。</p>
+<p>通过使用上下文对象来传递用户身份验证信息，我们可以在不同的中间件和处理函数中访问和使用该信息，以实现身份验证和授权的功能。</p>
+<blockquote>
+<hr>
+</blockquote>
+<p><code>exec.CommandContext()</code> 函数用于创建一个带有上下文（context）的执行命令。它是 Go 语言中 <code>exec.Command()</code> 函数的扩展版本，允许您传递一个上下文对象来控制命令的执行。</p>
+<p><code>exec.CommandContext()</code> 函数的作用是创建一个 <code>*exec.Cmd</code> 类型的对象，该对象表示要执行的命令，并与给定的上下文对象关联。通过将上下文对象传递给 <code>exec.CommandContext()</code>，您可以在需要时控制命令的执行，例如在取消命令执行或设置超时时限。</p>
+<p>下面是 <code>exec.CommandContext()</code> 的示例用法：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;os/exec&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#b44">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">func</span> <span style="color:#00a000">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 创建上下文对象
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	ctx, cancel <span style="color:#666">:=</span> context.<span style="color:#00a000">WithTimeout</span>(context.<span style="color:#00a000">Background</span>(), <span style="color:#666">5</span><span style="color:#666">*</span>time.Second)
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">defer</span> <span style="color:#00a000">cancel</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 创建带有上下文的命令对象
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	cmd <span style="color:#666">:=</span> exec.<span style="color:#00a000">CommandContext</span>(ctx, <span style="color:#b44">&#34;ls&#34;</span>, <span style="color:#b44">&#34;-l&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 执行命令并获取输出
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	output, err <span style="color:#666">:=</span> cmd.<span style="color:#00a000">Output</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a2f;font-weight:bold">if</span> err <span style="color:#666">!=</span> <span style="color:#a2f;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>		fmt.<span style="color:#00a000">Println</span>(<span style="color:#b44">&#34;Error:&#34;</span>, err)
+</span></span><span style="display:flex;"><span>		<span style="color:#a2f;font-weight:bold">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#080;font-style:italic">// 打印命令输出结果
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>	fmt.<span style="color:#00a000">Println</span>(<span style="color:#a2f">string</span>(output))
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在上面的示例中，我们使用 <code>context.WithTimeout()</code> 函数创建了一个具有 5 秒超时时限的上下文对象。然后，我们调用 <code>exec.CommandContext()</code> 函数，传递上下文对象和要执行的命令及其参数。最后，我们使用 <code>cmd.Output()</code> 方法执行命令并获取输出结果。</p>
+<p>通过使用 <code>exec.CommandContext()</code> 函数，您可以灵活地控制命令的执行，例如在超时时限内取消命令的执行或在需要时修改上下文对象来控制命令的行为。这对于处理长时间运行的命令或需要及时响应取消请求的情况非常有用。</p>
+<blockquote>
+<hr>
+</blockquote>
+<p>要播放 H.264 视频流，您可以使用 <code>&lt;video&gt;</code> 元素，并通过 JavaScript 将视频流传递给该元素。</p>
+<p>以下是一个示例的 HTML 和 JavaScript 代码，演示如何播放 H.264 视频流：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#080">&lt;!DOCTYPE html&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#008000;font-weight:bold">html</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#008000;font-weight:bold">head</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#008000;font-weight:bold">title</span>&gt;H.264 Video Streaming&lt;/<span style="color:#008000;font-weight:bold">title</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#008000;font-weight:bold">head</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#008000;font-weight:bold">body</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#008000;font-weight:bold">video</span> <span style="color:#b44">id</span><span style="color:#666">=</span><span style="color:#b44">&#34;videoPlayer&#34;</span> <span style="color:#b44">autoplay</span> <span style="color:#b44">controls</span>&gt;&lt;/<span style="color:#008000;font-weight:bold">video</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#008000;font-weight:bold">script</span>&gt;
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 获取 video 元素
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#a2f;font-weight:bold">const</span> video <span style="color:#666">=</span> <span style="color:#a2f">document</span>.getElementById(<span style="color:#b44">&#39;videoPlayer&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 创建 WebSocket 连接
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#a2f;font-weight:bold">const</span> socket <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">new</span> WebSocket(<span style="color:#b44">&#39;ws://your-video-stream-url&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 监听 WebSocket 连接打开事件
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        socket.addEventListener(<span style="color:#b44">&#39;open&#39;</span>, <span style="color:#a2f;font-weight:bold">function</span> (event) {
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#b44">&#39;WebSocket connection is open&#39;</span>);
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 监听 WebSocket 消息事件
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        socket.addEventListener(<span style="color:#b44">&#39;message&#39;</span>, <span style="color:#a2f;font-weight:bold">function</span> (event) {
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic">// 将接收到的数据作为 ArrayBuffer
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            <span style="color:#a2f;font-weight:bold">const</span> data <span style="color:#666">=</span> event.data;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic">// 创建 Uint8Array 对象，将 ArrayBuffer 转换为字节数组
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            <span style="color:#a2f;font-weight:bold">const</span> byteArray <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">new</span> Uint8Array(data);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic">// 创建 Blob 对象，将字节数组转换为二进制数据
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            <span style="color:#a2f;font-weight:bold">const</span> blob <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">new</span> Blob([byteArray], { type<span style="color:#666">:</span> <span style="color:#b44">&#39;video/mp4&#39;</span> });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic">// 创建 URL 对象，将 Blob 转换为视频源
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            <span style="color:#a2f;font-weight:bold">const</span> videoUrl <span style="color:#666">=</span> URL.createObjectURL(blob);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#080;font-style:italic">// 设置 video 元素的 src 属性为视频源
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>            video.src <span style="color:#666">=</span> videoUrl;
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic">// 监听 WebSocket 连接关闭事件
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        socket.addEventListener(<span style="color:#b44">&#39;close&#39;</span>, <span style="color:#a2f;font-weight:bold">function</span> (event) {
+</span></span><span style="display:flex;"><span>            console.log(<span style="color:#b44">&#39;WebSocket connection is closed&#39;</span>);
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#008000;font-weight:bold">script</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#008000;font-weight:bold">body</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#008000;font-weight:bold">html</span>&gt;
+</span></span></code></pre></div><p>在上面的示例中，我们使用 <code>&lt;video&gt;</code> 元素创建了一个视频播放器，并为其指定了 <code>id</code> 属性为 &ldquo;videoPlayer&rdquo;。我们还设置了 <code>autoplay</code> 和 <code>controls</code> 属性，使视频在加载完成后自动播放，并显示播放控件。</p>
+<p>通过 JavaScript，我们创建了一个 WebSocket 连接，将视频流作为二进制数据传递给客户端。在 <code>message</code> 事件的处理程序中，我们将接收到的数据转换为字节数组，并创建一个 Blob 对象。然后，我们使用 URL.createObjectURL() 方法将 Blob 转换为视频源，并将其设置为 <code>&lt;video&gt;</code> 元素的 <code>src</code> 属性。</p>
+<p>请注意，上述代码中的 <code>ws://your-video-stream-url</code> 应替换为实际的视频流 URL，以便连接到视频流的 WebSocket 服务器。此外，确保视频流的 MIME 类型正确设置为 <code>video/mp4</code> 或适用于您的视频流的正确 MIME 类型。</p>
+<p>请注意，由于不同浏览器之间的兼容性差异，播放特定的 H.264 视频流可能会有一些限制。建议您在目标浏览器中进行测试，并根据需要进行适当的兼容性处理。</p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/go">Go</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

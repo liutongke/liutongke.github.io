@@ -6,7 +6,16 @@
     <description>Recent content in Posts on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 22 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 28 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go语言上下文（context）详解</title>
+      <link>https://ltkblog.cn/go_context/</link>
+      <pubDate>Wed, 28 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/go_context/</guid>
+      <description>在 Go 语言中，上下文（context）对象用于传递请求的上下文信息，并实现请求的超时控制、取消操作以及传递其他相关值。上下文对象是一个可选的参</description>
+    </item>
+    
     <item>
       <title>解决Docker被墙pull拉取retrying in 1 second超时可用镜像地址</title>
       <link>https://ltkblog.cn/docker-_image_url/</link>

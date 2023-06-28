@@ -69,13 +69,13 @@ if (!doNotTrack) {
           ·
         </span>
         <span>
-          303字
+          629字
         </span>
         <span class="split">
           ·
         </span>
         <span>
-          1分钟
+          2分钟
         </span>
         <span class="split">
           ·
@@ -120,6 +120,22 @@ if (!doNotTrack) {
 <p><p class="markdown-image">
   <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20230622122128.png" alt="Img"  />
 </p></p>
+<h1 id="docker拉镜像的几个阶段说明">Docker拉镜像的几个阶段说明 <a href="#docker%e6%8b%89%e9%95%9c%e5%83%8f%e7%9a%84%e5%87%a0%e4%b8%aa%e9%98%b6%e6%ae%b5%e8%af%b4%e6%98%8e" class="anchor">🔗</a></h1><p>Docker拉取镜像时候会经历等待、拉取开始、下载成功、检验、拉取成功几个阶段：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>Waiting
+</span></span><span style="display:flex;"><span>Pulling fs layer
+</span></span><span style="display:flex;"><span>Download <span style="color:#a2f">complete</span>
+</span></span><span style="display:flex;"><span>Verifying Checksum
+</span></span><span style="display:flex;"><span>Pull <span style="color:#a2f">complete</span>
+</span></span></code></pre></div><p>当我们使用 Docker 命令下载镜像时，通常会看到以下两种提示信息：</p>
+<ol>
+<li>
+<p>Downloading：这表示正在下载镜像，但还未完成。在这个阶段，Docker 正在从远程镜像仓库获取镜像的数据，并将其保存到本地机器上。</p>
+</li>
+<li>
+<p>Pull complete：这表示镜像下载完成，并已经成功导入到 Docker 系统中。在这个阶段，Docker 已经完成了镜像的下载、解压缩和校验等操作，你可以使用该镜像来创建容器或进行其他操作。</p>
+</li>
+</ol>
+<p>简而言之，&ldquo;Downloading&rdquo; 表示正在进行下载过程，而 &ldquo;Pull complete&rdquo; 则表示下载已经完成并成功导入到 Docker 系统中，可以开始使用该镜像了。</p>
 
     </div>
 
