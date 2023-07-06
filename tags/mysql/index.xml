@@ -6,7 +6,16 @@
     <description>Recent content in MySQL on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 02 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 06 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL-Docker搭建MySQL8主从复制</title>
+      <link>https://ltkblog.cn/mysql_master_slave/</link>
+      <pubDate>Thu, 06 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/mysql_master_slave/</guid>
+      <description>主MySQL数据库配置 🔗打开/etc/mysql/conf.d/mysql.cnf配置文件，添加如下内容： [mysqld] #服务id,在一个主从复制集群中</description>
+    </item>
+    
     <item>
       <title>Go-伪装成MySQL Slave同步主库binlog日志实现主从复制</title>
       <link>https://ltkblog.cn/mysql_binlog_dump/</link>

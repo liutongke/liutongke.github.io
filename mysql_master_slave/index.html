@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>MySQL-Docker搭建MySQL8主从复制 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="MySQL-Docker搭建MySQL8主从复制配置">
+<meta name="keywords" content="MySQL主从复制搭建, MySQL8主从复制搭建, mysql master slave" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">MySQL-Docker搭建MySQL8主从复制</h1>
+
+    <div class="tip">
+        <time datetime="2023-07-06 00:00:00 &#43;0000 UTC">2023年07月06日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1406字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          3分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#主mysql数据库配置">主MySQL数据库配置</a></li>
+    <li><a href="#从mysql数据库配置">从MySQL数据库配置</a></li>
+    <li><a href="#在mysql主从复制中可以采取以下措施来确保数据一致性">在MySQL主从复制中，可以采取以下措施来确保数据一致性：</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h2 id="主mysql数据库配置">主MySQL数据库配置 <a href="#%e4%b8%bbmysql%e6%95%b0%e6%8d%ae%e5%ba%93%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h2><p>打开<code>/etc/mysql/conf.d/mysql.cnf</code>配置文件，添加如下内容：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span>[mysqld]<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#080;font-style:italic">#服务id,在一个主从复制集群中要唯一,值范围1-255
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>server<span style="color:#666">-</span>id<span style="color:#bbb"> </span><span style="color:#666">=</span><span style="color:#bbb"> </span><span style="color:#666">1</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#080;font-style:italic">#开启log-bin日志,非常重要,复制原理也是基于这一个,后面的值随便写我这里就写mysql-master-bin了
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>log<span style="color:#666">-</span>bin<span style="color:#bbb"> </span><span style="color:#666">=</span><span style="color:#bbb"> </span>mysql<span style="color:#666">-</span>master<span style="color:#666">-</span>bin<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#080;font-style:italic">#从机复制时,忽略的数据库,也就是说这里配置的数据库不会被从机同步
+</span></span></span></code></pre></div><p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20230706184129.png" alt="Img"  />
+</p></p>
+<h2 id="从mysql数据库配置">从MySQL数据库配置 <a href="#%e4%bb%8emysql%e6%95%b0%e6%8d%ae%e5%ba%93%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h2><p>打开<code>/etc/mysql/conf.d/mysql.cnf</code>配置文件，添加如下内容：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span>[mysqld]<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>server<span style="color:#666">-</span>id<span style="color:#bbb"> </span><span style="color:#666">=</span><span style="color:#bbb"> </span><span style="color:#666">2</span><span style="color:#bbb">
+</span></span></span></code></pre></div><p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20230706184328.png" alt="Img"  />
+</p></p>
+<p>重启主从容器后，在主MySQL数据库执行以下sql：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>show master status;
+</span></span></code></pre></div><p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20230706184436.png" alt="Img"  />
+</p></p>
+<p>获取<code>File</code>和<code>Position</code>字段，记录获得的值，设置从MySQL数据库的配置。在<strong>从MySQL</strong>中使用以下命令：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">CHANGE</span><span style="color:#bbb"> </span>MASTER<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">TO</span><span style="color:#bbb"> </span>MASTER_HOST<span style="color:#666">=</span><span style="color:#b44">&#39;主数据库ip地址&#39;</span>,<span style="color:#bbb"> </span>MASTER_USER<span style="color:#666">=</span><span style="color:#b44">&#39;主数据库用户&#39;</span>,<span style="color:#bbb"> </span>MASTER_PASSWORD<span style="color:#666">=</span><span style="color:#b44">&#39;主数据库密码&#39;</span>,<span style="color:#bbb"> </span>MASTER_LOG_FILE<span style="color:#666">=</span><span style="color:#b44">&#39;mysql-master-bin.000002&#39;</span>,<span style="color:#bbb"> </span>MASTER_LOG_POS<span style="color:#666">=</span><span style="color:#666">156</span>,<span style="color:#bbb"> </span>MASTER_PORT<span style="color:#666">=</span><span style="">主数据库端口</span>;<span style="color:#bbb">
+</span></span></span></code></pre></div><p>该SQL语句是用于在MySQL主从复制中配置从服务器的连接主服务器的参数。</p>
+<ul>
+<li><code>MASTER_HOST</code>：指定主数据库的IP地址。</li>
+<li><code>MASTER_USER</code>：指定连接主数据库所使用的用户名。</li>
+<li><code>MASTER_PASSWORD</code>：指定连接主数据库所使用的密码。</li>
+<li><code>MASTER_LOG_FILE</code>：指定主数据库二进制日志文件的名称，用于从服务器从指定位置开始复制数据。</li>
+<li><code>MASTER_LOG_POS</code>：指定主数据库二进制日志文件的位置，用于从服务器从指定位置开始复制数据。</li>
+<li><code>MASTER_PORT</code>：指定主数据库的端口号，用于连接主数据库。</li>
+</ul>
+<p>通过执行该SQL语句，从服务器将建立与主数据库的连接，并从指定的位置开始复制主数据库的二进制日志，以实现主从数据的同步复制。</p>
+<p>需要注意的是，执行该SQL语句前，请确保从服务器已正确配置，并确保主服务器的相关参数正确设置，并处于可复制状态。此外，确保主从服务器之间的网络连接正常，从服务器可以访问到主服务器。</p>
+<p>启动从服务：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span>start<span style="color:#bbb"> </span>slave;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#080;font-style:italic"># 查看运行情况
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#a2f;font-weight:bold">SHOW</span><span style="color:#bbb"> </span>SLAVE<span style="color:#bbb"> </span>STATUS;<span style="color:#bbb">
+</span></span></span></code></pre></div><h2 id="在mysql主从复制中可以采取以下措施来确保数据一致性">在MySQL主从复制中，可以采取以下措施来确保数据一致性： <a href="#%e5%9c%a8mysql%e4%b8%bb%e4%bb%8e%e5%a4%8d%e5%88%b6%e4%b8%ad%e5%8f%af%e4%bb%a5%e9%87%87%e5%8f%96%e4%bb%a5%e4%b8%8b%e6%8e%aa%e6%96%bd%e6%9d%a5%e7%a1%ae%e4%bf%9d%e6%95%b0%e6%8d%ae%e4%b8%80%e8%87%b4%e6%80%a7" class="anchor">🔗</a></h2><ol>
+<li>
+<p>使用正确的复制拓扑：确保主服务器是写入操作的源头，所有的写入操作都在主服务器上执行，从服务器只用于读取。</p>
+</li>
+<li>
+<p>使用正确的复制模式：在MySQL中，主从复制支持两种复制模式，即异步复制和半同步复制。异步复制是默认的复制模式，从服务器在接收到主服务器的日志事件后才会应用到自己的数据库中，存在一定的延迟。而半同步复制要求主服务器至少收到一个从服务器的确认信息才能提交事务，从而确保数据的同步性。</p>
+</li>
+<li>
+<p>监控复制状态：定期监控主从服务器的复制状态，确保复制链路正常运行。可以使用MySQL提供的命令如<code>SHOW SLAVE STATUS;</code>来查看从服务器的状态信息。</p>
+</li>
+<li>
+<p>设置合适的复制延迟和复制线程数：根据实际情况调整从服务器的复制延迟和复制线程数，确保从服务器能够及时处理主服务器的日志事件。</p>
+</li>
+<li>
+<p>定期备份数据：除了主从复制，定期备份数据是保证数据一致性的另一个重要手段。即使主从复制出现问题，备份数据可以用于恢复数据库到一致的状态。</p>
+</li>
+<li>
+<p>合理规划数据库架构：在设计数据库架构时，考虑业务需求和数据访问模式，避免出现写冲突和数据不一致的情况。</p>
+</li>
+</ol>
+<p>综上所述，通过正确的配置、监控和管理，可以确保MySQL主从复制中的数据一致性。同时，也需要根据具体业务情况和需求进行定制化的配置和优化。</p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/mysql">MySQL</a>
+            
+                <a href="https://ltkblog.cn/tags/mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6">MySQL主从复制</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>
