@@ -6,7 +6,16 @@
     <description>Recent content in Posts on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 06 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 09 Jan 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux安装Go</title>
+      <link>https://ltkblog.cn/go_install/</link>
+      <pubDate>Tue, 09 Jan 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/go_install/</guid>
+      <description>在 Linux 上安装 Go 通常包括下载 Go 二进制分发版本并将其添加到系统的 PATH 中。以下是一般的步骤： 下载 Go 二进制分发版本： 访问 官方 Go 下载页面。 选择适用于你 Linux 系</description>
+    </item>
+    
     <item>
       <title>MySQL-Docker搭建MySQL8主从复制</title>
       <link>https://ltkblog.cn/mysql_master_slave/</link>
@@ -85,7 +94,7 @@
       <pubDate>Wed, 02 Nov 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/nas_jellyfin/</guid>
-      <description>（一）jellyfin媒体系统 🔗jellyfin客户端 media视频内容文件夹 影视内容命名规范 🔗Film (2010) [imdbid-tt0106145]Film (2018) [tmdbid-65567] 影片名+空格+（年份）+为了</description>
+      <description>（一）jellyfin媒体系统 🔗jellyfin客户端 media视频内容文件夹 影视内容命名规范 🔗Film (2010) [imdbid-tt0106145] Film (2018) [tmdbid-65567] 影片名+空格+（年份）+为</description>
     </item>
     
     <item>
@@ -500,6 +509,15 @@
       
       <guid>https://ltkblog.cn/thinkphp_phpqrcode/</guid>
       <description>第一步： phpqrcode下载第三方扩展包，http://phpqrcode.sourceforge.net/ 第二步： 将扩展包放到/Thin</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://ltkblog.cn/onedrive/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/onedrive/</guid>
+      <description>onedrive 🔗v2rayN配置onedrive代理： 代理网址如下： onedrive.com, *.onedrive.com, onedrive.live.com, login.live.com, g.live.com, spoprod-a.akamaihd.net, *.mesh.com, p.sfx.ms, oneclient.sfx.ms, *.microsoft.com, fabric.io, *.crashlytics.com, vortex.data.microsoft.com, posarprodcssservice.accesscontrol.windows.net, redemptionservices.accesscontrol.windows.net, token.cp.microsoft.com/, tokensit.cp.microsoft-tst.com/, *.office.com, *.officeapps.live.com, *.aria.microsoft.com, *.mobileengagement.windows.net, *.branch.io, *.adjust.com, *.servicebus.windows.net, vas.samsungapps.com, odc.officeapps.live.com, login.windows.net, login.microsoftonline.com, *.files.1drv.com, *.onedrive.live.com, *.*.onedrive.live.com, storage.live.com, *.storage.live.com, *.*.storage.live.com, *.groups.office.live.com, *.groups.photos.live.com, *.groups.skydrive.live.com, favorites.live.com, oauth.live.com, photos.live.com, skydrive.live.com, api.live.net,</description>
     </item>
     
   </channel>

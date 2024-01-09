@@ -6,7 +6,16 @@
     <description>Recent content in Go on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 28 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 09 Jan 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux安装Go</title>
+      <link>https://ltkblog.cn/go_install/</link>
+      <pubDate>Tue, 09 Jan 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/go_install/</guid>
+      <description>在 Linux 上安装 Go 通常包括下载 Go 二进制分发版本并将其添加到系统的 PATH 中。以下是一般的步骤： 下载 Go 二进制分发版本： 访问 官方 Go 下载页面。 选择适用于你 Linux 系</description>
+    </item>
+    
     <item>
       <title>Go语言上下文（context）详解</title>
       <link>https://ltkblog.cn/go_context/</link>
