@@ -83,6 +83,22 @@ if (!doNotTrack) {
         
         <section class="item">
           <div>
+            <h1 class="title"><a href='/go_input_func/'>Go自定义 input 函数整理用户输入</a></h1>
+            <div class ="date">
+                <time datetime="2021-01-13 00:00:00 &#43;0000 UTC">2021/01/13</time>  
+            </div>
+          </div>
+
+          
+              <div class="summary">学习阶段经常使用输入，把 fmt.Scan 用户输入整理成函数，方便调用，减少重复代码 package main import ( &#34;fmt&#34; ) func input(prompt string) string { var text string fmt.Print(prompt) fmt.Scan(&amp;text) return text } func main() { a := input(&#34;输</div>
+          
+
+        </section>
+    
+        
+        
+        <section class="item">
+          <div>
             <h1 class="title"><a href='/redis_data_reveal/'>使用Redis Data Reveal（rdr）查看Redis中key占用内存空间</a></h1>
             <div class ="date">
                 <time datetime="2020-06-30 00:00:00 &#43;0000 UTC">2020/06/30</time>  
@@ -219,22 +235,6 @@ if (!doNotTrack) {
 
           
               <div class="summary">1.1查看新磁盘,可以看到/dev/sdb是新的未挂载的磁盘； [root@localhost ~]# fdisk -l 1.2硬盘分区 ，进入fdisk模式 进入fdisk模式 [root@localhost ~]# /sbin/fdisk /dev/sdb 输入n进行</div>
-          
-
-        </section>
-    
-        
-        
-        <section class="item">
-          <div>
-            <h1 class="title"><a href='/php_foreach/'>PHP foreach引用&amp;</a></h1>
-            <div class ="date">
-                <time datetime="2018-07-11 00:00:00 &#43;0000 UTC">2018/07/11</time>  
-            </div>
-          </div>
-
-          
-              <div class="summary">将以下代码打印 $variable = [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]; foreach ($variable as $key =&gt; &amp;$value) { } foreach ($variable as $key =&gt; $value) { } echo &#34;&lt;pre /&gt;&#34;; var_dump($variable); echo &#34;&lt;pre /&gt;&#34;; #结果 array(3) { [0]=&gt; string(1) &#34;a&#34; [1]=&gt; string(1) &#34;b&#34; [2]=&gt; &amp;string(1) &#34;b&#34; } 打印出来的结果跟预期结果的不一致，这是因</div>
           
 
         </section>

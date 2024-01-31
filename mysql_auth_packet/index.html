@@ -69,13 +69,13 @@ if (!doNotTrack) {
           ·
         </span>
         <span>
-          1560字
+          2284字
         </span>
         <span class="split">
           ·
         </span>
         <span>
-          4分钟
+          5分钟
         </span>
         <span class="split">
           ·
@@ -96,7 +96,7 @@ if (!doNotTrack) {
           <div>
               <nav id="TableOfContents">
   <ul>
-    <li><a href="#auth-packet格式">Auth Packet格式</a></li>
+    <li><a href="#auth-packet格式httpsdevmysqlcomdocdevmysql-serverlatestpage_protocol_connection_phase_packets_protocol_handshake_responsehtmlsect_protocol_connection_phase_packets_protocol_handshake_response41"><a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_packets_protocol_handshake_response.html#sect_protocol_connection_phase_packets_protocol_handshake_response41">Auth Packet格式</a></a></li>
     <li><a href="#字符串">字符串</a></li>
     <li><a href="#加密方式">加密方式</a></li>
   </ul>
@@ -117,7 +117,7 @@ if (!doNotTrack) {
 <li><a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a></li>
 <li><a href="https://github.com/liutongke/my-mysql-driver" target="_blank" rel="noopener">源码地址</a></li>
 </ul>
-<h2 id="auth-packet格式">Auth Packet格式 <a href="#auth-packet%e6%a0%bc%e5%bc%8f" class="anchor">🔗</a></h2><p>Auth packet包是由MySQL客户端向MySQL服务端发送的认证包，用于验证数据库账户登录，相应内容的格式：</p>
+<h2 id="auth-packet格式httpsdevmysqlcomdocdevmysql-serverlatestpage_protocol_connection_phase_packets_protocol_handshake_responsehtmlsect_protocol_connection_phase_packets_protocol_handshake_response41"><a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_packets_protocol_handshake_response.html#sect_protocol_connection_phase_packets_protocol_handshake_response41" target="_blank" rel="noopener">Auth Packet格式</a> <a href="#auth-packet%e6%a0%bc%e5%bc%8fhttpsdevmysqlcomdocdevmysql-serverlatestpage_protocol_connection_phase_packets_protocol_handshake_responsehtmlsect_protocol_connection_phase_packets_protocol_handshake_response41" class="anchor">🔗</a></h2><p>Auth packet包是由MySQL客户端向MySQL服务端发送的认证包，用于验证数据库账户登录，相应内容的格式：</p>
 <table>
 <thead>
 <tr>
@@ -162,7 +162,7 @@ if (!doNotTrack) {
 <td>32</td>
 <td>不定长</td>
 <td>认证字符串（Username）</td>
-<td>用户名：NullTerminatedString格式编码</td>
+<td>用户名：NullTerminatedString格式编码，以0x00结尾</td>
 </tr>
 <tr>
 <td>不定</td>
@@ -178,6 +178,57 @@ if (!doNotTrack) {
 </tr>
 </tbody>
 </table>
+<p>根据给出的 Protocol::HandshakeResponse41 解析说明，以下是对各字段的简要解释：</p>
+<ol>
+<li>
+<p><strong>client_flag (int&lt;4&gt;):</strong> 客户端标志，表示客户端的配置和特性。其中 CLIENT_PROTOCOL_41 始终设置。</p>
+</li>
+<li>
+<p><strong>max_packet_size (int&lt;4&gt;):</strong> 最大数据包大小，表示客户端愿意接收的最大数据包大小。</p>
+</li>
+<li>
+<p><strong>character_set (int&lt;1&gt;):</strong> 客户端字符集，表示客户端使用的字符集编码。取值为 a_protocol_character_set 字段的低 8 位。</p>
+</li>
+<li>
+<p><strong>filler (string[23]):</strong> 用于填充的字段，将填充到握手响应数据包的大小。所有字节都设置为 0。</p>
+</li>
+<li>
+<p><strong>username (string<NUL>):</strong> 登录用户名。</p>
+</li>
+<li>
+<p><strong>auth_response (string):</strong></p>
+<ul>
+<li>如果 <code>capabilities &amp; CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA</code> 成立，则为一个长度编码的字符串，表示由插件名称字段指定的身份验证方法生成的不透明身份验证响应数据。</li>
+<li>否则，首先为一个字节的 auth_response_length，然后是 auth_response 字段，表示身份验证响应数据。</li>
+</ul>
+</li>
+<li>
+<p><strong>database (string<NUL>):</strong></p>
+<ul>
+<li>如果 <code>capabilities &amp; CLIENT_CONNECT_WITH_DB</code> 成立，则为连接的初始数据库。这个字符串应该使用字符集字段指示的字符集进行解释。</li>
+</ul>
+</li>
+<li>
+<p><strong>client_plugin_name (string<NUL>):</strong></p>
+<ul>
+<li>如果 <code>capabilities &amp; CLIENT_PLUGIN_AUTH</code> 成立，则为客户端用于在此数据包中生成 auth-response 值的身份验证方法的名称。这是一个 UTF-8 字符串。</li>
+</ul>
+</li>
+<li>
+<p><strong>key-values (CLIENT_CONNECT_ATTRS):</strong></p>
+<ul>
+<li>如果 <code>capabilities &amp; CLIENT_CONNECT_ATTRS</code> 成立，则包含客户端属性。以长度编码的方式表示所有键-值对。</li>
+<li>每个键值对由一个长度编码的字符串表示键和值。</li>
+</ul>
+</li>
+<li>
+<p><strong>zstd_compression_level (int&lt;1&gt;):</strong></p>
+</li>
+</ol>
+<ul>
+<li>如果 <code>capabilities &amp; CLIENT_ZSTD_COMPRESSION_ALGORITHM</code> 成立，则表示 zstd 压缩算法的压缩级别。</li>
+</ul>
+<p>这个解析说明提供了每个字段的基本含义和解析方法。在实际应用中，需要根据 MySQL 协议文档和具体情况进行更详细的解析。</p>
 <p><strong>报文结构：</strong>
 <p class="markdown-image">
   <img src="http://hutaow.com/images/articles/201311/mysql_protocol_auth_41.png" alt="Img"  />
@@ -186,7 +237,18 @@ if (!doNotTrack) {
 <p><p class="markdown-image">
   <img src="https://image-hosting-services.oss-cn-hangzhou.aliyuncs.com/Markdown/yank-note-picgo-img-20220929042040.png" alt="Img"  />
 </p>
-<strong>特别注意：认证字符串（Username）和认证密码（Password）之间有个字节<code>14</code>，<code>Username</code>已经有<code>00</code>结尾仍然有这个字节，官网文档没找到解释资料。</strong></p>
+<strong>特别注意：认证字符串（Username）和认证密码（Password）之间有个字节<code>14</code>，它是Protocol::HandshakeResponse41中<code>auth_response_length</code>字段。</strong></p>
+<p><code>auth_response_length</code> 字段是 <code>Protocol::HandshakeResponse41</code> 中的一个字节，用于表示 <code>auth_response</code> 字段的长度。</p>
+<p>具体解析方式如下：</p>
+<ul>
+<li>
+<p>如果 <code>capabilities &amp; CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA</code> 成立，表示 <code>auth_response</code> 字段的长度由长度编码方式给出，不使用 <code>auth_response_length</code> 字段。</p>
+</li>
+<li>
+<p>否则，<code>auth_response_length</code> 表示 <code>auth_response</code> 字段的长度。在这种情况下，<code>auth_response</code> 字段是一个固定长度的字节数组。</p>
+</li>
+</ul>
+<p>总之，<code>auth_response_length</code> 用于指定 <code>auth_response</code> 字段的长度，具体解析方式取决于 <code>capabilities</code> 的设置。在解析 <code>Protocol::HandshakeResponse41</code> 数据包时，需要根据实际情况选择解析方式。</p>
 <h2 id="字符串">字符串 <a href="#%e5%ad%97%e7%ac%a6%e4%b8%b2" class="anchor">🔗</a></h2><ol>
 <li>String的编码格式相对Integer来说会复杂一点，主要有以下几种：</li>
 <li>FixedLengthString（定长方式）：需先知道String的长度，MySQL中的一个例子就是ERR_Packet包（后续会讲到）就使用了这种编码方式，因为它的长度固定，用5个字节存储所有数据。</li>
