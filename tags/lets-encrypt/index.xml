@@ -13,7 +13,7 @@
       <pubDate>Sun, 28 Jan 2024 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/lets-encrypt/</guid>
-      <description>要在Docker容器中的Nginx使用Certbot的certonly模式获取证书，您可以按照以下步骤操作： 创建Nginx容器： 如果您还没有</description>
+      <description>要在Docker容器中的Nginx使用Certbot的certonly模式获取证书，您可以按照以下步骤操作： （一）创建Nginx容器 🔗 创建N</description>
     </item>
     
   </channel>
