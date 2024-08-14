@@ -6,7 +6,16 @@
     <description>Recent content in Posts on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 28 Jan 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 12 Aug 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Docker搭建LibreSpeed测速服务器</title>
+      <link>https://ltkblog.cn/librespeed/</link>
+      <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/librespeed/</guid>
+      <description>要使用 Docker 搭建一个测速服务器，您可以使用 LibreSpeed 这个开源项目。LibreSpeed 提供了简单易用的测速功能，并且可以通过 Docker 快速部署。 以下是使用 Docker 搭建</description>
+    </item>
+    
     <item>
       <title>使用Let’s Encrypt的Certbot为Nginx网站自动配置SSL证书并续期</title>
       <link>https://ltkblog.cn/lets-encrypt/</link>

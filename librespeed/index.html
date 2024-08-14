@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Docker搭建LibreSpeed测速服务器 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="docker搭建LibreSpeed测速服务器">
+<meta name="keywords" content="LibreSpeed, docker搭建LibreSpeed测速服务器" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">Docker搭建LibreSpeed测速服务器</h1>
+
+    <div class="tip">
+        <time datetime="2024-08-12 00:00:00 &#43;0000 UTC">2024年08月12日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          589字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#1-安装-docker">1. 安装 Docker</a></li>
+        <li><a href="#2-创建-docker-compose-文件">2. 创建 Docker Compose 文件</a></li>
+        <li><a href="#3-部署-librespeed">3. 部署 LibreSpeed</a></li>
+        <li><a href="#4-访问测速服务器">4. 访问测速服务器</a></li>
+        <li><a href="#5-配置防火墙">5. 配置防火墙</a></li>
+        <li><a href="#6-可选配置">6. 可选配置</a></li>
+        <li><a href="#其他注意事项">其他注意事项</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <p>要使用 Docker 搭建一个测速服务器，您可以使用 LibreSpeed 这个开源项目。LibreSpeed 提供了简单易用的测速功能，并且可以通过 Docker 快速部署。</p>
+<p>以下是使用 Docker 搭建 LibreSpeed 测速服务器的步骤：</p>
+<h3 id="1-安装-docker">1. 安装 Docker <a href="#1-%e5%ae%89%e8%a3%85-docker" class="anchor">🔗</a></h3><p>首先，确保您的系统上安装了 Docker。如果没有，请按照以下步骤安装：</p>
+<ul>
+<li>
+<p>在 Ubuntu 上安装 Docker：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt update
+</span></span><span style="display:flex;"><span>sudo apt install -y docker.io docker-compose
+</span></span><span style="display:flex;"><span>sudo systemctl start docker
+</span></span><span style="display:flex;"><span>sudo systemctl <span style="color:#a2f">enable</span> docker
+</span></span></code></pre></div></li>
+<li>
+<p>在 CentOS 上安装 Docker：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo yum install -y yum-utils
+</span></span><span style="display:flex;"><span>sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+</span></span><span style="display:flex;"><span>sudo yum install -y docker-ce docker-ce-cli containerd.io
+</span></span><span style="display:flex;"><span>sudo systemctl start docker
+</span></span><span style="display:flex;"><span>sudo systemctl <span style="color:#a2f">enable</span> docker
+</span></span></code></pre></div></li>
+</ul>
+<h3 id="2-创建-docker-compose-文件">2. 创建 Docker Compose 文件 <a href="#2-%e5%88%9b%e5%bb%ba-docker-compose-%e6%96%87%e4%bb%b6" class="anchor">🔗</a></h3><p>在您选择的目录中创建一个名为 <code>docker-compose.yml</code> 的文件，并添加以下内容：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#008000;font-weight:bold">version</span>:<span style="color:#bbb"> </span><span style="color:#b44">&#39;3&#39;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">services</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">librespeed</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">image</span>:<span style="color:#bbb"> </span>adolfintel/speedtest:latest<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">container_name</span>:<span style="color:#bbb"> </span>librespeed<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">ports</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- <span style="color:#b44">&#34;80:80&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">restart</span>:<span style="color:#bbb"> </span>always<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">environment</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- MODE=standalone<span style="color:#bbb">
+</span></span></span></code></pre></div><h3 id="3-部署-librespeed">3. 部署 LibreSpeed <a href="#3-%e9%83%a8%e7%bd%b2-librespeed" class="anchor">🔗</a></h3><p>在终端中导航到包含 <code>docker-compose.yml</code> 文件的目录，然后运行以下命令启动 LibreSpeed 服务器：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo docker-compose up -d
+</span></span></code></pre></div><h3 id="4-访问测速服务器">4. 访问测速服务器 <a href="#4-%e8%ae%bf%e9%97%ae%e6%b5%8b%e9%80%9f%e6%9c%8d%e5%8a%a1%e5%99%a8" class="anchor">🔗</a></h3><ul>
+<li>打开您的浏览器，访问 <code>http://&lt;your-server-ip&gt;/</code>（将 <code>&lt;your-server-ip&gt;</code> 替换为您的服务器 IP 地址）即可访问 LibreSpeed 界面并进行测速。</li>
+</ul>
+<h3 id="5-配置防火墙">5. 配置防火墙 <a href="#5-%e9%85%8d%e7%bd%ae%e9%98%b2%e7%81%ab%e5%a2%99" class="anchor">🔗</a></h3><p>确保您的服务器防火墙允许端口 80 的入站流量，以便外部设备可以访问测速服务器：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo ufw allow 80/tcp
+</span></span></code></pre></div><h3 id="6-可选配置">6. 可选配置 <a href="#6-%e5%8f%af%e9%80%89%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h3><ul>
+<li><strong>HTTPS 支持</strong>：建议使用 Nginx 反向代理和 Let&rsquo;s Encrypt 来启用 HTTPS，以确保数据传输安全。</li>
+<li><strong>自定义配置</strong>：您可以根据需要自定义 LibreSpeed 的配置文件，这些文件通常在 Docker 容器内或卷挂载位置。</li>
+</ul>
+<h3 id="其他注意事项">其他注意事项 <a href="#%e5%85%b6%e4%bb%96%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" class="anchor">🔗</a></h3><ul>
+<li>确保服务器的网络带宽足够大，以便准确地进行速度测试。</li>
+<li>如果您打算将服务器暴露在公共互联网中，请考虑实施适当的安全措施，如防火墙规则和访问控制。</li>
+</ul>
+<p>通过以上步骤，您就可以使用 Docker 快速搭建一个简单的测速服务器。</p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/librespeed">LibreSpeed</a>
+            
+                <a href="https://ltkblog.cn/tags/docker">docker</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>
