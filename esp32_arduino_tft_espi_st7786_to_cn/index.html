@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>制作Arduino TFT_eSPI库中文字库，实现在ST7789屏幕上显示中文字符 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="制作Arduino TFT_eSPI库中文字库，实现在ST7789屏幕上显示中文字符">
+<meta name="keywords" content="ESP32, ST7789, TFT_eSPI库中文字库" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">制作Arduino TFT_eSPI库中文字库，实现在ST7789屏幕上显示中文字符</h1>
+
+    <div class="tip">
+        <time datetime="2024-12-24 00:00:00 &#43;0000 UTC">2024年12月24日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          4885字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          10分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#字库制作工具位置">字库制作工具位置</a></li>
+    <li><a href="#制作字库的步骤">制作字库的步骤</a>
+      <ul>
+        <li><a href="#第一步下载字体文件"><strong>第一步：下载字体文件</strong></a></li>
+        <li><a href="#第二步安装-processing-软件"><strong>第二步：安装 Processing 软件</strong></a></li>
+        <li><a href="#第三步打开生成脚本"><strong>第三步：打开生成脚本</strong></a></li>
+        <li><a href="#第四步复制字体文件"><strong>第四步：复制字体文件</strong></a></li>
+        <li><a href="#第五步修改代码"><strong>第五步：修改代码</strong></a></li>
+        <li><a href="#第六步运行生成字库"><strong>第六步：运行生成字库</strong></a></li>
+        <li><a href="#第七步转换为-arduino-字库文件"><strong>第七步：转换为 Arduino 字库文件</strong></a></li>
+      </ul>
+    </li>
+    <li><a href="#使用自定义字库">使用自定义字库</a></li>
+    <li><a href="#注意事项">注意事项</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <p>在使用 Arduino 的 <strong>TFT_eSPI</strong> 库时，若需显示中文字符，我们可以通过自定义字库来实现。以下是详细步骤。</p>
+<h2 id="字库制作工具位置">字库制作工具位置 <a href="#%e5%ad%97%e5%ba%93%e5%88%b6%e4%bd%9c%e5%b7%a5%e5%85%b7%e4%bd%8d%e7%bd%ae" class="anchor">🔗</a></h2><p>以我的安装目录为例，工具存放在项目根目录的 <code>libraries\TFT_eSPI\Tools\Create_Smooth_Font\Create_font</code> 目录下。</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225020358.png" alt="制作字库工具目录"  />
+</p></p>
+<p>该目录包含以下文件和文件夹：</p>
+<ol>
+<li><strong>data</strong>：用于存放字体文件（以 <code>.ttf</code> 结尾）。</li>
+<li><strong>FontFiles</strong>：用于存放生成的字库文件（以 <code>.vlw</code> 结尾）。</li>
+<li><strong>Create_font.pde</strong>：生成字库文件的代码。</li>
+</ol>
+<hr>
+<h2 id="制作字库的步骤">制作字库的步骤 <a href="#%e5%88%b6%e4%bd%9c%e5%ad%97%e5%ba%93%e7%9a%84%e6%ad%a5%e9%aa%a4" class="anchor">🔗</a></h2><h3 id="第一步下载字体文件"><strong>第一步：下载字体文件</strong> <a href="#%e7%ac%ac%e4%b8%80%e6%ad%a5%e4%b8%8b%e8%bd%bd%e5%ad%97%e4%bd%93%e6%96%87%e4%bb%b6" class="anchor">🔗</a></h3><p>下载 <a href="https://www.iconfont.cn/fonts/detail?spm=a313x.fonts_index.i1.d9df05512.56543a81wyXKDE&amp;cnid=clpB5hhpYWUN" target="_blank" rel="noopener">钉钉进步体</a> 字体文件（以 <code>.ttf</code> 结尾）。</p>
+<h3 id="第二步安装-processing-软件"><strong>第二步：安装 Processing 软件</strong> <a href="#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e5%ae%89%e8%a3%85-processing-%e8%bd%af%e4%bb%b6" class="anchor">🔗</a></h3><p>从 <a href="https://processing.org/" target="_blank" rel="noopener">Processing 官网</a> 下载并安装 Processing 软件。</p>
+<h3 id="第三步打开生成脚本"><strong>第三步：打开生成脚本</strong> <a href="#%e7%ac%ac%e4%b8%89%e6%ad%a5%e6%89%93%e5%bc%80%e7%94%9f%e6%88%90%e8%84%9a%e6%9c%ac" class="anchor">🔗</a></h3><p>使用 Processing 软件打开 <code>Create_font.pde</code> 文件。</p>
+<h3 id="第四步复制字体文件"><strong>第四步：复制字体文件</strong> <a href="#%e7%ac%ac%e5%9b%9b%e6%ad%a5%e5%a4%8d%e5%88%b6%e5%ad%97%e4%bd%93%e6%96%87%e4%bb%b6" class="anchor">🔗</a></h3><p>将下载的字体文件（如 <code>.ttf</code> 格式）复制到 <code>data</code> 目录。</p>
+<h3 id="第五步修改代码"><strong>第五步：修改代码</strong> <a href="#%e7%ac%ac%e4%ba%94%e6%ad%a5%e4%bf%ae%e6%94%b9%e4%bb%a3%e7%a0%81" class="anchor">🔗</a></h3><p><a href="#section1">使用Python代码将中文转为Unicode码</a>，在 <code>Create_font.pde</code> 中添加所需的中文字符对应的 Unicode 码，确保需要的字符都包含在字库中。 <code> </code></p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225023618.png" alt="增加需要制作的字体"  />
+</p></p>
+<h3 id="第六步运行生成字库"><strong>第六步：运行生成字库</strong> <a href="#%e7%ac%ac%e5%85%ad%e6%ad%a5%e8%bf%90%e8%a1%8c%e7%94%9f%e6%88%90%e5%ad%97%e5%ba%93" class="anchor">🔗</a></h3><p>运行 <code>Create_font.pde</code> 文件，成功后会弹出以下提示：</p>
+<ul>
+<li>一个图片预览窗口。</li>
+<li>在 <code>FontFiles</code> 目录中生成 <code>.vlw</code> 字库文件，例如 <code>DingTalk-JinBuTi28.vlw</code>。</li>
+</ul>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225021747.png" alt="字体制作成功"  />
+</p></p>
+<h3 id="第七步转换为-arduino-字库文件"><strong>第七步：转换为 Arduino 字库文件</strong> <a href="#%e7%ac%ac%e4%b8%83%e6%ad%a5%e8%bd%ac%e6%8d%a2%e4%b8%ba-arduino-%e5%ad%97%e5%ba%93%e6%96%87%e4%bb%b6" class="anchor">🔗</a></h3><ol>
+<li>打开在线工具：<a href="https://tomeko.net/online_tools/file_to_hex.php?lang=zh" target="_blank" rel="noopener">File to Hex Converter</a>。</li>
+<li>上传 <code>.vlw</code> 文件（如 <code>DingTalk-JinBuTi28.vlw</code>）。</li>
+<li>将生成的十六进制数据保存为 <code>.h</code> 文件（如 <code>my_font28.h</code>），供 Arduino 使用。</li>
+</ol>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225021808.png" alt="在线工具转换"  />
+</p></p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241227010340.png" alt="转换成功后"  />
+</p></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#include</span> <span style="color:#080">&lt;pgmspace.h&gt;</span><span style="color:#080">
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span><span style="color:#a2f;font-weight:bold">const</span> <span style="color:#0b0;font-weight:bold">uint8_t</span> my_font28[] PROGMEM <span style="color:#666">=</span>{
+</span></span><span style="display:flex;"><span>    };
+</span></span></code></pre></div><hr>
+<h2 id="使用自定义字库">使用自定义字库 <a href="#%e4%bd%bf%e7%94%a8%e8%87%aa%e5%ae%9a%e4%b9%89%e5%ad%97%e5%ba%93" class="anchor">🔗</a></h2><p>以下是示例代码，展示如何在 Arduino 中加载和使用生成的字体文件：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#include</span> <span style="color:#080">&lt;TFT_eSPI.h&gt;</span><span style="color:#080">
+</span></span></span><span style="display:flex;"><span><span style="color:#080">#include</span> <span style="color:#080">&lt;SPI.h&gt;</span><span style="color:#080">
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080">#include</span> <span style="color:#080">&#34;my_font28.h&#34; //导入字库文件</span><span style="color:#080">
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080">#define TFT_GREY 0x5AEB </span><span style="color:#080;font-style:italic">// 定义新颜色：灰色
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>TFT_eSPI tft <span style="color:#666">=</span> TFT_eSPI(); <span style="color:#080;font-style:italic">// 调用库
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#0b0;font-weight:bold">void</span> <span style="color:#00a000">setup</span>(<span style="color:#0b0;font-weight:bold">void</span>)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  tft.init();           <span style="color:#080;font-style:italic">// 初始化
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.setRotation(<span style="color:#666">0</span>);   <span style="color:#080;font-style:italic">// 设置旋转角度为0
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.invertDisplay(<span style="color:#666">0</span>); <span style="color:#080;font-style:italic">// 不反转显示
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#0b0;font-weight:bold">void</span> <span style="color:#00a000">loop</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 用灰色填充屏幕，以便我们可以看到有背景色和无背景色打印的效果
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.fillScreen(TFT_GREY);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 设置字体颜色为绿色，背景色为黑色，文本大小倍数为1
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+</span></span><span style="display:flex;"><span>  tft.loadFont(my_font28);             <span style="color:#080;font-style:italic">// 指定tft屏幕对象载入my_font28字库
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.drawString(<span style="color:#b44">&#34;你好世界&#34;</span>, <span style="color:#666">0</span>, <span style="color:#666">3</span>);
+</span></span><span style="display:flex;"><span>  tft.unloadFont(); <span style="color:#080;font-style:italic">// 释放字库文件,节省资源
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  delay(<span style="color:#666">10000</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="注意事项">注意事项 <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" class="anchor">🔗</a></h2><ol>
+<li><strong>Unicode 范围</strong>：确保在 <code>Create_font.pde</code> 中添加的 Unicode 码覆盖需要显示的所有中文字符。</li>
+<li><strong>内存占用</strong>：大字体文件可能占用较多内存，需注意 ESP32 的内存限制。</li>
+<li><strong>屏幕兼容性</strong>：确保屏幕支持 <code>TFT_eSPI</code> 库，且屏幕驱动芯片已在库中正确配置。</li>
+</ol>
+<hr>
+<p>完成以上步骤后，即可在 Arduino 项目中顺利使用中文字符。🎉</p>
+<div id="section1">使用Python将中文转为unicode码：</div>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#080;font-style:italic">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># -*- coding: utf-8 -*-</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># 定义要转换的中文字符串</span>
+</span></span><span style="display:flex;"><span>chinese_str <span style="color:#666">=</span> <span style="color:#b44">&#34;你好世界&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># 创建一个空列表来存储转换后的Unicode码点</span>
+</span></span><span style="display:flex;"><span>unicode_codepoints <span style="color:#666">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># 创建一个空集合来跟踪已经添加过的字符</span>
+</span></span><span style="display:flex;"><span>seen_chars <span style="color:#666">=</span> <span style="color:#a2f">set</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># 遍历字符串中的每个字符</span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">for</span> char <span style="color:#a2f;font-weight:bold">in</span> chinese_str:
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic"># 如果字符还没有被添加过</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">if</span> char <span style="color:#a2f;font-weight:bold">not</span> <span style="color:#a2f;font-weight:bold">in</span> seen_chars:
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic"># 使用ord()函数获取字符的Unicode码点，并使用f-string格式化为0x前缀的十六进制表示</span>
+</span></span><span style="display:flex;"><span>        codepoint <span style="color:#666">=</span> <span style="color:#b44">f</span><span style="color:#b44">&#34;0x</span><span style="color:#b68;font-weight:bold">{</span><span style="color:#a2f">ord</span>(char)<span style="color:#b68;font-weight:bold">:</span><span style="color:#b44">04x</span><span style="color:#b68;font-weight:bold">}</span><span style="color:#b44">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic"># 将格式化后的码点添加到列表中</span>
+</span></span><span style="display:flex;"><span>        unicode_codepoints<span style="color:#666">.</span>append(codepoint)
+</span></span><span style="display:flex;"><span>        <span style="color:#080;font-style:italic"># 将字符添加到已添加过的字符集合中</span>
+</span></span><span style="display:flex;"><span>        seen_chars<span style="color:#666">.</span>add(char)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># 将转换后的Unicode码点列表转换为一个字符串，用逗号分隔</span>
+</span></span><span style="display:flex;"><span>codepoints_str <span style="color:#666">=</span> <span style="color:#b44">&#34;,&#34;</span><span style="color:#666">.</span>join(unicode_codepoints)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># 打开一个文件来写入数据</span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">with</span> <span style="color:#a2f">open</span>(<span style="color:#b44">&#34;unicode_codepoints.txt&#34;</span>, <span style="color:#b44">&#34;w&#34;</span>, encoding<span style="color:#666">=</span><span style="color:#b44">&#34;utf-8&#34;</span>) <span style="color:#a2f;font-weight:bold">as</span> file:
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic"># 将数据写入文件</span>
+</span></span><span style="display:flex;"><span>    file<span style="color:#666">.</span>write(codepoints_str)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"># 打印一条消息表示数据已经保存</span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f">print</span>(<span style="color:#b44">&#34;Unicode码点已保存到unicode_codepoints.txt文件中。&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a2f">print</span>(codepoints_str)
+</span></span></code></pre></div><p>Create_font.pde文件：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080;font-style:italic">// This is a Processing sketch, see https://processing.org/ to download the IDE
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Select the font, size and character ranges in the user configuration section
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// of this sketch, which starts at line 120. Instructions start at line 50.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">Software License Agreement (FreeBSD License)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> Copyright (c) 2018 Bodmer (https://github.com/Bodmer)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> All rights reserved.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> Redistribution and use in source and binary forms, with or without
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> modification, are permitted provided that the following conditions are met:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 1. Redistributions of source code must retain the above copyright notice, this
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> list of conditions and the following disclaimer.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 2. Redistributions in binary form must reproduce the above copyright notice,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> this list of conditions and the following disclaimer in the documentation
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> and/or other materials provided with the distribution.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &#34;AS IS&#34; AND
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> The views and conclusions contained in the software and documentation are those
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> of the authors and should not be interpreted as representing official policies,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> either expressed or implied, of the FreeBSD Project.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> */</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">////////////////////////////////////////////////////////////////////////////////////////////////
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// This is a processing sketch to create font files for the TFT_eSPI library:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// https://github.com/Bodmer/TFT_eSPI
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Coded by Bodmer January 2018, updated 10/2/19
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Version 0.8
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;             INSTRUCTIONS             &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// See comments below in code for specifying the font parameters (point size,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// unicode blocks to include etc.). Ranges of characters (glyphs) and specific
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// individual glyphs can be included in the created &#34;*.vlw&#34; font file.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Created fonts are saved in the sketches &#34;FontFiles&#34; folder. Press Ctrl+K to
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// see that folder location.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 16-bit Unicode point codes in the range 0x0000 - 0xFFFF are supported.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Codes 0-31 are control codes such as &#34;tab&#34; and &#34;carraige return&#34; etc.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// and 32 is a &#34;space&#34;, these should NOT be included.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The sketch will convert True Type (a .ttf or .otf file) file stored in the
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// sketches &#34;Data&#34; folder as well as your computers&#39; system fonts.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// To maximise rendering performance and the memory consumed only include the characters
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// you will use. Characters at the start of the file will render faster than those at
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// the end due to the buffering and file seeking overhead.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The inclusion of &#34;non-existant&#34; characters in a font may give unpredicatable results
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// when rendering with the TFT_eSPI library. The Processing sketch window that pops up
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// to show the font characters will print &#34;boxes&#34; (also known as Tofu!) for non existant
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// characters.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Once created the files must be loaded into the ESP32 or ESP8266 SPIFFS memory
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// using the Arduino IDE plugin detailed here:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// https://github.com/esp8266/arduino-esp8266fs-plugin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// https://github.com/me-no-dev/arduino-esp32fs-plugin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// When the sketch is run it will generate a file called &#34;System_Font_List.txt&#34; in the
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// sketch &#34;FontFiles&#34; folder, press Ctrl+K to see it. Open the file in a text editor to
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// view it. This list provides the font reference number needed below to locate that
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// font on your system.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The sketch also lists all the available system fonts to the console, you can increase
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// the console line count (in preferences.txt) to stop some fonts scrolling out of view.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// See link in File&gt;Preferences to locate &#34;preferences.txt&#34; file. You must close
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Processing then edit the file lines. If Processing is not closed first then the
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// edits will be overwritten by defaults! Edit &#34;preferences.txt&#34; as follows for
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 3000 lines, then save, then run Processing again:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//     console.length=3000;             // Line 4 in file
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//     console.scrollback.lines=3000;   // Line 7 in file
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Useful links:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080;font-style:italic">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> https://en.wikipedia.org/wiki/Unicode_font
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> https://www.gnu.org/software/freefont/
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> https://www.gnu.org/software/freefont/sources/
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> https://www.gnu.org/software/freefont/ranges/
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> http://savannah.gnu.org/projects/freefont/
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> http://www.google.com/get/noto/
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> https://github.com/Bodmer/TFT_eSPI
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> https://github.com/esp8266/arduino-esp8266fs-plugin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> https://github.com/me-no-dev/arduino-esp32fs-plugin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">   &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;         END OF INSTRUCTIONS         &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; */</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>import java.awt.Desktop; <span style="color:#080;font-style:italic">// Required to allow sketch to open file windows
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">////////////////////////////////////////////////////////////////////////////////////////////////
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//                       &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; USER CONFIGURED PARAMETERS START HERE &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Use font number or name, -1 for fontNumber means use fontName below, a value &gt;=0 means use system font number from list.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// When the sketch is run it will generate a file called &#34;systemFontList.txt&#34; in the sketch folder, press Ctrl+K to see it.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Open the &#34;systemFontList.txt&#34; in a text editor to view the font files and reference numbers for your system.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#0b0;font-weight:bold">int</span> fontNumber <span style="color:#666">=</span> <span style="color:#666">-</span><span style="color:#666">1</span>; <span style="color:#080;font-style:italic">// &lt;&lt; Use [Number] in brackets from the fonts listed.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 或者使用放置在&#34;Data&#34;文件夹中的ttf文件的字体名称，或者在IDE控制台中看到的系统字体的字体编号
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 当草图运行时，会列出字体编号。
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//                |         1         2     |       SPIFFS的最大文件名大小为31，包括前导/
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//                 1234567890123456789012345        以及添加的点大小和.vlw扩展名，所以最大为25
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>String fontName <span style="color:#666">=</span> <span style="color:#b44">&#34;DingTalk-JinBuTi&#34;</span>;  <span style="color:#080;font-style:italic">// 如果需要，创建后手动裁剪文件名长度
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                                     <span style="color:#080;font-style:italic">// 注意：SPIFFS不接受文件名中的下划线！
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>String fontType <span style="color:#666">=</span> <span style="color:#b44">&#34;.ttf&#34;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//String fontType = &#34;.otf&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 为TFT_eSPI字体文件定义字体大小（以点为单位）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#0b0;font-weight:bold">int</span> fontSize <span style="color:#666">=</span> <span style="color:#666">28</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 在Processing草图显示窗口中使用的字体大小（可以与上面不同）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#0b0;font-weight:bold">int</span> displayFontSize <span style="color:#666">=</span> <span style="color:#666">28</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 创建一个C头文件（.h文件），准备在使用或复制到草图文件夹时使用
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>boolean createHeaderFile <span style="color:#666">=</span> <span style="color:#a2f">true</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 完成后自动打开包含创建文件的文件夹
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>boolean openFolder <span style="color:#666">=</span> <span style="color:#a2f">true</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Next we specify which unicode blocks from the the Basic Multilingual Plane (BMP) are included in the final font file. //
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Note: The ttf/otf font file MAY NOT contain all possible Unicode characters, refer to the fonts online documentation. //
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">static</span> <span style="color:#a2f;font-weight:bold">final</span> <span style="color:#0b0;font-weight:bold">int</span>[] unicodeBlocks <span style="color:#666">=</span> {
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 以下列表是根据此处的表格创建的：https://en.wikipedia.org/wiki/Unicode_block
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 移除下面行首的//以包含该Unicode区块，也可以通过编辑起始和结束范围值来指定不同的代码范围。
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 可以包含下面列表中的多行，仅受最终字体文件大小的限制！
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 区块范围,   //区块名称, 代码点, 已分配字符, 文字系统
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 起始, 结束,   //范围包括起始和结束代码
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#666">0x0021</span>, <span style="color:#666">0x007E</span>, <span style="color:#080;font-style:italic">//Basic Latin, 128, 128, Latin (52 characters), Common (76 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0080, 0x00FF, //Latin-1 Supplement, 128, 128, Latin (64 characters), Common (64 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0100, 0x017F, //Latin Extended-A, 128, 128, Latin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0180, 0x024F, //Latin Extended-B, 208, 208, Latin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0250, 0x02AF, //IPA Extensions, 96, 96, Latin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x02B0, 0x02FF, //Spacing Modifier Letters, 80, 80, Bopomofo (2 characters), Latin (14 characters), Common (64 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0300, 0x036F, //Combining Diacritical Marks, 112, 112, Inherited
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0370, 0x03FF, //Greek and Coptic, 144, 135, Coptic (14 characters), Greek (117 characters), Common (4 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0400, 0x04FF, //Cyrillic, 256, 256, Cyrillic (254 characters), Inherited (2 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0500, 0x052F, //Cyrillic Supplement, 48, 48, Cyrillic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0530, 0x058F, //Armenian, 96, 89, Armenian (88 characters), Common (1 character)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0590, 0x05FF, //Hebrew, 112, 87, Hebrew
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0600, 0x06FF, //Arabic, 256, 255, Arabic (237 characters), Common (6 characters), Inherited (12 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0700, 0x074F, //Syriac, 80, 77, Syriac
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0750, 0x077F, //Arabic Supplement, 48, 48, Arabic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0780, 0x07BF, //Thaana, 64, 50, Thaana
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x07C0, 0x07FF, //NKo, 64, 59, Nko
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0800, 0x083F, //Samaritan, 64, 61, Samaritan
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0840, 0x085F, //Mandaic, 32, 29, Mandaic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0860, 0x086F, //Syriac Supplement, 16, 11, Syriac
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x08A0, 0x08FF, //Arabic Extended-A, 96, 73, Arabic (72 characters), Common (1 character)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0900, 0x097F, //Devanagari, 128, 128, Devanagari (124 characters), Common (2 characters), Inherited (2 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0980, 0x09FF, //Bengali, 128, 95, Bengali
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0A00, 0x0A7F, //Gurmukhi, 128, 79, Gurmukhi
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0A80, 0x0AFF, //Gujarati, 128, 91, Gujarati
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0B00, 0x0B7F, //Oriya, 128, 90, Oriya
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0B80, 0x0BFF, //Tamil, 128, 72, Tamil
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0C00, 0x0C7F, //Telugu, 128, 96, Telugu
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0C80, 0x0CFF, //Kannada, 128, 88, Kannada
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0D00, 0x0D7F, //Malayalam, 128, 117, Malayalam
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0D80, 0x0DFF, //Sinhala, 128, 90, Sinhala
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0E00, 0x0E7F, //Thai, 128, 87, Thai (86 characters), Common (1 character)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0E80, 0x0EFF, //Lao, 128, 67, Lao
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0F00, 0x0FFF, //Tibetan, 256, 211, Tibetan (207 characters), Common (4 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1000, 0x109F, //Myanmar, 160, 160, Myanmar
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x10A0, 0x10FF, //Georgian, 96, 88, Georgian (87 characters), Common (1 character)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1100, 0x11FF, //Hangul Jamo, 256, 256, Hangul
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1200, 0x137F, //Ethiopic, 384, 358, Ethiopic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1380, 0x139F, //Ethiopic Supplement, 32, 26, Ethiopic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x13A0, 0x13FF, //Cherokee, 96, 92, Cherokee
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1400, 0x167F, //Unified Canadian Aboriginal Syllabics, 640, 640, Canadian Aboriginal
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1680, 0x169F, //Ogham, 32, 29, Ogham
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x16A0, 0x16FF, //Runic, 96, 89, Runic (86 characters), Common (3 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1700, 0x171F, //Tagalog, 32, 20, Tagalog
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1720, 0x173F, //Hanunoo, 32, 23, Hanunoo (21 characters), Common (2 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1740, 0x175F, //Buhid, 32, 20, Buhid
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1760, 0x177F, //Tagbanwa, 32, 18, Tagbanwa
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1780, 0x17FF, //Khmer, 128, 114, Khmer
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1800, 0x18AF, //Mongolian, 176, 156, Mongolian (153 characters), Common (3 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x18B0, 0x18FF, //Unified Canadian Aboriginal Syllabics Extended, 80, 70, Canadian Aboriginal
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1900, 0x194F, //Limbu, 80, 68, Limbu
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1950, 0x197F, //Tai Le, 48, 35, Tai Le
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1980, 0x19DF, //New Tai Lue, 96, 83, New Tai Lue
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x19E0, 0x19FF, //Khmer Symbols, 32, 32, Khmer
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1A00, 0x1A1F, //Buginese, 32, 30, Buginese
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1A20, 0x1AAF, //Tai Tham, 144, 127, Tai Tham
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1AB0, 0x1AFF, //Combining Diacritical Marks Extended, 80, 15, Inherited
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1B00, 0x1B7F, //Balinese, 128, 121, Balinese
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1B80, 0x1BBF, //Sundanese, 64, 64, Sundanese
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1BC0, 0x1BFF, //Batak, 64, 56, Batak
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1C00, 0x1C4F, //Lepcha, 80, 74, Lepcha
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1C50, 0x1C7F, //Ol Chiki, 48, 48, Ol Chiki
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1C80, 0x1C8F, //Cyrillic Extended-C, 16, 9, Cyrillic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1CC0, 0x1CCF, //Sundanese Supplement, 16, 8, Sundanese
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1CD0, 0x1CFF, //Vedic Extensions, 48, 42, Common (15 characters), Inherited (27 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1D00, 0x1D7F, //Phonetic Extensions, 128, 128, Cyrillic (2 characters), Greek (15 characters), Latin (111 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1D80, 0x1DBF, //Phonetic Extensions Supplement, 64, 64, Greek (1 character), Latin (63 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1DC0, 0x1DFF, //Combining Diacritical Marks Supplement, 64, 63, Inherited
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1E00, 0x1EFF, //Latin Extended Additional, 256, 256, Latin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x1F00, 0x1FFF, //Greek Extended, 256, 233, Greek
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2000, 0x206F, //General Punctuation, 112, 111, Common (109 characters), Inherited (2 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2070, 0x209F, //Superscripts and Subscripts, 48, 42, Latin (15 characters), Common (27 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x20A0, 0x20CF, //Currency Symbols, 48, 32, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x20D0, 0x20FF, //Combining Diacritical Marks for Symbols, 48, 33, Inherited
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2100, 0x214F, //Letterlike Symbols, 80, 80, Greek (1 character), Latin (4 characters), Common (75 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2150, 0x218F, //Number Forms, 64, 60, Latin (41 characters), Common (19 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2190, 0x21FF, //Arrows, 112, 112, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2200, 0x22FF, //Mathematical Operators, 256, 256, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2300, 0x23FF, //Miscellaneous Technical, 256, 256, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2400, 0x243F, //Control Pictures, 64, 39, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2440, 0x245F, //Optical Character Recognition, 32, 11, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2460, 0x24FF, //Enclosed Alphanumerics, 160, 160, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2500, 0x257F, //Box Drawing, 128, 128, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2580, 0x259F, //Block Elements, 32, 32, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x25A0, 0x25FF, //Geometric Shapes, 96, 96, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2600, 0x26FF, //Miscellaneous Symbols, 256, 256, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2700, 0x27BF, //Dingbats, 192, 192, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x27C0, 0x27EF, //Miscellaneous Mathematical Symbols-A, 48, 48, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x27F0, 0x27FF, //Supplemental Arrows-A, 16, 16, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2800, 0x28FF, //Braille Patterns, 256, 256, Braille
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2900, 0x297F, //Supplemental Arrows-B, 128, 128, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2980, 0x29FF, //Miscellaneous Mathematical Symbols-B, 128, 128, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2A00, 0x2AFF, //Supplemental Mathematical Operators, 256, 256, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2B00, 0x2BFF, //Miscellaneous Symbols and Arrows, 256, 207, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2C00, 0x2C5F, //Glagolitic, 96, 94, Glagolitic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2C60, 0x2C7F, //Latin Extended-C, 32, 32, Latin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2C80, 0x2CFF, //Coptic, 128, 123, Coptic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2D00, 0x2D2F, //Georgian Supplement, 48, 40, Georgian
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2D30, 0x2D7F, //Tifinagh, 80, 59, Tifinagh
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2D80, 0x2DDF, //Ethiopic Extended, 96, 79, Ethiopic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2DE0, 0x2DFF, //Cyrillic Extended-A, 32, 32, Cyrillic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2E00, 0x2E7F, //Supplemental Punctuation, 128, 74, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2E80, 0x2EFF, //CJK Radicals Supplement, 128, 115, Han
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2F00, 0x2FDF, //Kangxi Radicals, 224, 214, Han
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x2FF0, 0x2FFF, //Ideographic Description Characters, 16, 12, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x3000, 0x303F, //CJK Symbols and Punctuation, 64, 64, Han (15 characters), Hangul (2 characters), Common (43 characters), Inherited (4 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x3040, 0x309F, //Hiragana, 96, 93, Hiragana (89 characters), Common (2 characters), Inherited (2 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x30A0, 0x30FF, //Katakana, 96, 96, Katakana (93 characters), Common (3 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x3100, 0x312F, //Bopomofo, 48, 42, Bopomofo
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x3130, 0x318F, //Hangul Compatibility Jamo, 96, 94, Hangul
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x3190, 0x319F, //Kanbun, 16, 16, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x31A0, 0x31BF, //Bopomofo Extended, 32, 27, Bopomofo
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x31C0, 0x31EF, //CJK Strokes, 48, 36, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x31F0, 0x31FF, //Katakana Phonetic Extensions, 16, 16, Katakana
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x3200, 0x32FF, //Enclosed CJK Letters and Months, 256, 254, Hangul (62 characters), Katakana (47 characters), Common (145 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x3300, 0x33FF, //CJK Compatibility, 256, 256, Katakana (88 characters), Common (168 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x3400, 0x4DBF, //CJK Unified Ideographs Extension A, 6,592, 6,582, Han
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x4DC0, 0x4DFF, //Yijing Hexagram Symbols, 64, 64, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x4E00, 0x9FFF, //CJK Unified Ideographs, 20,992, 20,971, Han
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA000, 0xA48F, //Yi Syllables, 1,168, 1,165, Yi
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA490, 0xA4CF, //Yi Radicals, 64, 55, Yi
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA4D0, 0xA4FF, //Lisu, 48, 48, Lisu
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA500, 0xA63F, //Vai, 320, 300, Vai
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA640, 0xA69F, //Cyrillic Extended-B, 96, 96, Cyrillic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA6A0, 0xA6FF, //Bamum, 96, 88, Bamum
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA700, 0xA71F, //Modifier Tone Letters, 32, 32, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA720, 0xA7FF, //Latin Extended-D, 224, 160, Latin (155 characters), Common (5 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA800, 0xA82F, //Syloti Nagri, 48, 44, Syloti Nagri
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA830, 0xA83F, //Common Indic Number Forms, 16, 10, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA840, 0xA87F, //Phags-pa, 64, 56, Phags Pa
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA880, 0xA8DF, //Saurashtra, 96, 82, Saurashtra
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA8E0, 0xA8FF, //Devanagari Extended, 32, 30, Devanagari
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA900, 0xA92F, //Kayah Li, 48, 48, Kayah Li (47 characters), Common (1 character)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA930, 0xA95F, //Rejang, 48, 37, Rejang
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA960, 0xA97F, //Hangul Jamo Extended-A, 32, 29, Hangul
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA980, 0xA9DF, //Javanese, 96, 91, Javanese (90 characters), Common (1 character)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xA9E0, 0xA9FF, //Myanmar Extended-B, 32, 31, Myanmar
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xAA00, 0xAA5F, //Cham, 96, 83, Cham
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xAA60, 0xAA7F, //Myanmar Extended-A, 32, 32, Myanmar
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xAA80, 0xAADF, //Tai Viet, 96, 72, Tai Viet
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xAAE0, 0xAAFF, //Meetei Mayek Extensions, 32, 23, Meetei Mayek
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xAB00, 0xAB2F, //Ethiopic Extended-A, 48, 32, Ethiopic
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xAB30, 0xAB6F, //Latin Extended-E, 64, 54, Latin (52 characters), Greek (1 character), Common (1 character)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xAB70, 0xABBF, //Cherokee Supplement, 80, 80, Cherokee
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xABC0, 0xABFF, //Meetei Mayek, 64, 56, Meetei Mayek
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xAC00, 0xD7AF, //Hangul Syllables, 11,184, 11,172, Hangul
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xD7B0, 0xD7FF, //Hangul Jamo Extended-B, 80, 72, Hangul
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xD800, 0xDB7F, //High Surrogates, 896, 0, Unknown
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xDB80, 0xDBFF, //High Private Use Surrogates, 128, 0, Unknown
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xDC00, 0xDFFF, //Low Surrogates, 1,024, 0, Unknown
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xE000, 0xF8FF, //Private Use Area, 6,400, 6,400, Unknown
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xF900, 0xFAFF, //CJK Compatibility Ideographs, 512, 472, Han
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xFB00, 0xFB4F, //Alphabetic Presentation Forms, 80, 58, Armenian (5 characters), Hebrew (46 characters), Latin (7 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xFB50, 0xFDFF, //Arabic Presentation Forms-A, 688, 611, Arabic (609 characters), Common (2 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xFE00, 0xFE0F, //Variation Selectors, 16, 16, Inherited
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xFE10, 0xFE1F, //Vertical Forms, 16, 10, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xFE20, 0xFE2F, //Combining Half Marks, 16, 16, Cyrillic (2 characters), Inherited (14 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xFE30, 0xFE4F, //CJK Compatibility Forms, 32, 32, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xFE50, 0xFE6F, //Small Form Variants, 32, 26, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xFE70, 0xFEFF, //Arabic Presentation Forms-B, 144, 141, Arabic (140 characters), Common (1 character)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xFF00, 0xFFEF, //Halfwidth and Fullwidth Forms, 240, 225, Hangul (52 characters), Katakana (55 characters), Latin (52 characters), Common (66 characters)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0xFFF0, 0xFFFF, //Specials, 16, 5, Common
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">//0x0030, 0x0039, //Example custom range (numbers 0-9)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0041, 0x005A, //Example custom range (Upper case A-Z)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">//0x0061, 0x007A, //Example custom range (Lower case a-z)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 在此处我们指定要包含的特定单个Unicode（附加在所选范围的末尾）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#a2f;font-weight:bold">static</span> <span style="color:#a2f;font-weight:bold">final</span> <span style="color:#0b0;font-weight:bold">int</span>[] specificUnicodes <span style="color:#666">=</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#666">0x4f60</span>,<span style="color:#666">0x597d</span>,<span style="color:#666">0x4e16</span>,<span style="color:#666">0x754c</span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 常用代码，在下一行中添加或移除//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">// 0x00A3, 0x00B0, 0x00B5, 0x03A9, 0x20AC, // £ ° µ Ω €
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 显示时间所用的数字和字符，将下一行更改为//*以使用
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080;font-style:italic">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x002B, 0x002D, 0x002E, 0x0030, 0x0031, 0x0032, 0x0033, 0x0034, // - + . 0 1 2 3 4
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x0035, 0x0036, 0x0037, 0x0038, 0x0039, 0x003A, 0x0061, 0x006D, // 5 6 7 8 9 : a m
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x0070,                                                         // p
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> //*/</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// More characters for TFT_eSPI test sketches, change next line to //* to use
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x0102, 0x0103, 0x0104, 0x0105, 0x0106, 0x0107, 0x010C, 0x010D,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x010E, 0x010F, 0x0110, 0x0111, 0x0118, 0x0119, 0x011A, 0x011B,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x0131, 0x0139, 0x013A, 0x013D, 0x013E, 0x0141, 0x0142, 0x0143,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x0144, 0x0147, 0x0148, 0x0150, 0x0151, 0x0152, 0x0153, 0x0154,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x0155, 0x0158, 0x0159, 0x015A, 0x015B, 0x015E, 0x015F, 0x0160,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x0161, 0x0162, 0x0163, 0x0164, 0x0165, 0x016E, 0x016F, 0x0170,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x0171, 0x0178, 0x0179, 0x017A, 0x017B, 0x017C, 0x017D, 0x017E,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x0192,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x02C6, 0x02C7, 0x02D8, 0x02D9, 0x02DA, 0x02DB, 0x02DC, 0x02DD,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x03A9, 0x03C0, 0x2013, 0x2014, 0x2018, 0x2019, 0x201A, 0x201C,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x201D, 0x201E, 0x2020, 0x2021, 0x2022, 0x2026, 0x2030, 0x2039,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x203A, 0x2044, 0x20AC,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x2122, 0x2202, 0x2206, 0x220F,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x2211, 0x221A, 0x221E, 0x222B, 0x2248, 0x2260, 0x2264, 0x2265,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0x25CA,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">    0xF8FF, 0xFB01, 0xFB02,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">  //*/</span>
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//                       &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; USER CONFIGURED PARAMETERS END HERE &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">////////////////////////////////////////////////////////////////////////////////////////////////
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Variable to hold the inclusive Unicode range (16-bit values only for this sketch)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#0b0;font-weight:bold">int</span> firstUnicode <span style="color:#666">=</span> <span style="color:#666">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#0b0;font-weight:bold">int</span> lastUnicode  <span style="color:#666">=</span> <span style="color:#666">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>PFont myFont;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>PrintWriter logOutput;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#0b0;font-weight:bold">void</span> <span style="color:#00a000">setup</span>() {
+</span></span><span style="display:flex;"><span>  logOutput <span style="color:#666">=</span> createWriter(<span style="color:#b44">&#34;FontFiles/System_Font_List.txt&#34;</span>); 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  size(<span style="color:#666">1000</span>, <span style="color:#666">800</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// Print the available fonts to the console as a list:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  String[] fontList <span style="color:#666">=</span> PFont.list();
+</span></span><span style="display:flex;"><span>  printArray(fontList);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// Save font list to file
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#a2f;font-weight:bold">for</span> (<span style="color:#0b0;font-weight:bold">int</span> x <span style="color:#666">=</span> <span style="color:#666">0</span>; x <span style="color:#666">&lt;</span> fontList.length; x<span style="color:#666">++</span>)
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    logOutput.print(<span style="color:#b44">&#34;[&#34;</span> <span style="color:#666">+</span> x <span style="color:#666">+</span> <span style="color:#b44">&#34;] &#34;</span>);
+</span></span><span style="display:flex;"><span>    logOutput.println(fontList[x]);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  logOutput.flush(); <span style="color:#080;font-style:italic">// Writes the remaining data to the file
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  logOutput.close(); <span style="color:#080;font-style:italic">// Finishes the file
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// Set the fontName from the array number or the defined fontName
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#a2f;font-weight:bold">if</span> (fontNumber <span style="color:#666">&gt;=</span> <span style="color:#666">0</span>)
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//    fontName = fontList[fontNumber];
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    fontType <span style="color:#666">=</span> <span style="color:#b44">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">char</span>[]   charset;
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">int</span>  index <span style="color:#666">=</span> <span style="color:#666">0</span>, count <span style="color:#666">=</span> <span style="color:#666">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">int</span> blockCount <span style="color:#666">=</span> unicodeBlocks.length;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a2f;font-weight:bold">for</span> (<span style="color:#0b0;font-weight:bold">int</span> i <span style="color:#666">=</span> <span style="color:#666">0</span>; i <span style="color:#666">&lt;</span> blockCount; i<span style="color:#666">+=</span><span style="color:#666">2</span>) {
+</span></span><span style="display:flex;"><span>    firstUnicode <span style="color:#666">=</span> unicodeBlocks[i];
+</span></span><span style="display:flex;"><span>    lastUnicode  <span style="color:#666">=</span> unicodeBlocks[i<span style="color:#666">+</span><span style="color:#666">1</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">if</span> (lastUnicode <span style="color:#666">&lt;</span> firstUnicode) {
+</span></span><span style="display:flex;"><span>      delay(<span style="color:#666">100</span>);
+</span></span><span style="display:flex;"><span>      System.err.println(<span style="color:#b44">&#34;ERROR: Bad Unicode range secified, last &lt; first!&#34;</span>);
+</span></span><span style="display:flex;"><span>      System.err.print(<span style="color:#b44">&#34;first in range = 0x&#34;</span> <span style="color:#666">+</span> hex(firstUnicode, <span style="color:#666">4</span>));
+</span></span><span style="display:flex;"><span>      System.err.println(<span style="color:#b44">&#34;, last in range  = 0x&#34;</span> <span style="color:#666">+</span> hex(lastUnicode, <span style="color:#666">4</span>));
+</span></span><span style="display:flex;"><span>      <span style="color:#a2f;font-weight:bold">while</span> (<span style="color:#a2f">true</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">// calculate the number of characters
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    count <span style="color:#666">+=</span> (lastUnicode <span style="color:#666">-</span> firstUnicode <span style="color:#666">+</span> <span style="color:#666">1</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  count <span style="color:#666">+=</span> specificUnicodes.length;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  println();
+</span></span><span style="display:flex;"><span>  println(<span style="color:#b44">&#34;=====================&#34;</span>);
+</span></span><span style="display:flex;"><span>  println(<span style="color:#b44">&#34;Creating font file...&#34;</span>);
+</span></span><span style="display:flex;"><span>  println(<span style="color:#b44">&#34;Unicode blocks included     = &#34;</span> <span style="color:#666">+</span> (blockCount<span style="color:#666">/</span><span style="color:#666">2</span>));
+</span></span><span style="display:flex;"><span>  println(<span style="color:#b44">&#34;Specific unicodes included  = &#34;</span> <span style="color:#666">+</span> specificUnicodes.length);
+</span></span><span style="display:flex;"><span>  println(<span style="color:#b44">&#34;Total number of characters  = &#34;</span> <span style="color:#666">+</span> count);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a2f;font-weight:bold">if</span> (count <span style="color:#666">==</span> <span style="color:#666">0</span>) {
+</span></span><span style="display:flex;"><span>    delay(<span style="color:#666">100</span>);
+</span></span><span style="display:flex;"><span>    System.err.println(<span style="color:#b44">&#34;ERROR: No Unicode range or specific codes have been defined!&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">while</span> (<span style="color:#a2f">true</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// allocate memory
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  charset <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">new</span> <span style="color:#0b0;font-weight:bold">char</span>[count];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a2f;font-weight:bold">for</span> (<span style="color:#0b0;font-weight:bold">int</span> i <span style="color:#666">=</span> <span style="color:#666">0</span>; i <span style="color:#666">&lt;</span> blockCount; i<span style="color:#666">+=</span><span style="color:#666">2</span>) {
+</span></span><span style="display:flex;"><span>    firstUnicode <span style="color:#666">=</span> unicodeBlocks[i];
+</span></span><span style="display:flex;"><span>    lastUnicode  <span style="color:#666">=</span>  unicodeBlocks[i<span style="color:#666">+</span><span style="color:#666">1</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">// loading the range specified
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    <span style="color:#a2f;font-weight:bold">for</span> (<span style="color:#0b0;font-weight:bold">int</span> code <span style="color:#666">=</span> firstUnicode; code <span style="color:#666">&lt;=</span> lastUnicode; code<span style="color:#666">++</span>) {
+</span></span><span style="display:flex;"><span>      charset[index] <span style="color:#666">=</span> Character.toChars(code)[<span style="color:#666">0</span>];
+</span></span><span style="display:flex;"><span>      index<span style="color:#666">++</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// loading the specific point codes
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#a2f;font-weight:bold">for</span> (<span style="color:#0b0;font-weight:bold">int</span> i <span style="color:#666">=</span> <span style="color:#666">0</span>; i <span style="color:#666">&lt;</span> specificUnicodes.length; i<span style="color:#666">++</span>) {
+</span></span><span style="display:flex;"><span>    charset[index] <span style="color:#666">=</span> Character.toChars(specificUnicodes[i])[<span style="color:#666">0</span>];
+</span></span><span style="display:flex;"><span>    index<span style="color:#666">++</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// Make font smooth (anti-aliased)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  boolean smooth <span style="color:#666">=</span> <span style="color:#a2f">true</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// Create the font in memory
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  myFont <span style="color:#666">=</span> createFont(fontName<span style="color:#666">+</span>fontType, displayFontSize, smooth, charset);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// Print characters to the sketch window
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  fill(<span style="color:#666">0</span>, <span style="color:#666">0</span>, <span style="color:#666">0</span>);
+</span></span><span style="display:flex;"><span>  textFont(myFont);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// Set the left and top margin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#0b0;font-weight:bold">int</span> margin <span style="color:#666">=</span> displayFontSize;
+</span></span><span style="display:flex;"><span>  translate(margin<span style="color:#666">/</span><span style="color:#666">2</span>, margin);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">int</span> gapx <span style="color:#666">=</span> displayFontSize<span style="color:#666">*</span><span style="color:#666">10</span><span style="color:#666">/</span><span style="color:#666">8</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">int</span> gapy <span style="color:#666">=</span> displayFontSize<span style="color:#666">*</span><span style="color:#666">10</span><span style="color:#666">/</span><span style="color:#666">8</span>;
+</span></span><span style="display:flex;"><span>  index <span style="color:#666">=</span> <span style="color:#666">0</span>;
+</span></span><span style="display:flex;"><span>  fill(<span style="color:#666">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  textSize(displayFontSize);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a2f;font-weight:bold">for</span> (<span style="color:#0b0;font-weight:bold">int</span> y <span style="color:#666">=</span> <span style="color:#666">0</span>; y <span style="color:#666">&lt;</span> height<span style="color:#666">-</span>gapy; y <span style="color:#666">+=</span> gapy) {
+</span></span><span style="display:flex;"><span>    <span style="color:#0b0;font-weight:bold">int</span> x <span style="color:#666">=</span> <span style="color:#666">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">while</span> (x <span style="color:#666">&lt;</span> width) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#0b0;font-weight:bold">int</span> unicode <span style="color:#666">=</span> charset[index];
+</span></span><span style="display:flex;"><span>      <span style="color:#0b0;font-weight:bold">float</span> cwidth <span style="color:#666">=</span> textWidth((<span style="color:#0b0;font-weight:bold">char</span>)unicode) <span style="color:#666">+</span> <span style="color:#666">2</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#a2f;font-weight:bold">if</span> ( (x <span style="color:#666">+</span> cwidth) <span style="color:#666">&gt;</span> (width <span style="color:#666">-</span> gapx) ) <span style="color:#a2f;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#080;font-style:italic">// Draw the glyph to the screen
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>      text(<span style="color:#a2f;font-weight:bold">new</span> String(Character.toChars(unicode)), x, y);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#080;font-style:italic">// Move cursor
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>      x <span style="color:#666">+=</span> cwidth;
+</span></span><span style="display:flex;"><span>      <span style="color:#080;font-style:italic">// Increment the counter
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>      index<span style="color:#666">++</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#a2f;font-weight:bold">if</span> (index <span style="color:#666">&gt;=</span> count) <span style="color:#a2f;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">if</span> (index <span style="color:#666">&gt;=</span> count) <span style="color:#a2f;font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// creating font to save as a file
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  PFont    font;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  font <span style="color:#666">=</span> createFont(fontName<span style="color:#666">+</span>fontType, fontSize, smooth, charset);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  println(<span style="color:#b44">&#34;Created font &#34;</span> <span style="color:#666">+</span> fontName <span style="color:#666">+</span> str(fontSize) <span style="color:#666">+</span> <span style="color:#b44">&#34;.vlw&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  String fontFileName <span style="color:#666">=</span> <span style="color:#b44">&#34;FontFiles/&#34;</span> <span style="color:#666">+</span> fontName <span style="color:#666">+</span> str(fontSize) <span style="color:#666">+</span> <span style="color:#b44">&#34;.vlw&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// creating file
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#a2f;font-weight:bold">try</span> {
+</span></span><span style="display:flex;"><span>    print(<span style="color:#b44">&#34;Saving to sketch FontFiles folder... &#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    OutputStream output <span style="color:#666">=</span> createOutput(fontFileName);
+</span></span><span style="display:flex;"><span>    font.save(output);
+</span></span><span style="display:flex;"><span>    output.close();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    println(<span style="color:#b44">&#34;OK!&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    delay(<span style="color:#666">100</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic">// Open up the FontFiles folder to access the saved file
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    String path <span style="color:#666">=</span> sketchPath();
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">if</span>(openFolder){
+</span></span><span style="display:flex;"><span>      Desktop.getDesktop().open(<span style="color:#a2f;font-weight:bold">new</span> File(path<span style="color:#666">+</span><span style="color:#b44">&#34;/FontFiles&#34;</span>));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    System.err.println(<span style="color:#b44">&#34;All done! Note: Rectangles are displayed for non-existant characters.&#34;</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a2f;font-weight:bold">catch</span>(IOException e) {
+</span></span><span style="display:flex;"><span>    println(<span style="color:#b44">&#34;Doh! Failed to create the file&#34;</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a2f;font-weight:bold">if</span>(<span style="color:#666">!</span>createHeaderFile) <span style="color:#a2f;font-weight:bold">return</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// Now creating header file if the option was specified.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#a2f;font-weight:bold">try</span>{
+</span></span><span style="display:flex;"><span>    print(<span style="color:#b44">&#34;saving header file to FontFile folder...&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    InputStream input <span style="color:#666">=</span> createInputRaw(fontFileName);
+</span></span><span style="display:flex;"><span>    PrintWriter output <span style="color:#666">=</span> createWriter(<span style="color:#b44">&#34;FontFiles/&#34;</span> <span style="color:#666">+</span> fontName <span style="color:#666">+</span> str(fontSize) <span style="color:#666">+</span> <span style="color:#b44">&#34;.h&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    output.println(<span style="color:#b44">&#34;#include &lt;pgmspace.h&gt;&#34;</span>);
+</span></span><span style="display:flex;"><span>    output.println();
+</span></span><span style="display:flex;"><span>    output.println(<span style="color:#b44">&#34;const uint8_t &#34;</span> <span style="color:#666">+</span> fontName <span style="color:#666">+</span> str(fontSize) <span style="color:#666">+</span> <span style="color:#b44">&#34;[] PROGMEM = {&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#0b0;font-weight:bold">int</span> i <span style="color:#666">=</span> <span style="color:#666">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#0b0;font-weight:bold">int</span> data <span style="color:#666">=</span> input.read();
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">while</span>(data <span style="color:#666">!=</span> <span style="color:#666">-</span><span style="color:#666">1</span>){
+</span></span><span style="display:flex;"><span>      output.print(<span style="color:#b44">&#34;0x&#34;</span>);
+</span></span><span style="display:flex;"><span>      output.print(hex(data, <span style="color:#666">2</span>));
+</span></span><span style="display:flex;"><span>      <span style="color:#a2f;font-weight:bold">if</span>(i<span style="color:#666">++</span> <span style="color:#666">&lt;</span> <span style="color:#666">15</span>){
+</span></span><span style="display:flex;"><span>        output.print(<span style="color:#b44">&#34;, &#34;</span>);
+</span></span><span style="display:flex;"><span>      } <span style="color:#a2f;font-weight:bold">else</span> {
+</span></span><span style="display:flex;"><span>        output.println(<span style="color:#b44">&#34;,&#34;</span>);
+</span></span><span style="display:flex;"><span>        i <span style="color:#666">=</span> <span style="color:#666">0</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      data <span style="color:#666">=</span> input.read();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//    font.save(output);
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    output.println(<span style="color:#b44">&#34;</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#b44">};&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    output.close();
+</span></span><span style="display:flex;"><span>    input.close();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    println(<span style="color:#b44">&#34;C header file created.&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  } <span style="color:#a2f;font-weight:bold">catch</span>(IOException e){
+</span></span><span style="display:flex;"><span>    println(<span style="color:#b44">&#34;Failed to create C header file&#34;</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/esp32">ESP32</a>
+            
+                <a href="https://ltkblog.cn/tags/st7789">ST7789</a>
+            
+                <a href="https://ltkblog.cn/tags/tft_espi%E5%BA%93%E4%B8%AD%E6%96%87%E5%AD%97%E5%BA%93">TFT_eSPI库中文字库</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

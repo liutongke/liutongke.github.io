@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>使用 ESP32 和 Arduino 驱动 ST7789 屏幕（TFT_eSPI）与 TJpg_Decoder 显示图片 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="使用 ESP32 和 Arduino 驱动 ST7789 屏幕（TFT_eSPI）与 TJpg_Decoder 显示图片">
+<meta name="keywords" content="ESP32, ST7789, TFT_eSPI, TJpg_Decoder" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">使用 ESP32 和 Arduino 驱动 ST7789 屏幕（TFT_eSPI）与 TJpg_Decoder 显示图片</h1>
+
+    <div class="tip">
+        <time datetime="2024-12-24 00:00:00 &#43;0000 UTC">2024年12月24日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1054字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          3分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#tjpg_decoder-库示例程序位置">TJpg_Decoder 库示例程序位置</a></li>
+    <li><a href="#选择屏幕驱动型号">选择屏幕驱动型号</a>
+      <ul>
+        <li><a href="#示例配置">示例配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#配置屏幕颜色排列顺序">配置屏幕颜色排列顺序</a>
+      <ul>
+        <li><a href="#关于颜色排列顺序">关于颜色排列顺序</a></li>
+        <li><a href="#配置方法">配置方法</a></li>
+      </ul>
+    </li>
+    <li><a href="#定义屏幕宽度和高度">定义屏幕宽度和高度</a>
+      <ul>
+        <li><a href="#示例配置-1">示例配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#配置屏幕颜色反转">配置屏幕颜色反转</a></li>
+    <li><a href="#定义-spi-通信的-gpio-引脚">定义 SPI 通信的 GPIO 引脚</a>
+      <ul>
+        <li><a href="#示例引脚配置">示例引脚配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#设置-spi-通信频率">设置 SPI 通信频率</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <p>在 Arduino 中使用 <strong>ESP32</strong>、<strong>TFT_eSPI</strong> 和 <strong>TJpg_Decoder</strong> 驱动 ST7789 屏幕显示图片时，需要对相关库文件进行一些配置。以下是详细的操作步骤。</p>
+<hr>
+<h2 id="tjpg_decoder-库示例程序位置">TJpg_Decoder 库示例程序位置 <a href="#tjpg_decoder-%e5%ba%93%e7%a4%ba%e4%be%8b%e7%a8%8b%e5%ba%8f%e4%bd%8d%e7%bd%ae" class="anchor">🔗</a></h2><p>以我的安装目录为例，TJpg_Decoder 库的示例程序位于项目根目录下的 <code>libraries\TJpg_Decoder\examples\FLash_array\ESP32_Dual_Core_Flash_Jpg</code> 路径，可以直接将<code>ESP32_Dual_Core_Flash_Jpg.ino</code> <code>panda.h</code>复制到项目目录编译运行，显示图片：</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225230432.png" alt="TJpg_Decoder示例所在目录"  />
+</p><br>
+<em>图片注释：TJpg_Decoder 示例程序所在目录。</em></p>
+<h2 id="选择屏幕驱动型号">选择屏幕驱动型号 <a href="#%e9%80%89%e6%8b%a9%e5%b1%8f%e5%b9%95%e9%a9%b1%e5%8a%a8%e5%9e%8b%e5%8f%b7" class="anchor">🔗</a></h2><p>在配置文件中，选择适合的屏幕驱动型号，例如 ST7789。</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225032157.png" alt="选择屏幕驱动"  />
+</p><br>
+<em>图片注释：选择屏幕驱动型号。</em></p>
+<h3 id="示例配置">示例配置 <a href="#%e7%a4%ba%e4%be%8b%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h3><p>取消注释 ST7789 的驱动型号宏：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#define ST7789_DRIVER </span><span style="color:#080;font-style:italic">// 使用 ST7789 驱动
+</span></span></span></code></pre></div><hr>
+<h2 id="配置屏幕颜色排列顺序">配置屏幕颜色排列顺序 <a href="#%e9%85%8d%e7%bd%ae%e5%b1%8f%e5%b9%95%e9%a2%9c%e8%89%b2%e6%8e%92%e5%88%97%e9%a1%ba%e5%ba%8f" class="anchor">🔗</a></h2><p>在配置文件中，有关于屏幕颜色排列顺序的宏定义，如下图所示：</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225031626.png" alt="修改屏幕颜色排列顺序"  />
+</p><br>
+<em>图片注释：修改屏幕颜色排列顺序。</em></p>
+<h3 id="关于颜色排列顺序">关于颜色排列顺序 <a href="#%e5%85%b3%e4%ba%8e%e9%a2%9c%e8%89%b2%e6%8e%92%e5%88%97%e9%a1%ba%e5%ba%8f" class="anchor">🔗</a></h3><p>TFT 显示屏的像素颜色由红（Red）、绿（Green）、蓝（Blue）三种基本颜色组成，但不同厂商生产的显示屏可能采用不同的颜色排列顺序。常见的两种顺序是：</p>
+<ul>
+<li><strong>TFT_RGB</strong>：颜色顺序为红-绿-蓝（Red-Green-Blue）。</li>
+<li><strong>TFT_BGR</strong>：颜色顺序为蓝-绿-红（Blue-Green-Red）。</li>
+</ul>
+<h3 id="配置方法">配置方法 <a href="#%e9%85%8d%e7%bd%ae%e6%96%b9%e6%b3%95" class="anchor">🔗</a></h3><ol>
+<li>如果显示屏颜色显示异常（如红色和蓝色反转），可以尝试在代码中启用（取消注释）一个宏定义：
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#define TFT_RGB </span><span style="color:#080;font-style:italic">// 红-绿-蓝
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 或者
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_BGR </span><span style="color:#080;font-style:italic">// 蓝-绿-红
+</span></span></span></code></pre></div></li>
+<li>编译并上传代码到 ESP32，观察屏幕颜色显示是否正常。</li>
+<li>如果颜色仍然异常，切换为另一个选项并重新尝试，直到颜色显示正确。</li>
+</ol>
+<hr>
+<h2 id="定义屏幕宽度和高度">定义屏幕宽度和高度 <a href="#%e5%ae%9a%e4%b9%89%e5%b1%8f%e5%b9%95%e5%ae%bd%e5%ba%a6%e5%92%8c%e9%ab%98%e5%ba%a6" class="anchor">🔗</a></h2><p>根据屏幕的型号（如 ST7789），需要定义其分辨率宽度和高度（通常以竖屏模式为基准）。</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225031707.png" alt="定义 ST7789 在竖屏模式下的宽度和高度"  />
+</p><br>
+<em>图片注释：定义 ST7789 在竖屏模式下的宽度和高度。</em></p>
+<h3 id="示例配置-1">示例配置 <a href="#%e7%a4%ba%e4%be%8b%e9%85%8d%e7%bd%ae-1" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#define TFT_WIDTH  240 </span><span style="color:#080;font-style:italic">// 屏幕宽度
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_HEIGHT 320 </span><span style="color:#080;font-style:italic">// 屏幕高度
+</span></span></span></code></pre></div><hr>
+<h2 id="配置屏幕颜色反转">配置屏幕颜色反转 <a href="#%e9%85%8d%e7%bd%ae%e5%b1%8f%e5%b9%95%e9%a2%9c%e8%89%b2%e5%8f%8d%e8%bd%ac" class="anchor">🔗</a></h2><p>在配置文件中，有关于屏幕颜色反转的宏定义，如下图所示：</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225230817.png" alt="Img"  />
+</p><br>
+<em>图片注释：修改屏幕颜色反转。</em></p>
+<hr>
+<h2 id="定义-spi-通信的-gpio-引脚">定义 SPI 通信的 GPIO 引脚 <a href="#%e5%ae%9a%e4%b9%89-spi-%e9%80%9a%e4%bf%a1%e7%9a%84-gpio-%e5%bc%95%e8%84%9a" class="anchor">🔗</a></h2><p>ESP32 使用 SPI 与 ST7789 屏幕通信时，可以通过编程定义 SPI 的 GPIO 引脚。TFT_eSPI 库允许用户在配置文件中设置这些引脚。</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225032236.png" alt="定义 SPI GPIO 引脚"  />
+</p><br>
+<em>图片注释：定义 SPI GPIO 引脚。</em></p>
+<h3 id="示例引脚配置">示例引脚配置 <a href="#%e7%a4%ba%e4%be%8b%e5%bc%95%e8%84%9a%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h3><p>在 <strong>User_Setup.h</strong> 文件中定义 SPI 接口的 GPIO 引脚：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#define TFT_MISO -1   </span><span style="color:#080;font-style:italic">// MISO 引脚（如未使用，则设为 -1）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_MOSI 22   </span><span style="color:#080;font-style:italic">// MOSI 引脚
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_SCLK 23   </span><span style="color:#080;font-style:italic">// SCK 引脚
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_CS   3    </span><span style="color:#080;font-style:italic">// CS（片选）引脚
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_DC   1    </span><span style="color:#080;font-style:italic">// 数据/命令引脚
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_RST  21   </span><span style="color:#080;font-style:italic">// 复位引脚
+</span></span></span></code></pre></div><p>根据硬件连接的实际情况调整上述引脚定义。</p>
+<hr>
+<h2 id="设置-spi-通信频率">设置 SPI 通信频率 <a href="#%e8%ae%be%e7%bd%ae-spi-%e9%80%9a%e4%bf%a1%e9%a2%91%e7%8e%87" class="anchor">🔗</a></h2><p>可以根据需要设置 SPI 通信的频率，以确保数据传输的稳定性。</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225231134.png" alt="设置 SPI 通信频率"  />
+</p><br>
+<em>图片注释：设置 SPI 通信频率。</em></p>
+<hr>
+<p>通过以上配置，你可以成功地在 ESP32 上使用 <strong>TJpg_Decoder</strong> 库解码 JPEG 图片，并通过 <strong>TFT_eSPI</strong> 驱动 <strong>ST7789</strong> 屏幕进行显示。根据需要调整各项配置，以确保屏幕显示效果正常。</p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/esp32">ESP32</a>
+            
+                <a href="https://ltkblog.cn/tags/st7789">ST7789</a>
+            
+                <a href="https://ltkblog.cn/tags/tft_espi">TFT_eSPI</a>
+            
+                <a href="https://ltkblog.cn/tags/tjpg_decoder">TJpg_Decoder</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

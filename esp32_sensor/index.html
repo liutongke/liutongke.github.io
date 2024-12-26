@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>ESP32使用BMP280气压传感器 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="ESP32使用BMP280气压传感器">
+<meta name="keywords" content="ESP32, BMP280" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">ESP32使用BMP280气压传感器</h1>
+
+    <div class="tip">
+        <time datetime="2024-10-29 00:00:00 &#43;0000 UTC">2024年10月29日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          646字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一bmp280气压传感器">(一)BMP280气压传感器</a>
+      <ul>
+        <li><a href="#引脚定义">引脚定义</a></li>
+        <li><a href="#注意事项">注意事项</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h2 id="一bmp280气压传感器">(一)BMP280气压传感器 <a href="#%e4%b8%80bmp280%e6%b0%94%e5%8e%8b%e4%bc%a0%e6%84%9f%e5%99%a8" class="anchor">🔗</a></h2><p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241029140802.png" alt="I2C模式"  />
+</p></p>
+<p><strong>以下是 BMP280 传感器各引脚的作用定义：</strong></p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241029140838.png" alt="引脚定义"  />
+</p></p>
+<h3 id="引脚定义">引脚定义 <a href="#%e5%bc%95%e8%84%9a%e5%ae%9a%e4%b9%89" class="anchor">🔗</a></h3><ol>
+<li>
+<p><strong>VCC</strong>：</p>
+<ul>
+<li><strong>作用</strong>：电源引脚，用于为传感器供电。</li>
+<li><strong>连接</strong>：通常连接到 3.3V 或 5V 电源。</li>
+</ul>
+</li>
+<li>
+<p><strong>GND</strong>：</p>
+<ul>
+<li><strong>作用</strong>：地引脚，连接到电源的地线（GND）。</li>
+<li><strong>连接</strong>：确保传感器与主控板共地。</li>
+</ul>
+</li>
+<li>
+<p><strong>SDA</strong>：</p>
+<ul>
+<li><strong>作用</strong>：串行数据引脚，负责 I2C 通信中的数据传输。</li>
+<li><strong>连接</strong>：连接到主控板的 SDA 引脚（如 ESP32 的 GPIO 21）。</li>
+</ul>
+</li>
+<li>
+<p><strong>SCL</strong>：</p>
+<ul>
+<li><strong>作用</strong>：串行时钟引脚，提供 I2C 通信中的时钟信号。</li>
+<li><strong>连接</strong>：连接到主控板的 SCL 引脚（如 ESP32 的 GPIO 22）。</li>
+</ul>
+</li>
+<li>
+<p><strong>CSB</strong>（可选）：</p>
+<ul>
+<li><strong>作用</strong>：片选引脚，主要用于 SPI 模式下的选择控制。</li>
+<li><strong>连接</strong>：在 I2C 模式下，通常接高电平（VCC）；在 SPI 模式下，接主控板的相应片选引脚。</li>
+</ul>
+</li>
+<li>
+<p><strong>SDO</strong>（可选）：</p>
+<ul>
+<li><strong>作用</strong>：数据输出引脚，用于选择 I2C 地址（0x76 或 0x77）。</li>
+<li><strong>连接</strong>：根据接地或连接电源，可以选择不同的 I2C 地址。接地时为 0x76，连接 VCC 时为 0x77。</li>
+</ul>
+</li>
+<li>
+<p><strong>VDDIO</strong>：</p>
+<ul>
+<li><strong>作用</strong>：定义 I/O 引脚的工作电压。VDDIO 为 BMP280 的 I/O 引脚（如 SDA 和 SCL）提供电源电压。这使得传感器能够与使用不同电压（如 3.3V 或 5V）的主控板进行通信。</li>
+<li><strong>连接</strong>：为 BMP280 的 I/O 引脚（如 SDA 和 SCL）提供电源电压，可连接到 3.3V 或 5V，取决于主控板的逻辑电平。如果你的主控板（如 ESP32）工作在 3.3V 下，你可以将 VDDIO 连接到 3.3V。</li>
+</ul>
+</li>
+</ol>
+<h3 id="注意事项">注意事项 <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" class="anchor">🔗</a></h3><ul>
+<li>在使用 BMP280 时，确保各引脚的连接正确，并注意工作电压范围，以避免损坏传感器。</li>
+<li>对于 I2C 和 SPI 模式的具体接线方式，请参考 BMP280 的数据手册。</li>
+<li>确保 VDDIO 的电压在 BMP280 的工作范围内，通常为 1.71V 到 3.6V（对于 I2C 和 SPI 模式）。</li>
+<li>在连接之前，请参考 BMP280 的数据手册，以获得具体的引脚配置和电气特性信息。</li>
+</ul>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/esp32">ESP32</a>
+            
+                <a href="https://ltkblog.cn/tags/bmp280">BMP280</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

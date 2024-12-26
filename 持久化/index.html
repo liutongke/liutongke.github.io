@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="持久化 🔗为实现断电记忆功能，我们可以将累计的电池容量和总能量值保存到 ESP32 的 EEPROM 或类似的非易失性存储器中。这样即使设备断电，再次通电后也能从上次保">
+<meta name="keywords" content="" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title"></h1>
+
+    <div class="tip">
+        <time datetime="0001-01-01 00:00:00 &#43;0000 UTC">0001年01月01日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          807字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#修改后的代码">修改后的代码</a></li>
+        <li><a href="#修改说明">修改说明</a></li>
+        <li><a href="#注意事项">注意事项</a></li>
+        <li><a href="#运行结果">运行结果</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h1 id="持久化">持久化 <a href="#%e6%8c%81%e4%b9%85%e5%8c%96" class="anchor">🔗</a></h1><p>为实现断电记忆功能，我们可以将累计的电池容量和总能量值保存到 ESP32 的 <strong>EEPROM</strong> 或类似的非易失性存储器中。这样即使设备断电，再次通电后也能从上次保存的状态继续。</p>
+<p>以下是修改后的代码，增加了 EEPROM 的使用：</p>
+<h3 id="修改后的代码">修改后的代码 <a href="#%e4%bf%ae%e6%94%b9%e5%90%8e%e7%9a%84%e4%bb%a3%e7%a0%81" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#include</span> <span style="color:#080">&lt;EEPROM.h&gt;</span><span style="color:#080">
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// EEPROM 地址设置
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define EEPROM_SIZE 64           </span><span style="color:#080;font-style:italic">// EEPROM大小
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define CAPACITY_ADDR 0          </span><span style="color:#080;font-style:italic">// 电池容量存储的起始地址
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define ENERGY_ADDR 4            </span><span style="color:#080;font-style:italic">// 总能量存储的起始地址
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#0b0;font-weight:bold">void</span> <span style="color:#00a000">setup</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  Serial.begin(<span style="color:#666">115200</span>);
+</span></span><span style="display:flex;"><span>  Wire.begin();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 初始化 EEPROM
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  EEPROM.begin(EEPROM_SIZE);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 从 EEPROM 读取断电前保存的累计电池容量和总能量
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  EEPROM.get(CAPACITY_ADDR, totalCapacity_mAh);
+</span></span><span style="display:flex;"><span>  EEPROM.get(ENERGY_ADDR, totalEnergy_Wh);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 校验是否读取有效数据
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#a2f;font-weight:bold">if</span> (isnan(totalCapacity_mAh)) totalCapacity_mAh <span style="color:#666">=</span> <span style="color:#666">0.0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#a2f;font-weight:bold">if</span> (isnan(totalEnergy_Wh)) totalEnergy_Wh <span style="color:#666">=</span> <span style="color:#666">0.0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  Serial.print(<span style="color:#b44">&#34;Restored Capacity [mAh]: &#34;</span>);
+</span></span><span style="display:flex;"><span>  Serial.println(totalCapacity_mAh);
+</span></span><span style="display:flex;"><span>  Serial.print(<span style="color:#b44">&#34;Restored Energy [Wh]: &#34;</span>);
+</span></span><span style="display:flex;"><span>  Serial.println(totalEnergy_Wh);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 其余初始化代码保持不变...
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#0b0;font-weight:bold">void</span> <span style="color:#00a000">loop</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">float</span> shuntVoltage_mV <span style="color:#666">=</span> <span style="color:#666">0.0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">float</span> loadVoltage_V <span style="color:#666">=</span> <span style="color:#666">0.0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">float</span> busVoltage_V <span style="color:#666">=</span> <span style="color:#666">0.0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">float</span> current_mA <span style="color:#666">=</span> <span style="color:#666">0.0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">float</span> power_mW <span style="color:#666">=</span> <span style="color:#666">0.0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  shuntVoltage_mV <span style="color:#666">=</span> ina226.getShuntVoltage_mV();
+</span></span><span style="display:flex;"><span>  busVoltage_V <span style="color:#666">=</span> ina226.getBusVoltage_V();
+</span></span><span style="display:flex;"><span>  current_mA <span style="color:#666">=</span> ina226.getCurrent_mA();
+</span></span><span style="display:flex;"><span>  power_mW <span style="color:#666">=</span> ina226.getBusPower();
+</span></span><span style="display:flex;"><span>  loadVoltage_V <span style="color:#666">=</span> busVoltage_V <span style="color:#666">+</span> (shuntVoltage_mV <span style="color:#666">/</span> <span style="color:#666">1000</span>);
+</span></span><span style="display:flex;"><span>  checkForI2cErrors();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">float</span> current_A <span style="color:#666">=</span> current_mA <span style="color:#666">/</span> <span style="color:#666">1000.0</span>; <span style="color:#080;font-style:italic">// 将电流从 mA 转换为 A
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#0b0;font-weight:bold">float</span> power_W <span style="color:#666">=</span> power_mW <span style="color:#666">/</span> <span style="color:#666">1000.0</span>;     <span style="color:#080;font-style:italic">// 将功率从 mW 转换为 W
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 计算电池容量 (mAh)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#0b0;font-weight:bold">unsigned</span> <span style="color:#0b0;font-weight:bold">long</span> currentMillis <span style="color:#666">=</span> millis();
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">float</span> deltaTimeHours <span style="color:#666">=</span> (currentMillis <span style="color:#666">-</span> lastMillis) <span style="color:#666">/</span> <span style="color:#666">3600000.0</span>; <span style="color:#080;font-style:italic">// 时间间隔（小时）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  lastMillis <span style="color:#666">=</span> currentMillis;
+</span></span><span style="display:flex;"><span>  totalCapacity_mAh <span style="color:#666">+=</span> current_mA <span style="color:#666">*</span> deltaTimeHours; <span style="color:#080;font-style:italic">// 累加容量 (mAh)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 计算总能量 (Wh)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  totalEnergy_Wh <span style="color:#666">+=</span> power_W <span style="color:#666">*</span> deltaTimeHours; <span style="color:#080;font-style:italic">// 功率 (W) x 时间 (h)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 定期将累计值保存到 EEPROM
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#a2f;font-weight:bold">static</span> <span style="color:#0b0;font-weight:bold">unsigned</span> <span style="color:#0b0;font-weight:bold">long</span> lastSaveMillis <span style="color:#666">=</span> <span style="color:#666">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#a2f;font-weight:bold">if</span> (currentMillis <span style="color:#666">-</span> lastSaveMillis <span style="color:#666">&gt;=</span> <span style="color:#666">10000</span>) <span style="color:#080;font-style:italic">// 每 10 秒保存一次
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  {
+</span></span><span style="display:flex;"><span>    EEPROM.put(CAPACITY_ADDR, totalCapacity_mAh);
+</span></span><span style="display:flex;"><span>    EEPROM.put(ENERGY_ADDR, totalEnergy_Wh);
+</span></span><span style="display:flex;"><span>    EEPROM.commit(); <span style="color:#080;font-style:italic">// 提交保存数据到 EEPROM
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    lastSaveMillis <span style="color:#666">=</span> currentMillis;
+</span></span><span style="display:flex;"><span>    Serial.println(<span style="color:#b44">&#34;Data saved to EEPROM.&#34;</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// OLED 显示布局保持不变
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  display.clearDisplay();
+</span></span><span style="display:flex;"><span>  display.setTextSize(<span style="color:#666">1</span>); <span style="color:#080;font-style:italic">// 设置文字大小
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  display.setTextColor(SSD1306_WHITE);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  display.setCursor(<span style="color:#666">0</span>, <span style="color:#666">0</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34;U: &#34;</span>);
+</span></span><span style="display:flex;"><span>  display.print(loadVoltage_V, <span style="color:#666">3</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34; V&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  display.setCursor(<span style="color:#666">64</span>, <span style="color:#666">0</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34;I: &#34;</span>);
+</span></span><span style="display:flex;"><span>  display.print(current_A, <span style="color:#666">3</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34; A&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  display.setCursor(<span style="color:#666">0</span>, <span style="color:#666">16</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34;P: &#34;</span>);
+</span></span><span style="display:flex;"><span>  display.print(power_W, <span style="color:#666">3</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34; W&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  display.setCursor(<span style="color:#666">0</span>, <span style="color:#666">32</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34;C: &#34;</span>);
+</span></span><span style="display:flex;"><span>  display.print(totalCapacity_mAh, <span style="color:#666">3</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34; mAh&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  display.setCursor(<span style="color:#666">0</span>, <span style="color:#666">48</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34;E: &#34;</span>);
+</span></span><span style="display:flex;"><span>  display.print(totalEnergy_Wh, <span style="color:#666">3</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34; Wh&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  display.display();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  delay(<span style="color:#666">1000</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="修改说明">修改说明 <a href="#%e4%bf%ae%e6%94%b9%e8%af%b4%e6%98%8e" class="anchor">🔗</a></h3><ol>
+<li>
+<p><strong>EEPROM 初始化</strong></p>
+<ul>
+<li>在 <code>setup()</code> 中初始化 <code>EEPROM</code>，并从中读取之前保存的电池容量和总能量值。</li>
+</ul>
+</li>
+<li>
+<p><strong>定期保存数据</strong></p>
+<ul>
+<li>在 <code>loop()</code> 中，每隔 10 秒将累计的电池容量和总能量值写入 EEPROM。</li>
+<li>使用 <code>EEPROM.put</code> 写入数据，<code>EEPROM.commit</code> 提交更改。</li>
+</ul>
+</li>
+<li>
+<p><strong>校验读取数据</strong></p>
+<ul>
+<li>如果读取的值为 <code>NaN</code>（无效数据），将其重置为 0，确保数据正确。</li>
+</ul>
+</li>
+</ol>
+<h3 id="注意事项">注意事项 <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" class="anchor">🔗</a></h3><ol>
+<li>
+<p><strong>EEPROM 写入寿命</strong></p>
+<ul>
+<li>ESP32 的 EEPROM 模拟 Flash 存储，写入寿命有限（大约 10,000 次）。定期保存间隔不宜过短。</li>
+</ul>
+</li>
+<li>
+<p><strong>内存大小</strong></p>
+<ul>
+<li>确保 EEPROM 的定义大小（64 字节）足够存储数据。</li>
+</ul>
+</li>
+<li>
+<p><strong>断电后的恢复</strong></p>
+<ul>
+<li>断电后设备重启时，会从 EEPROM 恢复保存的数据，避免从 0 开始累计。</li>
+</ul>
+</li>
+</ol>
+<h3 id="运行结果">运行结果 <a href="#%e8%bf%90%e8%a1%8c%e7%bb%93%e6%9e%9c" class="anchor">🔗</a></h3><ul>
+<li>设备通电后，会读取上次保存的电池容量和总能量，并在 OLED 和串口中显示。</li>
+<li>每 10 秒保存一次新计算的数据，确保断电后依旧能够恢复数据。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

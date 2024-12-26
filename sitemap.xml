@@ -2,22 +2,52 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://ltkblog.cn/tags/esp32/</loc>
+    <lastmod>2024-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/</loc>
+    <lastmod>2024-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/posts/</loc>
+    <lastmod>2024-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/st7789/</loc>
+    <lastmod>2024-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/</loc>
+    <lastmod>2024-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/tft_espi/</loc>
+    <lastmod>2024-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/tft_espi%E5%BA%93%E4%B8%AD%E6%96%87%E5%AD%97%E5%BA%93/</loc>
+    <lastmod>2024-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/tjpg_decoder/</loc>
+    <lastmod>2024-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/esp32_arduino_tft_espi_st7786_picture/</loc>
+    <lastmod>2024-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/esp32_arduino_tft_espi_st7786_to_cn/</loc>
+    <lastmod>2024-12-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/tags/bmp280/</loc>
+    <lastmod>2024-10-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/esp32_sensor/</loc>
+    <lastmod>2024-10-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ltkblog.cn/esp32_arduino_tft_espi_st7786_display/</loc>
+    <lastmod>2024-10-29T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://ltkblog.cn/tags/docker/</loc>
     <lastmod>2024-08-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ltkblog.cn/librespeed/</loc>
     <lastmod>2024-08-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ltkblog.cn/</loc>
-    <lastmod>2024-08-12T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ltkblog.cn/tags/librespeed/</loc>
-    <lastmod>2024-08-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ltkblog.cn/posts/</loc>
-    <lastmod>2024-08-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ltkblog.cn/tags/</loc>
     <lastmod>2024-08-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ltkblog.cn/tags/certbot/</loc>
@@ -362,7 +392,11 @@
     <loc>https://ltkblog.cn/thinkphp_phpqrcode/</loc>
     <lastmod>2017-06-05T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://ltkblog.cn/new/</loc>
+  </url><url>
     <loc>https://ltkblog.cn/onedrive/</loc>
+  </url><url>
+    <loc>https://ltkblog.cn/%E6%8C%81%E4%B9%85%E5%8C%96/</loc>
   </url><url>
     <loc>https://ltkblog.cn/categories/</loc>
   </url>

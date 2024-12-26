@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>利用Arduino的TFT_eSPI库，在ESP32上驱动并显示ST7789屏幕的内容 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="利用Arduino的TFT_eSPI库，在ESP32上驱动并显示ST7789屏幕的内容">
+<meta name="keywords" content="ESP32, ST7789" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">利用Arduino的TFT_eSPI库，在ESP32上驱动并显示ST7789屏幕的内容</h1>
+
+    <div class="tip">
+        <time datetime="2024-10-29 00:00:00 &#43;0000 UTC">2024年10月29日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          4411字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          9分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#配置文件位置">配置文件位置</a></li>
+    <li><a href="#配置屏幕颜色排列顺序">配置屏幕颜色排列顺序</a>
+      <ul>
+        <li><a href="#关于颜色排列顺序">关于颜色排列顺序</a></li>
+        <li><a href="#配置方法">配置方法</a></li>
+      </ul>
+    </li>
+    <li><a href="#定义屏幕宽度和高度">定义屏幕宽度和高度</a>
+      <ul>
+        <li><a href="#示例配置">示例配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#选择屏幕驱动型号">选择屏幕驱动型号</a>
+      <ul>
+        <li><a href="#示例配置-1">示例配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#定义-spi-通信的-gpio-引脚">定义 SPI 通信的 GPIO 引脚</a>
+      <ul>
+        <li><a href="#示例引脚配置">示例引脚配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#安装-tft_espi-库">安装 TFT_eSPI 库</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h1 id="使用-esp32-和-arduino-驱动-st7789-屏幕tft_espi">使用 ESP32 和 Arduino 驱动 ST7789 屏幕（TFT_eSPI） <a href="#%e4%bd%bf%e7%94%a8-esp32-%e5%92%8c-arduino-%e9%a9%b1%e5%8a%a8-st7789-%e5%b1%8f%e5%b9%95tft_espi" class="anchor">🔗</a></h1><p>在 Arduino 中使用 <strong>ESP32</strong> 和 <strong>TFT_eSPI</strong> 驱动 ST7789 屏幕时，需要对库文件进行一定的配置。以下是详细的操作步骤。</p>
+<hr>
+<h2 id="配置文件位置">配置文件位置 <a href="#%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e4%bd%8d%e7%bd%ae" class="anchor">🔗</a></h2><p>以我的安装目录为例，TFT_eSPI 库的配置文件位于项目根目录的 <code>libraries\TFT_eSPI</code> 文件夹中。打开  <a href="#section1"><strong><code>User_Setup.h</code></strong></a>文件进行编辑。</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225032735.png" alt="User_Setup.h 文件位置"  />
+</p><br>
+<em>图片注释：User_Setup.h 文件所在目录。</em></p>
+<hr>
+<h2 id="配置屏幕颜色排列顺序">配置屏幕颜色排列顺序 <a href="#%e9%85%8d%e7%bd%ae%e5%b1%8f%e5%b9%95%e9%a2%9c%e8%89%b2%e6%8e%92%e5%88%97%e9%a1%ba%e5%ba%8f" class="anchor">🔗</a></h2><p>在配置文件中，有关于屏幕颜色排列顺序的宏定义，如下图所示：</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225031626.png" alt="修改屏幕颜色排列顺序"  />
+</p><br>
+<em>图片注释：修改屏幕颜色排列顺序。</em></p>
+<h3 id="关于颜色排列顺序">关于颜色排列顺序 <a href="#%e5%85%b3%e4%ba%8e%e9%a2%9c%e8%89%b2%e6%8e%92%e5%88%97%e9%a1%ba%e5%ba%8f" class="anchor">🔗</a></h3><p>TFT 显示屏的像素颜色由红（Red）、绿（Green）、蓝（Blue）三种基本颜色组成，但不同厂商生产的显示屏可能采用不同的颜色排列顺序。常见的两种顺序是：</p>
+<ul>
+<li><strong>TFT_RGB</strong>：颜色顺序为红-绿-蓝（Red-Green-Blue）。</li>
+<li><strong>TFT_BGR</strong>：颜色顺序为蓝-绿-红（Blue-Green-Red）。</li>
+</ul>
+<h3 id="配置方法">配置方法 <a href="#%e9%85%8d%e7%bd%ae%e6%96%b9%e6%b3%95" class="anchor">🔗</a></h3><ol>
+<li>如果显示屏颜色显示异常（如红色和蓝色反转），可以尝试在代码中启用（取消注释）一个宏定义：
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#define TFT_RGB </span><span style="color:#080;font-style:italic">// 红-绿-蓝
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 或者
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_BGR </span><span style="color:#080;font-style:italic">// 蓝-绿-红
+</span></span></span></code></pre></div></li>
+<li>编译并上传代码到 ESP32，观察屏幕颜色显示是否正常。</li>
+<li>如果颜色仍然异常，切换为另一个选项并重新尝试，直到颜色正确。</li>
+</ol>
+<hr>
+<h2 id="定义屏幕宽度和高度">定义屏幕宽度和高度 <a href="#%e5%ae%9a%e4%b9%89%e5%b1%8f%e5%b9%95%e5%ae%bd%e5%ba%a6%e5%92%8c%e9%ab%98%e5%ba%a6" class="anchor">🔗</a></h2><p>根据屏幕的型号（如 ST7789），需要定义其分辨率宽度和高度（通常以竖屏模式为基准）。</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225031707.png" alt="定义 ST7789 在竖屏模式下的宽度和高度"  />
+</p><br>
+<em>图片注释：定义 ST7789 在竖屏模式下的宽度和高度。</em></p>
+<h3 id="示例配置">示例配置 <a href="#%e7%a4%ba%e4%be%8b%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#define TFT_WIDTH  240 </span><span style="color:#080;font-style:italic">// 屏幕宽度
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_HEIGHT 320 </span><span style="color:#080;font-style:italic">// 屏幕高度
+</span></span></span></code></pre></div><hr>
+<h2 id="选择屏幕驱动型号">选择屏幕驱动型号 <a href="#%e9%80%89%e6%8b%a9%e5%b1%8f%e5%b9%95%e9%a9%b1%e5%8a%a8%e5%9e%8b%e5%8f%b7" class="anchor">🔗</a></h2><p>在配置文件中选择适合的屏幕驱动型号，例如 ST7789。</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225032157.png" alt="选择屏幕驱动"  />
+</p><br>
+<em>图片注释：选择屏幕驱动型号。</em></p>
+<h3 id="示例配置-1">示例配置 <a href="#%e7%a4%ba%e4%be%8b%e9%85%8d%e7%bd%ae-1" class="anchor">🔗</a></h3><p>取消注释 ST7789 的驱动型号宏：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#define ST7789_DRIVER </span><span style="color:#080;font-style:italic">// 使用 ST7789 驱动
+</span></span></span></code></pre></div><hr>
+<h2 id="定义-spi-通信的-gpio-引脚">定义 SPI 通信的 GPIO 引脚 <a href="#%e5%ae%9a%e4%b9%89-spi-%e9%80%9a%e4%bf%a1%e7%9a%84-gpio-%e5%bc%95%e8%84%9a" class="anchor">🔗</a></h2><p>ESP32 使用 SPI 与 ST7789 屏幕通信时，可以通过编程定义 SPI 的 GPIO 引脚。TFT_eSPI 库允许用户在配置文件中设置这些引脚。</p>
+<p><p class="markdown-image">
+  <img src="https://raw.githubusercontent.com/liutongke/Image-Hosting/master/images/yank-note-picgo-img-20241225032236.png" alt="定义 SPI GPIO 引脚"  />
+</p><br>
+<em>图片注释：定义 SPI GPIO 引脚。</em></p>
+<h3 id="示例引脚配置">示例引脚配置 <a href="#%e7%a4%ba%e4%be%8b%e5%bc%95%e8%84%9a%e9%85%8d%e7%bd%ae" class="anchor">🔗</a></h3><p>在 <strong>User_Setup.h</strong> 文件中定义 SPI 接口的 GPIO 引脚：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#define TFT_MISO -1   </span><span style="color:#080;font-style:italic">// MISO 引脚（如未使用，则设为 -1）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_MOSI 22   </span><span style="color:#080;font-style:italic">// MOSI 引脚
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_SCLK 23   </span><span style="color:#080;font-style:italic">// SCK 引脚
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_CS   3    </span><span style="color:#080;font-style:italic">// CS（片选）引脚
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_DC   1    </span><span style="color:#080;font-style:italic">// 数据/命令引脚
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_RST  21   </span><span style="color:#080;font-style:italic">// 复位引脚
+</span></span></span></code></pre></div><p>根据硬件连接实际情况调整上述引脚定义。</p>
+<hr>
+<h2 id="安装-tft_espi-库">安装 TFT_eSPI 库 <a href="#%e5%ae%89%e8%a3%85-tft_espi-%e5%ba%93" class="anchor">🔗</a></h2><p>在 Arduino 环境中：</p>
+<ol>
+<li>打开 <strong>Arduino IDE</strong>。</li>
+<li>进入 <strong>库管理器</strong>（<code>工具 -&gt; 管理库</code>）。</li>
+<li>搜索 <code>TFT_eSPI</code>，并点击安装。</li>
+</ol>
+<hr>
+<p>运行示例程序：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#include</span> <span style="color:#080">&lt;TFT_eSPI.h&gt; </span><span style="color:#080">
+</span></span></span><span style="display:flex;"><span><span style="color:#080">#include</span> <span style="color:#080">&lt;SPI.h&gt;</span><span style="color:#080">
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080">#define TFT_GREY 0x5AEB </span><span style="color:#080;font-style:italic">// 定义新颜色：灰色
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>TFT_eSPI tft <span style="color:#666">=</span> TFT_eSPI();  <span style="color:#080;font-style:italic">// 调用库
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#0b0;font-weight:bold">void</span> <span style="color:#00a000">setup</span>(<span style="color:#0b0;font-weight:bold">void</span>) {
+</span></span><span style="display:flex;"><span>  tft.init();  <span style="color:#080;font-style:italic">// 初始化
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.setRotation(<span style="color:#666">0</span>);  <span style="color:#080;font-style:italic">// 设置旋转角度为0
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.invertDisplay(<span style="color:#666">0</span>);  <span style="color:#080;font-style:italic">// 不反转显示
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#0b0;font-weight:bold">void</span> <span style="color:#00a000">loop</span>() {
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 用灰色填充屏幕，以便我们可以看到有背景色和无背景色打印的效果
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.fillScreen(TFT_GREY);
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 将“光标”设置在显示屏的左上角(0,0)，并选择字体2
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">// （使用&#39;tft.println&#39;时光标会自动移动到下一行，或使用&#39;tft.print&#39;时如果当前行有空间则光标保持在当前行）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.setCursor(<span style="color:#666">0</span>, <span style="color:#666">0</span>, <span style="color:#666">2</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 设置字体颜色为白色，背景色为黑色，文本大小倍数为1
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.setTextColor(TFT_WHITE,TFT_BLACK);  tft.setTextSize(<span style="color:#666">1</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 现在我们可以在屏幕上使用“print”类绘制文本
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.println(<span style="color:#b44">&#34;Hello World!&#34;</span>);
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 设置字体颜色为黄色，无背景色，字体设置为7
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.setTextColor(TFT_YELLOW,TFT_BLACK); tft.setTextFont(<span style="color:#666">7</span>);
+</span></span><span style="display:flex;"><span>  tft.println(<span style="color:#666">1234</span>);
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 设置字体颜色为绿色，背景色为黑色，字体设置为4
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.setTextColor(TFT_GREEN,TFT_BLACK);
+</span></span><span style="display:flex;"><span>  tft.setTextFont(<span style="color:#666">4</span>);
+</span></span><span style="display:flex;"><span>  tft.println(<span style="color:#b44">&#34;Groop&#34;</span>);
+</span></span><span style="display:flex;"><span>  tft.println(<span style="color:#b44">&#34;I implore thee,&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 更改为字体2
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.setTextFont(<span style="color:#666">2</span>);
+</span></span><span style="display:flex;"><span>  tft.println(<span style="color:#b44">&#34;my foonting turlingdromes.&#34;</span>);
+</span></span><span style="display:flex;"><span>  tft.println(<span style="color:#b44">&#34;And hooptiously drangle me&#34;</span>);
+</span></span><span style="display:flex;"><span>  tft.println(<span style="color:#b44">&#34;with crinkly bindlewurdles,&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 下一行故意设置得过长，以测试自动换行到下一行的功能
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.println(<span style="color:#b44">&#34;Or I will rend thee in the gobberwarts with my blurglecruncheon, see if I don&#39;t!&#34;</span>);
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 测试一些打印格式化函数
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#0b0;font-weight:bold">float</span> fnumber <span style="color:#666">=</span> <span style="color:#666">123.45</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 设置字体颜色为蓝色，无背景色，字体设置为4
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.setTextColor(TFT_BLUE);    tft.setTextFont(<span style="color:#666">4</span>);
+</span></span><span style="display:flex;"><span>  tft.print(<span style="color:#b44">&#34;Float = &#34;</span>); tft.println(fnumber);           <span style="color:#080;font-style:italic">// 打印浮点数
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.print(<span style="color:#b44">&#34;Binary = &#34;</span>); tft.println((<span style="color:#0b0;font-weight:bold">int</span>)fnumber, BIN); <span style="color:#080;font-style:italic">// 以二进制形式打印整数值
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  tft.print(<span style="color:#b44">&#34;Hexadecimal = &#34;</span>); tft.println((<span style="color:#0b0;font-weight:bold">int</span>)fnumber, HEX); <span style="color:#080;font-style:italic">// 以十六进制形式打印整数值
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  delay(<span style="color:#666">10000</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div id="section1"> User_Setup.h文件： </div>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080;font-style:italic">//                            USER DEFINED SETTINGS
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//   Set driver type, fonts to be loaded, pins used and SPI control method etc.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//   See the User_Setup_Select.h file if you wish to be able to define multiple
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//   setups and then easily select which setup file is used by the compiler.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//   If this file is edited correctly then all the library example sketches should
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//   run without the need to make any more changes for a particular hardware setup!
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//   Note that some sketches are designed for a particular TFT pixel width/height
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// User defined information reported by &#34;Read_User_Setup&#34; test &amp; diagnostics example
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define USER_SETUP_INFO &#34;User_Setup&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Define to disable all #warnings in library (can be put in User_Setup_Select.h)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define DISABLE_ALL_LIBRARY_WARNINGS
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ##################################################################################
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Section 1. Call up the right driver file and any options for it
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ##################################################################################
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Define STM32 to invoke optimised processor support (only for STM32)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define STM32
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Defining the STM32 board allows the library to optimise the performance
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// for UNO compatible &#34;MCUfriend&#34; style shields
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define NUCLEO_64_TFT
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define NUCLEO_144_TFT
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// STM32 8-bit parallel only:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// If STN32 Port A or B pins 0-7 are used for 8-bit parallel data bus bits 0-7
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// then this will improve rendering performance by a factor of ~8x
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define STM_PORTA_DATA_BUS
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define STM_PORTB_DATA_BUS
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Tell the library to use parallel mode (otherwise SPI is assumed)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_PARALLEL_8_BIT
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#defined TFT_PARALLEL_16_BIT // **** 16-bit parallel ONLY for RP2040 processor ****
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Display type -  only define if RPi display
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define RPI_DISPLAY_TYPE // 20MHz maximum SPI
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Only define one driver, the other ones must be commented out
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define ILI9341_DRIVER       // Generic driver for common displays
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define ILI9341_2_DRIVER     // Alternative ILI9341 driver, see https://github.com/Bodmer/TFT_eSPI/issues/1172
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define ST7735_DRIVER      // Define additional parameters below for this display
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define ILI9163_DRIVER     // Define additional parameters below for this display
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define S6D02A1_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define RPI_ILI9486_DRIVER // 20MHz maximum SPI
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define HX8357D_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define ILI9481_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define ILI9486_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define ILI9488_DRIVER     // WARNING: Do not connect ILI9488 display SDO to MISO if other devices share the SPI bus (TFT SDO does NOT tristate when CS is high)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define ST7789_DRIVER      </span><span style="color:#080;font-style:italic">// Full configuration option, define additional parameters below for this display
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define ST7789_2_DRIVER    // Minimal configuration option, define additional parameters below for this display
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define R61581_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define RM68140_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define ST7796_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define SSD1351_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define SSD1963_480_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define SSD1963_800_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define SSD1963_800ALT_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define ILI9225_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define GC9A01_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Some displays support SPI reads via the MISO pin, other displays have a single
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// bi-directional SDA pin and the library will try to read this via the MOSI line.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// To use the SDA line for reading data from the TFT uncomment the following line:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_SDA_READ      // This option is for ESP32 ONLY, tested with ST7789 and GC9A01 display only
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For ST7735, ST7789 and ILI9341 ONLY, define the colour order IF the blue and red are swapped on your display
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Try ONE option at a time to find the correct colour order for your display
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//  #define TFT_RGB_ORDER TFT_RGB  // Colour order Red-Green-Blue
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span> <span style="color:#080">#define TFT_RGB_ORDER TFT_BGR  </span><span style="color:#080;font-style:italic">// Colour order Blue-Green-Red
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For M5Stack ESP32 module with integrated ILI9341 display ONLY, remove // in line below
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define M5STACK
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For ST7789, ST7735, ILI9163 and GC9A01 ONLY, define the pixel width and height in portrait orientation
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_WIDTH  80
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_WIDTH  128
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_WIDTH  172 // ST7789 172 x 320
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_WIDTH  170 // ST7789 170 x 320
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_WIDTH  240 </span><span style="color:#080;font-style:italic">// ST7789 240 x 240 and 240 x 320
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_HEIGHT 160
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_HEIGHT 128
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_HEIGHT 240 // ST7789 240 x 240
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_HEIGHT 320 </span><span style="color:#080;font-style:italic">// ST7789 240 x 320
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_HEIGHT 240 // GC9A01 240 x 240
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For ST7735 ONLY, define the type of display, originally this was based on the
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// colour of the tab on the screen protector film but this is not always true, so try
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// out the different options below if the screen does not display graphics correctly,
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// e.g. colours wrong, mirror images, or stray pixels at the edges.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Comment out ALL BUT ONE of these options for a ST7735 display driver, save this
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// this User_Setup file, then rebuild and upload the sketch to the board again:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define ST7735_INITB
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define ST7735_GREENTAB
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define ST7735_GREENTAB2
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define ST7735_GREENTAB3
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define ST7735_GREENTAB128    // For 128 x 128 display
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define ST7735_GREENTAB160x80 // For 160 x 80 display (BGR, inverted, 26 offset)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define ST7735_ROBOTLCD       // For some RobotLCD Arduino shields (128x160, BGR, https://docs.arduino.cc/retired/getting-started-guides/TFT)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define ST7735_REDTAB
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define ST7735_BLACKTAB
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define ST7735_REDTAB160x80   // For 160 x 80 display with 24 pixel offset
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// If colours are inverted (white shows as black) then uncomment one of the next
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 2 lines try both options, one of the options should correct the inversion.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_INVERSION_ON
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_INVERSION_OFF
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ##################################################################################
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Section 2. Define the pins that are used to interface with the display here
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ##################################################################################
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// If a backlight control signal is available then define the TFT_BL pin in Section 2
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// below. The backlight will be turned ON when tft.begin() is called, but the library
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// needs to know if the LEDs are ON with the pin HIGH or LOW. If the LEDs are to be
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// driven with a PWM signal or turned OFF/ON then this must be handled by the user
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// sketch. e.g. with digitalWrite(TFT_BL, LOW);
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_BL   32            // LED back-light control pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_BACKLIGHT_ON HIGH  // Level to turn ON back-light (HIGH or LOW)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// We must use hardware SPI, a minimum of 3 GPIO pins is needed.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Typical setup for ESP8266 NodeMCU ESP-12 is :
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Display SDO/MISO  to NodeMCU pin D6 (or leave disconnected if not reading TFT)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Display LED       to NodeMCU pin VIN (or 5V, see below)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Display SCK       to NodeMCU pin D5
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Display SDI/MOSI  to NodeMCU pin D7
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Display DC (RS/AO)to NodeMCU pin D3
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Display RESET     to NodeMCU pin D4 (or RST, see below)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Display CS        to NodeMCU pin D8 (or GND, see below)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Display GND       to NodeMCU pin GND (0V)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Display VCC       to NodeMCU 5V or 3.3V
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The TFT RESET pin can be connected to the NodeMCU RST pin or 3.3V to free up a control pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The DC (Data Command) pin may be labelled AO or RS (Register Select)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// With some displays such as the ILI9341 the TFT CS pin can be connected to GND if no more
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// SPI devices (e.g. an SD Card) are connected, in this case comment out the #define TFT_CS
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// line below so it is NOT defined. Other displays such at the ST7735 require the TFT CS pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// to be toggled during setup, so in these cases the TFT_CS line must be defined and connected.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The NodeMCU D0 pin can be used for RST
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Note: only some versions of the NodeMCU provide the USB 5V on the VIN pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// If 5V is not available at a pin you can use 3.3V but backlight brightness
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// will be lower.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ###### EDIT THE PIN NUMBERS IN THE LINES FOLLOWING TO SUIT YOUR ESP8266 SETUP ######
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For NodeMCU - use pin numbers in the form PIN_Dx where Dx is the NodeMCU pin designation
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_MISO  PIN_D6  // Automatically assigned with ESP8266 if not defined
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_MOSI  PIN_D7  // Automatically assigned with ESP8266 if not defined
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_SCLK  PIN_D5  // Automatically assigned with ESP8266 if not defined
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_CS    PIN_D8  // Chip select control pin D8
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_DC    PIN_D3  // Data Command control pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_RST   PIN_D4  // Reset pin (could connect to NodeMCU RST, see next line)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RST  -1     // Set TFT_RST to -1 if the display RESET is connected to NodeMCU RST or 3.3V
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_BL PIN_D1  // LED back-light (only for ST7789 with backlight control pin)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TOUCH_CS PIN_D2     // Chip select pin (T_CS) of touch screen
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_WR PIN_D2       // Write strobe for modified Raspberry Pi TFT only
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ######  FOR ESP8266 OVERLAP MODE EDIT THE PIN NUMBERS IN THE FOLLOWING LINES  ######
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Overlap mode shares the ESP8266 FLASH SPI bus with the TFT so has a performance impact
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// but saves pins for other functions. It is best not to connect MISO as some displays
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// do not tristate that line when chip select is high!
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Note: Only one SPI device can share the FLASH SPI lines, so a SPI touch controller
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// cannot be connected as well to the same SPI signals.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// On NodeMCU 1.0 SD0=MISO, SD1=MOSI, CLK=SCLK to connect to TFT in overlap mode
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// On NodeMCU V3  S0 =MISO, S1 =MOSI, S2 =SCLK
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// In ESP8266 overlap mode the following must be defined
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_SPI_OVERLAP
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// In ESP8266 overlap mode the TFT chip select MUST connect to pin D3
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_CS   PIN_D3
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_DC   PIN_D5  // Data Command control pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RST  PIN_D4  // Reset pin (could connect to NodeMCU RST, see next line)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RST  -1  // Set TFT_RST to -1 if the display RESET is connected to NodeMCU RST or 3.3V
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ###### EDIT THE PIN NUMBERS IN THE LINES FOLLOWING TO SUIT YOUR ESP32 SETUP   ######
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For ESP32 Dev board (only tested with ILI9341 display)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The hardware SPI can be mapped to any pins
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define TFT_MISO 19    // 接收数据引脚
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_MOSI 22    </span><span style="color:#080;font-style:italic">// 发送数据引脚 (SDA)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_SCLK 23    </span><span style="color:#080;font-style:italic">// 时钟引脚 (SCL)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_CS   3     </span><span style="color:#080;font-style:italic">// 芯片选择控制引脚 (CS)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_DC   1     </span><span style="color:#080;font-style:italic">// 数据命令控制引脚 (DC)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define TFT_RST  21     </span><span style="color:#080;font-style:italic">// 重置引脚 (RES)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_MISO 19
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_MOSI 23
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_SCLK 18
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_CS   15  // Chip select control pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_DC    2  // Data Command control pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RST   4  // Reset pin (could connect to RST pin)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RST  -1  // Set TFT_RST to -1 if display RESET is connected to ESP32 board RST
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For ESP32 Dev board (only tested with GC9A01 display)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The hardware SPI can be mapped to any pins
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_MOSI 15 // In some display driver board, it might be written as &#34;SDA&#34; and so on.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_SCLK 14
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_CS   5  // Chip select control pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_DC   27  // Data Command control pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RST  33  // Reset pin (could connect to Arduino RESET pin)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_BL   22  // LED back-light
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TOUCH_CS 21     // Chip select pin (T_CS) of touch screen
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_WR 22    // Write strobe for modified Raspberry Pi TFT only
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For the M5Stack module use these #define lines
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_MISO 19
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_MOSI 23
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_SCLK 18
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_CS   14  // Chip select control pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_DC   27  // Data Command control pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RST  33  // Reset pin (could connect to Arduino RESET pin)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_BL   32  // LED back-light (required for M5Stack)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ######       EDIT THE PINs BELOW TO SUIT YOUR ESP32 PARALLEL TFT SETUP        ######
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The library supports 8-bit parallel TFTs with the ESP32, the pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// selection below is compatible with ESP32 boards in UNO format.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Wemos D32 boards need to be modified, see diagram in Tools folder.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Only ILI9481 and ILI9341 based displays have been tested!
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Parallel bus is only supported for the STM32 and ESP32
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Example below is for ESP32 Parallel interface with UNO displays
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Tell the library to use 8-bit parallel mode (otherwise SPI is assumed)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_PARALLEL_8_BIT
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The ESP32 and TFT the pins used for testing are:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_CS   33  // Chip select control pin (library pulls permanently low
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_DC   15  // Data Command control pin - must use a pin in the range 0-31
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RST  32  // Reset pin, toggles on startup
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_WR    4  // Write strobe control pin - must use a pin in the range 0-31
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RD    2  // Read strobe control pin
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_D0   12  // Must use pins in the range 0-31 for the data bus
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_D1   13  // so a single register write sets/clears all bits.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_D2   26  // Pins can be randomly assigned, this does not affect
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_D3   25  // TFT screen update performance.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_D4   17
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_D5   16
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_D6   27
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_D7   14
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ######       EDIT THE PINs BELOW TO SUIT YOUR STM32 SPI TFT SETUP        ######
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The TFT can be connected to SPI port 1 or 2
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_SPI_PORT 1 // SPI port 1 maximum clock rate is 55MHz
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_MOSI PA7
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_MISO PA6
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_SCLK PA5
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_SPI_PORT 2 // SPI port 2 maximum clock rate is 27MHz
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_MOSI PB15
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_MISO PB14
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_SCLK PB13
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Can use Ardiuno pin references, arbitrary allocation, TFT_eSPI controls chip select
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_CS   D5 // Chip select control pin to TFT CS
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_DC   D6 // Data Command control pin to TFT DC (may be labelled RS = Register Select)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RST  D7 // Reset pin to TFT RST (or RESET)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// OR alternatively, we can use STM32 port reference names PXnn
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_CS   PE11 // Nucleo-F767ZI equivalent of D5
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_DC   PE9  // Nucleo-F767ZI equivalent of D6
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RST  PF13 // Nucleo-F767ZI equivalent of D7
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_RST  -1   // Set TFT_RST to -1 if the display RESET is connected to processor reset
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                        <span style="color:#080;font-style:italic">// Use an Arduino pin for initial testing as connecting to processor reset
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>                        <span style="color:#080;font-style:italic">// may not work (pulse too short at power up?)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ##################################################################################
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Section 3. Define the fonts that are to be used here
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ##################################################################################
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Comment out the #defines below with // to stop that font being loaded
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The ESP8366 and ESP32 have plenty of memory so commenting out fonts is not
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// normally necessary. If all fonts are loaded the extra FLASH space required is
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// about 17Kbytes. To save FLASH space only enable the fonts you need!
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080">#define LOAD_GLCD   </span><span style="color:#080;font-style:italic">// Font 1. Original Adafruit 8 pixel font needs ~1820 bytes in FLASH
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define LOAD_FONT2  </span><span style="color:#080;font-style:italic">// Font 2. Small 16 pixel high font, needs ~3534 bytes in FLASH, 96 characters
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define LOAD_FONT4  </span><span style="color:#080;font-style:italic">// Font 4. Medium 26 pixel high font, needs ~5848 bytes in FLASH, 96 characters
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define LOAD_FONT6  </span><span style="color:#080;font-style:italic">// Font 6. Large 48 pixel font, needs ~2666 bytes in FLASH, only characters 1234567890:-.apm
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define LOAD_FONT7  </span><span style="color:#080;font-style:italic">// Font 7. 7 segment 48 pixel font, needs ~2438 bytes in FLASH, only characters 1234567890:-.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define LOAD_FONT8  </span><span style="color:#080;font-style:italic">// Font 8. Large 75 pixel font needs ~3256 bytes in FLASH, only characters 1234567890:-.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define LOAD_FONT8N // Font 8. Alternative to Font 8 above, slightly narrower, so 3 digits fit a 160 pixel TFT
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define LOAD_GFXFF  </span><span style="color:#080;font-style:italic">// FreeFonts. Include access to the 48 Adafruit_GFX free fonts FF1 to FF48 and custom fonts
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Comment out the #define below to stop the SPIFFS filing system and smooth font code being loaded
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// this will save ~20kbytes of FLASH
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define SMOOTH_FONT
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ##################################################################################
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Section 4. Other options
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// ##################################################################################
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For RP2040 processor and SPI displays, uncomment the following line to use the PIO interface.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define RP2040_PIO_SPI // Leave commented out to use standard RP2040 SPI port interface
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For RP2040 processor and 8 or 16-bit parallel displays:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The parallel interface write cycle period is derived from a division of the CPU clock
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// speed so scales with the processor clock. This means that the divider ratio may need
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// to be increased when overclocking. It may also need to be adjusted dependant on the
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// display controller type (ILI94341, HX8357C etc.). If RP2040_PIO_CLK_DIV is not defined
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// the library will set default values which may not suit your display.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The display controller data sheet will specify the minimum write cycle period. The
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// controllers often work reliably for shorter periods, however if the period is too short
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// the display may not initialise or graphics will become corrupted.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// PIO write cycle frequency = (CPU clock/(4 * RP2040_PIO_CLK_DIV))
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define RP2040_PIO_CLK_DIV 1 // 32ns write cycle at 125MHz CPU clock
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define RP2040_PIO_CLK_DIV 2 // 64ns write cycle at 125MHz CPU clock
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define RP2040_PIO_CLK_DIV 3 // 96ns write cycle at 125MHz CPU clock
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For the RP2040 processor define the SPI port channel used (default 0 if undefined)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_SPI_PORT 1 // Set to 0 if SPI0 pins are used, or 1 if spi1 pins used
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// For the STM32 processor define the SPI port channel used (default 1 if undefined)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define TFT_SPI_PORT 2 // Set to 1 for SPI port 1, or 2 for SPI port 2
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Define the SPI clock frequency, this affects the graphics rendering speed. Too
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// fast and the TFT driver will not keep up and display corruption appears.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// With an ILI9341 display 40MHz works OK, 80MHz sometimes fails
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// With a ST7735 display more than 27MHz may not work (spurious pixels and lines)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// With an ILI9163 display 27 MHz works OK.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define SPI_FREQUENCY   1000000
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define SPI_FREQUENCY   5000000
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define SPI_FREQUENCY  10000000
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define SPI_FREQUENCY  20000000
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define SPI_FREQUENCY  27000000
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span><span style="color:#080;font-style:italic">// #define SPI_FREQUENCY  40000000
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define SPI_FREQUENCY  55000000 // STM32 SPI1 only (SPI2 maximum is 27MHz)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define SPI_FREQUENCY  80000000
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Optional reduced SPI frequency for reading TFT
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define SPI_READ_FREQUENCY  20000000
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The XPT2046 requires a lower SPI clock rate of 2.5MHz so we define that here:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define SPI_TOUCH_FREQUENCY  2500000
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// The ESP32 has 2 free SPI ports i.e. VSPI and HSPI, the VSPI is the default.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// If the VSPI port is in use and pins are not accessible (e.g. TTGO T-Beam)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// then uncomment the following line:
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">//#define USE_HSPI_PORT
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Comment out the following #define if &#34;SPI Transactions&#34; do not need to be
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// supported. When commented out the code size will be smaller and sketches will
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// run slightly faster, so leave it commented out unless you need it!
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Transaction support is needed to work with SD library but not needed with TFT_SdFat
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Transaction support is required if other SPI devices are connected.
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// Transactions are automatically enabled by the library for an ESP32 (to use HAL mutex)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// so changing it here has no effect
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// #define SUPPORT_TRANSACTIONS
+</span></span></span></code></pre></div>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/esp32">ESP32</a>
+            
+                <a href="https://ltkblog.cn/tags/st7789">ST7789</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>

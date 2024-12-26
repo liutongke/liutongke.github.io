@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TFT_eSPI库中文字库 on keke的个人博客</title>
+    <link>https://ltkblog.cn/tags/tft_espi%E5%BA%93%E4%B8%AD%E6%96%87%E5%AD%97%E5%BA%93/</link>
+    <description>Recent content in TFT_eSPI库中文字库 on keke的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 24 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/tft_espi%E5%BA%93%E4%B8%AD%E6%96%87%E5%AD%97%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>制作Arduino TFT_eSPI库中文字库，实现在ST7789屏幕上显示中文字符</title>
+      <link>https://ltkblog.cn/esp32_arduino_tft_espi_st7786_to_cn/</link>
+      <pubDate>Tue, 24 Dec 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/esp32_arduino_tft_espi_st7786_to_cn/</guid>
+      <description>在使用 Arduino 的 TFT_eSPI 库时，若需显示中文字符，我们可以通过自定义字库来实现。以下是详细步骤。 字库制作工具位置 🔗以我的安装目录为例，工具存放在项目根目录</description>
+    </item>
+    
+  </channel>
+</rss>

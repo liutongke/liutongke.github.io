@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="INA226库仑计 🔗要使用 INA226_WE 库统计电池容量（以毫安时 mAh 为单位），需要测量电池的放电电流并跟踪放电时间，然后根据以下公式计算： [ \text{电">
+<meta name="keywords" content="" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title"></h1>
+
+    <div class="tip">
+        <time datetime="0001-01-01 00:00:00 &#43;0000 UTC">0001年01月01日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          831字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#主要步骤">主要步骤</a></li>
+        <li><a href="#示例代码">示例代码</a></li>
+        <li><a href="#代码解析">代码解析</a></li>
+        <li><a href="#运行说明">运行说明</a></li>
+        <li><a href="#注意事项">注意事项</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h1 id="ina226库仑计">INA226库仑计 <a href="#ina226%e5%ba%93%e4%bb%91%e8%ae%a1" class="anchor">🔗</a></h1><p>要使用 <strong>INA226_WE</strong> 库统计电池容量（以毫安时 mAh 为单位），需要测量电池的放电电流并跟踪放电时间，然后根据以下公式计算：</p>
+<p>[
+\text{电池容量 (mAh)} = \int I(t) ,dt
+]</p>
+<h3 id="主要步骤">主要步骤 <a href="#%e4%b8%bb%e8%a6%81%e6%ad%a5%e9%aa%a4" class="anchor">🔗</a></h3><ol>
+<li><strong>持续读取电流</strong>：使用 INA226 传感器定期读取电池的放电电流。</li>
+<li><strong>记录时间间隔</strong>：记录每次测量之间的时间。</li>
+<li><strong>累计电量</strong>：将每次测得的电流值乘以时间间隔并累加，得到总的放电容量。</li>
+</ol>
+<p>以下是实现此功能的代码示例：</p>
+<hr>
+<h3 id="示例代码">示例代码 <a href="#%e7%a4%ba%e4%be%8b%e4%bb%a3%e7%a0%81" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#080">#include</span> <span style="color:#080">&lt;Wire.h&gt;</span><span style="color:#080">
+</span></span></span><span style="display:flex;"><span><span style="color:#080">#include</span> <span style="color:#080">&lt;INA226_WE.h&gt;</span><span style="color:#080">
+</span></span></span><span style="display:flex;"><span><span style="color:#080">#include</span> <span style="color:#080">&lt;Adafruit_GFX.h&gt;</span><span style="color:#080">
+</span></span></span><span style="display:flex;"><span><span style="color:#080">#include</span> <span style="color:#080">&lt;Adafruit_SSD1306.h&gt;</span><span style="color:#080">
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// OLED 配置
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define SCREEN_WIDTH 128
+</span></span></span><span style="display:flex;"><span><span style="color:#080">#define SCREEN_HEIGHT 64
+</span></span></span><span style="display:flex;"><span><span style="color:#080">#define OLED_RESET -1
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span>Adafruit_SSD1306 <span style="color:#00a000">display</span>(SCREEN_WIDTH, SCREEN_HEIGHT, <span style="color:#666">&amp;</span>Wire, OLED_RESET);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// INA226 配置
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define I2C_ADDRESS 0x40
+</span></span></span><span style="display:flex;"><span><span style="color:#080"></span>INA226_WE <span style="color:#00a000">ina226</span>(I2C_ADDRESS);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic">// 变量初始化
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#0b0;font-weight:bold">float</span> totalCapacity_mAh <span style="color:#666">=</span> <span style="color:#666">0.0</span>; <span style="color:#080;font-style:italic">// 累计电池容量（毫安时）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#0b0;font-weight:bold">unsigned</span> <span style="color:#0b0;font-weight:bold">long</span> lastMeasurementTime <span style="color:#666">=</span> <span style="color:#666">0</span>; <span style="color:#080;font-style:italic">// 上次测量时间
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#0b0;font-weight:bold">void</span> <span style="color:#00a000">setup</span>() {
+</span></span><span style="display:flex;"><span>  Serial.begin(<span style="color:#666">115200</span>);
+</span></span><span style="display:flex;"><span>  Wire.begin();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 初始化 INA226
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#a2f;font-weight:bold">if</span> (<span style="color:#666">!</span>ina226.init()) {
+</span></span><span style="display:flex;"><span>    Serial.println(<span style="color:#b44">&#34;Failed to initialize INA226. Check connections.&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">while</span> (<span style="color:#666">1</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// INA226 配置
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  ina226.setAverage(AVERAGE_16);
+</span></span><span style="display:flex;"><span>  ina226.setConversionTime(CONV_TIME_1100);
+</span></span><span style="display:flex;"><span>  ina226.setResistorRange(<span style="color:#666">0.010</span>, <span style="color:#666">10.0</span>); <span style="color:#080;font-style:italic">// 设置分流器电阻值（单位：欧姆）和最大电流范围
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  ina226.setMeasureMode(CONTINUOUS);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 初始化 OLED
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#a2f;font-weight:bold">if</span> (<span style="color:#666">!</span>display.begin(SSD1306_SWITCHCAPVCC, <span style="color:#666">0x3C</span>)) {
+</span></span><span style="display:flex;"><span>    Serial.println(F(<span style="color:#b44">&#34;SSD1306 allocation failed&#34;</span>));
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">for</span> (;;);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  display.clearDisplay();
+</span></span><span style="display:flex;"><span>  display.setRotation(<span style="color:#666">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  lastMeasurementTime <span style="color:#666">=</span> millis(); <span style="color:#080;font-style:italic">// 初始化时间戳
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#0b0;font-weight:bold">void</span> <span style="color:#00a000">loop</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">unsigned</span> <span style="color:#0b0;font-weight:bold">long</span> currentTime <span style="color:#666">=</span> millis();
+</span></span><span style="display:flex;"><span>  <span style="color:#0b0;font-weight:bold">float</span> current_mA <span style="color:#666">=</span> ina226.getCurrent_mA(); <span style="color:#080;font-style:italic">// 获取电流值（单位：mA）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 计算时间间隔（秒）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  <span style="color:#0b0;font-weight:bold">float</span> elapsedSeconds <span style="color:#666">=</span> (currentTime <span style="color:#666">-</span> lastMeasurementTime) <span style="color:#666">/</span> <span style="color:#666">1000.0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 累加容量：mAh = mA * h = mA * (s / 3600)
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  totalCapacity_mAh <span style="color:#666">+=</span> (current_mA <span style="color:#666">*</span> elapsedSeconds) <span style="color:#666">/</span> <span style="color:#666">3600.0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  lastMeasurementTime <span style="color:#666">=</span> currentTime; <span style="color:#080;font-style:italic">// 更新测量时间
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 输出到串口
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  Serial.print(<span style="color:#b44">&#34;Current (mA): &#34;</span>);
+</span></span><span style="display:flex;"><span>  Serial.print(current_mA);
+</span></span><span style="display:flex;"><span>  Serial.print(<span style="color:#b44">&#34;</span><span style="color:#b62;font-weight:bold">\t</span><span style="color:#b44">Total Capacity (mAh): &#34;</span>);
+</span></span><span style="display:flex;"><span>  Serial.println(totalCapacity_mAh);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 输出到 OLED
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  display.clearDisplay();
+</span></span><span style="display:flex;"><span>  display.setTextSize(<span style="color:#666">1</span>);
+</span></span><span style="display:flex;"><span>  display.setTextColor(SSD1306_WHITE);
+</span></span><span style="display:flex;"><span>  display.setCursor(<span style="color:#666">0</span>, <span style="color:#666">0</span>);
+</span></span><span style="display:flex;"><span>  display.println(<span style="color:#b44">&#34;Battery Monitoring&#34;</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34;Current: &#34;</span>);
+</span></span><span style="display:flex;"><span>  display.print(current_mA);
+</span></span><span style="display:flex;"><span>  display.println(<span style="color:#b44">&#34; mA&#34;</span>);
+</span></span><span style="display:flex;"><span>  display.print(<span style="color:#b44">&#34;Capacity: &#34;</span>);
+</span></span><span style="display:flex;"><span>  display.print(totalCapacity_mAh);
+</span></span><span style="display:flex;"><span>  display.println(<span style="color:#b44">&#34; mAh&#34;</span>);
+</span></span><span style="display:flex;"><span>  display.display();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#080;font-style:italic">// 延迟以降低频率
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>  delay(<span style="color:#666">1000</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h3 id="代码解析">代码解析 <a href="#%e4%bb%a3%e7%a0%81%e8%a7%a3%e6%9e%90" class="anchor">🔗</a></h3><ol>
+<li>
+<p><strong><code>ina226.getCurrent_mA()</code></strong>:
+获取当前电池的放电电流值，单位为毫安（mA）。</p>
+</li>
+<li>
+<p><strong>累计容量</strong>:
+每次测量根据公式 ( \text{mAh} = \text{mA} \times \frac{\text{s}}{3600} ) 累加放电容量。</p>
+</li>
+<li>
+<p><strong>时间间隔</strong>:
+使用 <code>millis()</code> 记录当前时间，并与上次测量时间比较计算时间间隔。</p>
+</li>
+<li>
+<p><strong>显示数据</strong>:
+将当前电流和累计容量显示到 OLED 屏幕和串口。</p>
+</li>
+</ol>
+<hr>
+<h3 id="运行说明">运行说明 <a href="#%e8%bf%90%e8%a1%8c%e8%af%b4%e6%98%8e" class="anchor">🔗</a></h3><ol>
+<li>
+<p><strong>测量开始</strong>:
+当代码运行时，INA226 会开始测量电流并累计电池放电容量。</p>
+</li>
+<li>
+<p><strong>时间单位</strong>:
+总放电容量以毫安时（mAh）表示，通常用来评估电池的容量。</p>
+</li>
+<li>
+<p><strong>延迟和刷新频率</strong>:
+在 <code>loop()</code> 中设置了 1 秒延迟，降低了采样频率。如果需要更精确，可以减小间隔时间。</p>
+</li>
+</ol>
+<hr>
+<h3 id="注意事项">注意事项 <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" class="anchor">🔗</a></h3><ol>
+<li>
+<p><strong>准确性</strong>:</p>
+<ul>
+<li>确保分流电阻值设置正确。</li>
+<li>检查 INA226 的校准系数是否匹配。</li>
+</ul>
+</li>
+<li>
+<p><strong>电流方向</strong>:
+如果测量过程中电流为负值，说明电池在充电，可以分别统计充电和放电容量。</p>
+</li>
+<li>
+<p><strong>功耗</strong>:
+如果设备长期运行，请注意功耗问题，选择低功耗组件。</p>
+</li>
+</ol>
+<p>希望这个示例能帮助你统计电池容量！如果有进一步需求，可以随时讨论。</p>
+
+    </div>
+
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>
