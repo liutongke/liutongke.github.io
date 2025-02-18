@@ -6,7 +6,16 @@
     <description>Recent content in ESP32 on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 24 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/esp32/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 25 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/esp32/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>制作Arduino TFT_eSPI库中文字库，实现在ST7789屏幕上显示中文字符</title>
+      <link>https://ltkblog.cn/esp32_arduino_tft_espi_st7786_to_cn/</link>
+      <pubDate>Wed, 25 Dec 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/esp32_arduino_tft_espi_st7786_to_cn/</guid>
+      <description>在使用 Arduino 的 TFT_eSPI 库时，若需显示中文字符，我们可以通过自定义字库来实现。以下是详细步骤。 字库制作工具位置 🔗以我的安装目录为例，工具存放在项目根目录</description>
+    </item>
+    
     <item>
       <title>使用 ESP32 和 Arduino 驱动 ST7789 屏幕（TFT_eSPI）与 TJpg_Decoder 显示图片</title>
       <link>https://ltkblog.cn/esp32_arduino_tft_espi_st7786_picture/</link>
@@ -17,21 +26,12 @@
     </item>
     
     <item>
-      <title>制作Arduino TFT_eSPI库中文字库，实现在ST7789屏幕上显示中文字符</title>
-      <link>https://ltkblog.cn/esp32_arduino_tft_espi_st7786_to_cn/</link>
-      <pubDate>Tue, 24 Dec 2024 00:00:00 +0000</pubDate>
-      
-      <guid>https://ltkblog.cn/esp32_arduino_tft_espi_st7786_to_cn/</guid>
-      <description>在使用 Arduino 的 TFT_eSPI 库时，若需显示中文字符，我们可以通过自定义字库来实现。以下是详细步骤。 字库制作工具位置 🔗以我的安装目录为例，工具存放在项目根目录</description>
-    </item>
-    
-    <item>
-      <title>ESP32使用BMP280气压传感器</title>
-      <link>https://ltkblog.cn/esp32_sensor/</link>
+      <title>TFT_eSPI使用手册</title>
+      <link>https://ltkblog.cn/tft_espi_guide/</link>
       <pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>https://ltkblog.cn/esp32_sensor/</guid>
-      <description>(一)BMP280气压传感器 🔗 以下是 BMP280 传感器各引脚的作用定义： 引脚定义 🔗 VCC： 作用：电源引脚，用于为传感器供电。 连接：通常连接到 3.3V 或 5V 电源</description>
+      <guid>https://ltkblog.cn/tft_espi_guide/</guid>
+      <description>TFT_eSPI库提供了丰富的功能来控制和操作TFT显示屏，包括初始化、颜色设置、绘图、文本显示等。以下是一些常用的TFT_eSPI方法： 初</description>
     </item>
     
     <item>
@@ -41,6 +41,15 @@
       
       <guid>https://ltkblog.cn/esp32_arduino_tft_espi_st7786_display/</guid>
       <description>使用 ESP32 和 Arduino 驱动 ST7789 屏幕（TFT_eSPI） 🔗在 Arduino 中使用 ESP32 和 TFT_eSPI 驱动 ST7789 屏幕时，需要对库文件进行一定的配置。以下是详细的操作步骤。 配置文件位置 🔗以我</description>
+    </item>
+    
+    <item>
+      <title>ESP32使用BMP280气压传感器</title>
+      <link>https://ltkblog.cn/esp32_sensor/</link>
+      <pubDate>Sun, 29 Sep 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://ltkblog.cn/esp32_sensor/</guid>
+      <description>(一)BMP280气压传感器 🔗 以下是 BMP280 传感器各引脚的作用定义： 引脚定义 🔗 VCC： 作用：电源引脚，用于为传感器供电。 连接：通常连接到 3.3V 或 5V 电源</description>
     </item>
     
   </channel>

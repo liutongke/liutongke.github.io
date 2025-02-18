@@ -69,7 +69,7 @@ if (!doNotTrack) {
           ·
         </span>
         <span>
-          3225字
+          3229字
         </span>
         <span class="split">
           ·
@@ -322,7 +322,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">[Service]</span>
 </span></span><span style="display:flex;"><span><span style="color:#b44">Type</span><span style="color:#666">=</span><span style="color:#b44">oneshot</span>
-</span></span><span style="display:flex;"><span><span style="color:#b44">ExecStart</span><span style="color:#666">=</span><span style="color:#b44">/bin/bash -c &#39;echo &#34;$(date)&#34; &amp;&amp; docker exec https-nginx certbot renew&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#b44">ExecStart</span><span style="color:#666">=</span><span style="color:#b44">/bin/bash -c &#39;echo &#34;$(date)&#34; &amp;&amp; docker exec https-nginx certbot renew &amp;&amp; docker restart https-nginx&#39;</span>
 </span></span><span style="display:flex;"><span><span style="color:#b44">StandardOutput</span><span style="color:#666">=</span><span style="color:#b44">file:/var/log/certbot-renew.log</span>
 </span></span><span style="display:flex;"><span><span style="color:#b44">StandardError</span><span style="color:#666">=</span><span style="color:#b44">inherit</span>
 </span></span></code></pre></div><p>这个Systemd服务单元文件用于定期使用Certbot更新Let&rsquo;s Encrypt证书。下面是每个部分的详细说明：</p>

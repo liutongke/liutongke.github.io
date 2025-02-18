@@ -6,11 +6,11 @@
     <description>Recent content in BMP280 on keke的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 29 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/bmp280/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 29 Sep 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://ltkblog.cn/tags/bmp280/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ESP32使用BMP280气压传感器</title>
       <link>https://ltkblog.cn/esp32_sensor/</link>
-      <pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 29 Sep 2024 00:00:00 +0000</pubDate>
       
       <guid>https://ltkblog.cn/esp32_sensor/</guid>
       <description>(一)BMP280气压传感器 🔗 以下是 BMP280 传感器各引脚的作用定义： 引脚定义 🔗 VCC： 作用：电源引脚，用于为传感器供电。 连接：通常连接到 3.3V 或 5V 电源</description>

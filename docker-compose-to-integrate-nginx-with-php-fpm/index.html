@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>使用Docker Compose构建Nginx负载均衡与PHP-FPM集成的Web服务架构 | keke的个人博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="使用Docker Compose构建Nginx负载均衡与PHP-FPM集成的Web服务架构">
+<meta name="keywords" content="Docker Compose教程, Nginx负载均衡配置, PHP-FPM集成, Web服务架构搭建, Docker网络配置, Nginx与PHP-FPM, 容器化应用部署, 多实例PHP-FPM, Web服务器优化, Docker容器互联, 高性能Web架构, 应用负载均衡" >
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'your-google-analytics-id', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">使用Docker Compose构建Nginx负载均衡与PHP-FPM集成的Web服务架构</h1>
+
+    <div class="tip">
+        <time datetime="2025-02-18 00:00:00 &#43;0000 UTC">2025年02月18日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1487字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          3分钟
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          <span id="busuanzi_container_page_pv">阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#使用docker-compose构建nginx负载均衡与php-fpm集成的web服务架构">使用Docker Compose构建Nginx负载均衡与PHP-FPM集成的Web服务架构</a></li>
+        <li><a href="#前提条件">前提条件</a></li>
+        <li><a href="#步骤-1-编写nginx配置文件-defaultconf">步骤 1: 编写Nginx配置文件 (<code>default.conf</code>)</a></li>
+        <li><a href="#步骤-2-准备测试php脚本">步骤 2: 准备测试PHP脚本</a></li>
+        <li><a href="#步骤-3-编写docker-compose文件">步骤 3: 编写Docker Compose文件</a></li>
+        <li><a href="#步骤-4-启动服务">步骤 4: 启动服务</a></li>
+        <li><a href="#步骤-5-验证部署">步骤 5: 验证部署</a></li>
+        <li><a href="#nginx负载均衡的几种方式及优缺点">Nginx负载均衡的几种方式及优缺点</a></li>
+        <li><a href="#注意事项">注意事项</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h3 id="使用docker-compose构建nginx负载均衡与php-fpm集成的web服务架构">使用Docker Compose构建Nginx负载均衡与PHP-FPM集成的Web服务架构 <a href="#%e4%bd%bf%e7%94%a8docker-compose%e6%9e%84%e5%bb%banginx%e8%b4%9f%e8%bd%bd%e5%9d%87%e8%a1%a1%e4%b8%8ephp-fpm%e9%9b%86%e6%88%90%e7%9a%84web%e6%9c%8d%e5%8a%a1%e6%9e%b6%e6%9e%84" class="anchor">🔗</a></h3><p>使用Docker和Docker Compose来创建一个由Nginx作为负载均衡器，连接到三个PHP-FPM实例的Web服务环境。所有容器将被部署在名为<code>php-Proxy</code>的自定义网络中。</p>
+<hr>
+<h3 id="前提条件">前提条件 <a href="#%e5%89%8d%e6%8f%90%e6%9d%a1%e4%bb%b6" class="anchor">🔗</a></h3><ol>
+<li><strong>安装Docker和Docker Compose</strong>：
+<ul>
+<li>确保已经安装了<a href="https://docs.docker.com/get-docker/" target="_blank" rel="noopener">Docker</a> 和 <a href="https://docs.docker.com/compose/install/" target="_blank" rel="noopener">Docker Compose</a>。</li>
+</ul>
+</li>
+<li><strong>创建Docker网络</strong>：
+<ul>
+<li>创建一个名为<code>php-Proxy</code>的Docker网络（如果尚未创建）：
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker network create php-Proxy
+</span></span></code></pre></div></li>
+</ul>
+</li>
+<li><strong>项目目录结构</strong>：
+<ul>
+<li>在工作目录下创建以下结构：
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>project-root/
+</span></span><span style="display:flex;"><span>├── docker-compose.yml
+</span></span><span style="display:flex;"><span>├── nginx/
+</span></span><span style="display:flex;"><span>│   └── default.conf
+</span></span><span style="display:flex;"><span>├── php1/
+</span></span><span style="display:flex;"><span>│   └── index.php
+</span></span><span style="display:flex;"><span>├── php2/
+</span></span><span style="display:flex;"><span>│   └── index.php
+</span></span><span style="display:flex;"><span>└── php3/
+</span></span><span style="display:flex;"><span>    └── index.php
+</span></span></code></pre></div></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="步骤-1-编写nginx配置文件-defaultconf">步骤 1: 编写Nginx配置文件 (<code>default.conf</code>) <a href="#%e6%ad%a5%e9%aa%a4-1-%e7%bc%96%e5%86%99nginx%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6-defaultconf" class="anchor">🔗</a></h3><p>编辑<code>nginx/default.conf</code>，配置Nginx作为负载均衡器：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nginx" data-lang="nginx"><span style="display:flex;"><span><span style="color:#080;font-style:italic"># 定义上游服务器组
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span><span style="color:#a2f;font-weight:bold">upstream</span> <span style="color:#b44">php-upstream</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic"># 使用轮询策略（默认）
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-1:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-2:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-3:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">server</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">listen</span>       <span style="color:#666">80</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">listen</span>  <span style="color:#b44">[::]:80</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server_name</span>  <span style="color:#b44">localhost</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic"># 根目录设置
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    <span style="color:#a2f;font-weight:bold">root</span>   <span style="color:#b44">/var/www/html</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">index</span>  <span style="color:#b44">index.php</span> <span style="color:#b44">index.html</span> <span style="color:#b44">index.htm</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">location</span> <span style="color:#b44">/</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">try_files</span> <span style="color:#b8860b">$uri</span> <span style="color:#b8860b">$uri/</span> <span style="color:#b44">/index.php?</span><span style="color:#b8860b">$query_string</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic"># 错误页面配置
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    <span style="color:#a2f;font-weight:bold">error_page</span>   <span style="color:#666">500</span> <span style="color:#666">502</span> <span style="color:#666">503</span> <span style="color:#666">504</span>  <span style="color:#b44">/50x.html</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">location</span> = <span style="color:#b44">/50x.html</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">root</span>   <span style="color:#b44">/var/www/html</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#080;font-style:italic"># PHP脚本处理
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>    <span style="color:#a2f;font-weight:bold">location</span> ~ <span style="color:#b68">\.php$</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">root</span> <span style="color:#b44">/var/www/html</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">fastcgi_split_path_info</span> <span style="color:#b44">^(.+\.php)(/.+)</span>$;
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">fastcgi_pass</span> <span style="color:#b44">php-upstream</span>;  <span style="color:#080;font-style:italic"># 使用上游服务器组
+</span></span></span><span style="display:flex;"><span><span style="color:#080;font-style:italic"></span>        <span style="color:#a2f;font-weight:bold">fastcgi_index</span> <span style="color:#b44">index.php</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">include</span> <span style="color:#b44">fastcgi_params</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a2f;font-weight:bold">fastcgi_param</span> <span style="color:#b44">SCRIPT_FILENAME</span> <span style="color:#b8860b">$document_root$fastcgi_script_name</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h3 id="步骤-2-准备测试php脚本">步骤 2: 准备测试PHP脚本 <a href="#%e6%ad%a5%e9%aa%a4-2-%e5%87%86%e5%a4%87%e6%b5%8b%e8%af%95php%e8%84%9a%e6%9c%ac" class="anchor">🔗</a></h3><p>在每个<code>php1</code>, <code>php2</code>, <code>php3</code>目录下创建<code>index.php</code>文件，内容可以是简单的PHP信息页面：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#666">&lt;?</span>php
+</span></span><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">echo</span> <span style="color:#b44">&#34;Hello from PHP-FPM Server &#34;</span> <span style="color:#666">.</span> gethostname();
+</span></span></code></pre></div><hr>
+<h3 id="步骤-3-编写docker-compose文件">步骤 3: 编写Docker Compose文件 <a href="#%e6%ad%a5%e9%aa%a4-3-%e7%bc%96%e5%86%99docker-compose%e6%96%87%e4%bb%b6" class="anchor">🔗</a></h3><p>编辑<code>docker-compose.yml</code>，定义Nginx和PHP-FPM服务：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#008000;font-weight:bold">version</span>:<span style="color:#bbb"> </span><span style="color:#b44">&#39;3.8&#39;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">services</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">nginx</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">image</span>:<span style="color:#bbb"> </span>nginx:1.25.0-bullseye<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">container_name</span>:<span style="color:#bbb"> </span>nginx-load-balancer<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">ports</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- <span style="color:#b44">&#34;10001:80&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">volumes</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- ./nginx:/etc/nginx/conf.d<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">networks</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- php-Proxy<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">php-fpm-1</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">image</span>:<span style="color:#bbb"> </span>php:8.1.18-fpm-custom<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">container_name</span>:<span style="color:#bbb"> </span>php-fpm-server-1<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">ports</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- <span style="color:#b44">&#34;10002:9000&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">volumes</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- ./php1:/var/www/html<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">networks</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- php-Proxy<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">php-fpm-2</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">image</span>:<span style="color:#bbb"> </span>php:8.1.18-fpm-custom<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">container_name</span>:<span style="color:#bbb"> </span>php-fpm-server-2<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">ports</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- <span style="color:#b44">&#34;10003:9000&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">volumes</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- ./php2:/var/www/html<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">networks</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- php-Proxy<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">php-fpm-3</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">image</span>:<span style="color:#bbb"> </span>php:8.1.18-fpm-custom<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">container_name</span>:<span style="color:#bbb"> </span>php-fpm-server-3<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">ports</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- <span style="color:#b44">&#34;10004:9000&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">volumes</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- ./php3:/var/www/html<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">networks</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- php-Proxy<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#008000;font-weight:bold">networks</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#008000;font-weight:bold">php-Proxy</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#008000;font-weight:bold">external</span>:<span style="color:#bbb"> </span><span style="color:#a2f;font-weight:bold">true</span><span style="color:#bbb">
+</span></span></span></code></pre></div><hr>
+<h3 id="步骤-4-启动服务">步骤 4: 启动服务 <a href="#%e6%ad%a5%e9%aa%a4-4-%e5%90%af%e5%8a%a8%e6%9c%8d%e5%8a%a1" class="anchor">🔗</a></h3><p>在项目根目录下运行以下命令启动所有服务：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker-compose up -d
+</span></span></code></pre></div><hr>
+<h3 id="步骤-5-验证部署">步骤 5: 验证部署 <a href="#%e6%ad%a5%e9%aa%a4-5-%e9%aa%8c%e8%af%81%e9%83%a8%e7%bd%b2" class="anchor">🔗</a></h3><p>打开浏览器，访问<code>http://localhost:10001</code>。你应该能够看到通过Nginx负载均衡器分发到不同PHP-FPM实例的响应结果。</p>
+<hr>
+<h3 id="nginx负载均衡的几种方式及优缺点">Nginx负载均衡的几种方式及优缺点 <a href="#nginx%e8%b4%9f%e8%bd%bd%e5%9d%87%e8%a1%a1%e7%9a%84%e5%87%a0%e7%a7%8d%e6%96%b9%e5%bc%8f%e5%8f%8a%e4%bc%98%e7%bc%ba%e7%82%b9" class="anchor">🔗</a></h3><p>Nginx支持多种负载均衡策略，以下是常见的几种方式及其优缺点：</p>
+<h4 id="1-轮询round-robin">1. <strong>轮询（Round Robin）</strong> <a href="#1-%e8%bd%ae%e8%af%a2round-robin" class="anchor">🔗</a></h4><ul>
+<li><strong>默认策略</strong>：按顺序将请求分发到后端服务器。</li>
+<li><strong>优点</strong>：
+<ul>
+<li>简单易用，适合后端服务器性能相近的场景。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：
+<ul>
+<li>无法根据服务器负载动态调整。</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nginx" data-lang="nginx"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">upstream</span> <span style="color:#b44">php-upstream</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-1:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-2:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-3:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="2-加权轮询weighted-round-robin">2. <strong>加权轮询（Weighted Round Robin）</strong> <a href="#2-%e5%8a%a0%e6%9d%83%e8%bd%ae%e8%af%a2weighted-round-robin" class="anchor">🔗</a></h4><ul>
+<li><strong>策略</strong>：根据权重分配请求，权重高的服务器处理更多请求。</li>
+<li><strong>优点</strong>：
+<ul>
+<li>可以根据服务器性能分配负载。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：
+<ul>
+<li>需要手动配置权重。</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nginx" data-lang="nginx"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">upstream</span> <span style="color:#b44">php-upstream</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-1:<span style="color:#666">9000</span> <span style="color:#b44">weight=3</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-2:<span style="color:#666">9000</span> <span style="color:#b44">weight=2</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-3:<span style="color:#666">9000</span> <span style="color:#b44">weight=1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="3-ip哈希ip-hash">3. <strong>IP哈希（IP Hash）</strong> <a href="#3-ip%e5%93%88%e5%b8%8cip-hash" class="anchor">🔗</a></h4><ul>
+<li><strong>策略</strong>：根据客户端IP地址哈希值分配请求，确保同一客户端始终访问同一服务器。</li>
+<li><strong>优点</strong>：
+<ul>
+<li>适合需要会话保持的场景。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：
+<ul>
+<li>如果某台服务器宕机，会影响部分用户。</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nginx" data-lang="nginx"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">upstream</span> <span style="color:#b44">php-upstream</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">ip_hash</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-1:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-2:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-3:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="4-最少连接least-connections">4. <strong>最少连接（Least Connections）</strong> <a href="#4-%e6%9c%80%e5%b0%91%e8%bf%9e%e6%8e%a5least-connections" class="anchor">🔗</a></h4><ul>
+<li><strong>策略</strong>：将请求分发到当前连接数最少的服务器。</li>
+<li><strong>优点</strong>：
+<ul>
+<li>动态分配负载，适合后端服务器性能差异较大的场景。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：
+<ul>
+<li>需要实时监控连接数，性能开销较大。</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nginx" data-lang="nginx"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">upstream</span> <span style="color:#b44">php-upstream</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">least_conn</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-1:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-2:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-3:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="5-基于响应时间fair">5. <strong>基于响应时间（Fair）</strong> <a href="#5-%e5%9f%ba%e4%ba%8e%e5%93%8d%e5%ba%94%e6%97%b6%e9%97%b4fair" class="anchor">🔗</a></h4><ul>
+<li><strong>策略</strong>：根据后端服务器的响应时间分配请求。</li>
+<li><strong>优点</strong>：
+<ul>
+<li>动态调整，适合对响应时间敏感的场景。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：
+<ul>
+<li>需要额外模块支持（如<code>nginx-upstream-fair</code>）。</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nginx" data-lang="nginx"><span style="display:flex;"><span><span style="color:#a2f;font-weight:bold">upstream</span> <span style="color:#b44">php-upstream</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">fair</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-1:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-2:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a2f;font-weight:bold">server</span> php-fpm-server-3:<span style="color:#666">9000</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h3 id="注意事项">注意事项 <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" class="anchor">🔗</a></h3><ol>
+<li><strong>服务健康检查</strong>：
+<ul>
+<li>使用<code>health_check</code>模块或第三方工具（如<code>nginx_upstream_check_module</code>）监控后端服务器状态。</li>
+</ul>
+</li>
+<li><strong>动态配置</strong>：
+<ul>
+<li>使用<code>nginx -s reload</code>动态加载配置，避免重启服务。</li>
+</ul>
+</li>
+<li><strong>日志记录</strong>：
+<ul>
+<li>配置Nginx日志，记录请求分发情况和错误信息。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>通过以上步骤和配置，可以快速搭建一个基于Nginx负载均衡的PHP-FPM服务集群，并根据实际需求选择合适的负载均衡策略。</p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://ltkblog.cn/tags/php">php</a>
+            
+                <a href="https://ltkblog.cn/tags/nginx%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1">nginx负载均衡</a>
+            
+                <a href="https://ltkblog.cn/tags/docker-compose">Docker Compose</a>
+            
+                <a href="https://ltkblog.cn/tags/php-fpm">PHP-FPM</a>
+            
+                <a href="https://ltkblog.cn/tags/docker">Docker</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/liutongke" rel="me" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <div class="copyright">
+    
+        Copyright © 2017-2022
+    
+    </div>
+
+    
+    
+    <div class="busuanzi-footer">
+  <span id="busuanzi_container_site_pv">
+    总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+        <span id="busuanzi_container_site_uv">
+    总访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+    </div>
+    
+</footer>
+
+
+
+  </body>
+</html>
